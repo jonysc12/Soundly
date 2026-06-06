@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">Soundly</string>
+    <string name="onboarding_title">Bienvenido</string>
+    <string name="onboarding_subtitle">Soundly, un reproductor de música pensado para tu experiencia y tu personalidad.</string>
+    <string name="onboarding_continue_button">Continuar</string>
+    <string name="permission_screen_back">Volver</string>
+    <string name="permission_screen_title">Permisos</string>
+    <string name="permission_screen_storage_title">Acceso al almacenamiento</string>
+    <string name="permission_screen_storage_description">Permite a Soundly leer tu música local y organizarla automáticamente.</string>
+    <string name="permission_screen_notifications_title">Permitir notificaciones</string>
+    <string name="permission_screen_notifications_description">Permite que Soundly muestre controles y notificaciones mientras reproduces música.</string>
+    <string name="permission_screen_bluetooth_title">Conectividad Bluetooth</string>
+    <string name="permission_screen_bluetooth_description">Permite que Soundly se conecte a dispositivos de audio Bluetooth y controle la reproducción correctamente.</string>
+    <string name="permission_screen_explanation">Concede los permisos solicitados para acceder a tu música y enviarte notificaciones.</string>
+    <string name="permission_screen_grant_permission_button">Conceder permiso</string>
+    <string name="cd_profile_image_placeholder">Marcador de posición de imagen de perfil</string>
+    <string name="cd_profile_image">Imagen de perfil</string>
+    <string name="profile_screen_title">Perfil</string>
+    <string name="profile_screen_subtitle">Para tener una mejor experiencia, completa o edita tu perfil.</string>
+    <string name="profile_screen_username_label">Nombre de usuario</string>
+    <string name="profile_screen_button_ready">Listo</string>
+    <string name="profile_screen_button_save">Guardar y continuar</string>
+    <string name="exit_dialog_title">Salir de la aplicación</string>
+    <string name="exit_dialog_text">¿Estás seguro de que quieres salir de la aplicación?</string>
+    <string name="exit_dialog_confirm">Salir</string>
+    <string name="exit_dialog_cancel">Cancelar</string>
+    <string name="profile_screen_back">Volver</string>
+    <string name="profile_exit_dialog_title">¿Salir de la aplicación?</string>
+    <string name="profile_exit_dialog_text">Si sales ahora perderás tu progreso</string>
+    <string name="profile_complete_title">Completa</string>
+    <string name="profile_add_username">Añade tu nombre de usuario</string>
+    <string name="profile_completed_subtitle">Perfil completado ahora puedes continuar</string>
+    <string name="cd_camera_icon">Ícono de cámara</string>
+    <string name="change_image">Cambiar imagen</string>
+    <string name="confirm">Confirmar</string>
+    <string name="edit">Editar</string>
+</resources>

@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Soundly</string>
+    <string name="onboarding_title">欢迎</string>
+    <string name="onboarding_subtitle">Soundly是一款为您的体验和个性而设计的音乐播放器。</string>
+    <string name="onboarding_continue_button">继续</string>
+    <string name="permission_screen_back">返回</string>
+    <string name="permission_screen_title">权限</string>
+    <string name="permission_screen_storage_title">存储访问</string>
+    <string name="permission_screen_storage_description">允许 Soundly 读取您的本地音乐并自动整理。</string>
+    <string name="permission_screen_notifications_title">允许通知</string>
+    <string name="permission_screen_notifications_description">允许 Soundly 在您播放音乐时显示控件和通知。</string>
+    <string name="permission_screen_explanation">授予所请求的权限以访问您的音乐并向您发送通知。</string>
+    <string name="permission_screen_grant_permission_button">授予权限</string>
+    <string name="cd_profile_image_placeholder">个人资料图片占位符</string>
+    <string name="cd_profile_image">个人资料图片</string>
+    <string name="profile_screen_title">个人资料</string>
+    <string name="profile_screen_subtitle">为了获得更好的体验，请完成或编辑您的个人资料。</string>
+    <string name="profile_screen_username_label">用户名</string>
+    <string name="profile_screen_button_ready">准备好</string>
+    <string name="profile_screen_button_save">保存并继续</string>
+    <string name="exit_dialog_title">退出应用程序</string>
+    <string name="exit_dialog_text">您确定要退出应用程序吗？</string>
+    <string name="exit_dialog_confirm">退出</string>
+    <string name="exit_dialog_cancel">取消</string>
+    <string name="profile_screen_back">返回</string>
+    <string name="profile_exit_dialog_title">退出申请？</string>
+    <string name="profile_exit_dialog_text">如果现在退出，您的进度将丢失</string>
+    <string name="profile_complete_title">完成</string>
+    <string name="profile_add_username">添加您的用户名</string>
+    <string name="profile_completed_subtitle">个人资料已完成，您现在可以继续</string>
+    <string name="cd_camera_icon">相机图标</string>
+    <string name="change_image">更改图片</string>
+    <string name="confirm">确认</string>
+    <string name="edit">编辑</string>
+</resources>

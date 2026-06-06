@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Soundly</string>
+    <string name="onboarding_title">Willkommen</string>
+    <string name="onboarding_subtitle">Soundly, ein Musikplayer, der auf Ihr Erlebnis und Ihre Persönlichkeit zugeschnitten ist.</string>
+    <string name="onboarding_continue_button">Weiter</string>
+    <string name="permission_screen_back">Zurück</string>
+    <string name="permission_screen_title">Berechtigungen</string>
+    <string name="permission_screen_storage_title">Speicherzugriff</string>
+    <string name="permission_screen_storage_description">Ermöglicht Soundly, Ihre lokale Musik zu lesen und automatisch zu organisieren.</string>
+    <string name="permission_screen_notifications_title">Benachrichtigungen zulassen</string>
+    <string name="permission_screen_notifications_description">Ermöglicht Soundly, Steuerelemente und Benachrichtigungen anzuzeigen, während Sie Musik abspielen.</string>
+    <string name="permission_screen_explanation">Erteilen Sie die angeforderten Berechtigungen, um auf Ihre Musik zuzugreifen und Ihnen Benachrichtigungen zu senden.</string>
+    <string name="permission_screen_grant_permission_button">Berechtigung erteilen</string>
+    <string name="cd_profile_image_placeholder">Platzhalter für Profilbild</string>
+    <string name="cd_profile_image">Profilbild</string>
+    <string name="profile_screen_title">Profil</string>
+    <string name="profile_screen_subtitle">Für eine bessere Erfahrung vervollständigen oder bearbeiten Sie Ihr Profil.</string>
+    <string name="profile_screen_username_label">Benutzername</string>
+    <string name="profile_screen_button_ready">Fertig</string>
+    <string name="profile_screen_button_save">Speichern und fortfahren</string>
+    <string name="exit_dialog_title">App beenden</string>
+    <string name="exit_dialog_text">Sind Sie sicher, dass Sie die App beenden möchten?</string>
+    <string name="exit_dialog_confirm">Beenden</string>
+    <string name="exit_dialog_cancel">Abbrechen</string>
+    <string name="profile_screen_back">Zurück</string>
+    <string name="profile_exit_dialog_title">Anwendung beenden?</string>
+    <string name="profile_exit_dialog_text">Wenn Sie jetzt beenden, geht Ihr Fortschritt verloren</string>
+    <string name="profile_complete_title">Vervollständigen</string>
+    <string name="profile_add_username">Fügen Sie Ihren Benutzernamen hinzu</string>
+    <string name="profile_completed_subtitle">Profil vervollständigt, Sie können jetzt fortfahren</string>
+    <string name="cd_camera_icon">Kamerasymbol</string>
+    <string name="change_image">Bild ändern</string>
+    <string name="confirm">Bestätigen</string>
+    <string name="edit">Bearbeiten</string>
+</resources>

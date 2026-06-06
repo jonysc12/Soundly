@@ -1,0 +1,37 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Splash Screen -->
+    <style name="Theme.Soundly.Splash" parent="Theme.SplashScreen">
+
+        <!-- Android 12+ -->
+        <item name="windowSplashScreenBackground">@color/splash_light</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimationDuration">300</item>
+        <item name="postSplashScreenTheme">@style/Theme.Soundly</item>
+
+        <!-- Android antiguos -->
+
+        <!-- Fullscreen -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+
+
+
+    </style>
+
+
+    <!-- Tema normal de la app -->
+    <style name="Theme.Soundly" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- Barras transparentes -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+
+        <item name="android:colorBackground">@color/splash_light</item>
+        <item name="colorSurface">@color/splash_light</item>
+        <!-- Fuente de la app Global -->
+        <item name="android:fontFamily">@font/soundly</item>
+        <item name="fontFamily">@font/soundly</item>
+    </style>
+
+</resources>

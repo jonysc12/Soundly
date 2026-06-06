@@ -1,0 +1,846 @@
+kotlin version: 2.0.0
+error message: org.jetbrains.kotlin.util.KotlinFrontEndException: Exception while analyzing expression in (56,45) in C:/Users/jonat/AndroidStudioProjects/Soundly/app/src/main/java/com/soundly/player/PlaybackManager.kt
+
+Attachments:
+causeThrowable
+java.lang.IllegalStateException: Could not read file: C:/Users/jonat/AndroidStudioProjects/Soundly/app/build/tmp/kapt3/incrementalData/debug/com/soundly/player/PlayerUiState.class; size in bytes: 0; file type: CLASS
+	at org.jetbrains.kotlin.load.kotlin.VirtualFileKotlinClass$Factory.logFileReadingErrorMessage(VirtualFileKotlinClass.kt:77)
+	at org.jetbrains.kotlin.load.kotlin.VirtualFileKotlinClass$Factory.access$logFileReadingErrorMessage(VirtualFileKotlinClass.kt:46)
+	at org.jetbrains.kotlin.load.kotlin.VirtualFileKotlinClass.getFileContents(VirtualFileKotlinClass.kt:38)
+	at org.jetbrains.kotlin.load.kotlin.FileBasedKotlinClass.loadClassAnnotations(FileBasedKotlinClass.java:138)
+	at org.jetbrains.kotlin.load.kotlin.AbstractBinaryClassAnnotationLoader.loadClassAnnotations(AbstractBinaryClassAnnotationLoader.kt:61)
+	at org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedClassDescriptor.annotations$lambda$5(DeserializedClassDescriptor.kt:98)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$LockBasedLazyValue.invoke(LockBasedStorageManager.java:408)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$LockBasedNotNullLazyValue.invoke(LockBasedStorageManager.java:527)
+	at org.jetbrains.kotlin.storage.StorageKt.getValue(storage.kt:42)
+	at org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedAnnotations.getAnnotations(DeserializedAnnotations.kt:28)
+	at org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedAnnotations.iterator(DeserializedAnnotations.kt:32)
+	at org.jetbrains.kotlin.descriptors.annotations.Annotations$DefaultImpls.findAnnotation(Annotations.kt:124)
+	at org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedAnnotations.findAnnotation(DeserializedAnnotations.kt:24)
+	at org.jetbrains.kotlin.resolve.SinceKotlinUtilKt.getOwnSinceKotlinVersion$consider(sinceKotlinUtil.kt:75)
+	at org.jetbrains.kotlin.resolve.SinceKotlinUtilKt.getOwnSinceKotlinVersion(sinceKotlinUtil.kt:87)
+	at org.jetbrains.kotlin.resolve.SinceKotlinUtilKt.checkSinceKotlinVersionAccessibility(sinceKotlinUtil.kt:34)
+	at org.jetbrains.kotlin.resolve.deprecation.DeprecationResolver.isHiddenBecauseOfKotlinVersionAccessibility$lambda$3(DeprecationResolver.kt:117)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$MapBasedMemoizedFunction.invoke(LockBasedStorageManager.java:578)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$MapBasedMemoizedFunctionToNotNull.invoke(LockBasedStorageManager.java:681)
+	at org.jetbrains.kotlin.resolve.deprecation.DeprecationResolver.isHiddenInResolution(DeprecationResolver.kt:159)
+	at org.jetbrains.kotlin.resolve.deprecation.DeprecationResolver.isHiddenInResolution(DeprecationResolver.kt:145)
+	at org.jetbrains.kotlin.resolve.deprecation.DeprecationResolver.isHiddenInResolution$default(DeprecationResolver.kt:137)
+	at org.jetbrains.kotlin.resolve.calls.tower.KotlinResolutionStatelessCallbacksImpl.isHiddenInResolution(KotlinResolutionStatelessCallbacksImpl.kt:66)
+	at org.jetbrains.kotlin.resolve.calls.model.SimpleCandidateFactory.createCandidate(SimpleCandidateFactory.kt:158)
+	at org.jetbrains.kotlin.resolve.calls.model.SimpleCandidateFactory.createCandidate(SimpleCandidateFactory.kt:110)
+	at org.jetbrains.kotlin.resolve.calls.model.SimpleCandidateFactory.createCandidate(SimpleCandidateFactory.kt:29)
+	at org.jetbrains.kotlin.resolve.calls.tower.AbstractSimpleScopeTowerProcessor.createCandidates(ScopeTowerProcessors.kt:124)
+	at org.jetbrains.kotlin.resolve.calls.tower.NoExplicitReceiverScopeTowerProcessor.simpleProcess(ScopeTowerProcessors.kt:195)
+	at org.jetbrains.kotlin.resolve.calls.tower.SimpleScopeTowerProcessor.process(ScopeTowerProcessors.kt:109)
+	at org.jetbrains.kotlin.resolve.calls.tower.PrioritizedCompositeScopeTowerProcessor.process(ScopeTowerProcessors.kt:41)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver.processTowerData(TowerResolver.kt:383)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver.access$processTowerData(TowerResolver.kt:95)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver$Task.process(TowerResolver.kt:207)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver$Task.process(TowerResolver.kt:216)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver$Task.run$processImportingScope(TowerResolver.kt)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver$Task.run$processScopes(TowerResolver.kt:282)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver$Task.run(TowerResolver.kt:305)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver.run(TowerResolver.kt:114)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver.runResolve(TowerResolver.kt:101)
+	at org.jetbrains.kotlin.resolve.calls.KotlinCallResolver.resolveCall(KotlinCallResolver.kt:184)
+	at org.jetbrains.kotlin.resolve.calls.KotlinCallResolver.resolveAndCompleteCall(KotlinCallResolver.kt:41)
+	at org.jetbrains.kotlin.resolve.calls.tower.PSICallResolver.runResolutionAndInference(PSICallResolver.kt:114)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.doResolveCallOrGetCachedResults(CallResolver.java:602)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.lambda$computeTasksAndResolveCall$0(CallResolver.java:213)
+	at org.jetbrains.kotlin.util.PerformanceCounter.time(PerformanceCounter.kt:90)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.computeTasksAndResolveCall(CallResolver.java:211)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.computeTasksAndResolveCall(CallResolver.java:199)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.resolveFunctionCall(CallResolver.java:329)
+	at org.jetbrains.kotlin.resolve.calls.CallExpressionResolver.getResolvedCallForFunction(CallExpressionResolver.kt:86)
+	at org.jetbrains.kotlin.resolve.calls.CallExpressionResolver.getCallExpressionTypeInfoWithoutFinalTypeCheck(CallExpressionResolver.kt:208)
+	at org.jetbrains.kotlin.resolve.calls.CallExpressionResolver.getCallExpressionTypeInfo(CallExpressionResolver.kt:185)
+	at org.jetbrains.kotlin.types.expressions.BasicExpressionTypingVisitor.visitCallExpression(BasicExpressionTypingVisitor.java:731)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.visitCallExpression(ExpressionTypingVisitorDispatcher.java:396)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher$ForDeclarations.visitCallExpression(ExpressionTypingVisitorDispatcher.java:47)
+	at org.jetbrains.kotlin.psi.KtCallExpression.accept(KtCallExpression.java:35)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.lambda$getTypeInfo$0(ExpressionTypingVisitorDispatcher.java:176)
+	at org.jetbrains.kotlin.util.PerformanceCounter.time(PerformanceCounter.kt:90)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.getTypeInfo(ExpressionTypingVisitorDispatcher.java:165)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.getTypeInfo(ExpressionTypingVisitorDispatcher.java:135)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingServices.getTypeInfo(ExpressionTypingServices.java:126)
+	at org.jetbrains.kotlin.resolve.calls.tower.PSICallResolver.resolveValueArgument(PSICallResolver.kt:818)
+	at org.jetbrains.kotlin.resolve.calls.tower.PSICallResolver.resolveArgumentsInParenthesis(PSICallResolver.kt:754)
+	at org.jetbrains.kotlin.resolve.calls.tower.PSICallResolver.toKotlinCall(PSICallResolver.kt:613)
+	at org.jetbrains.kotlin.resolve.calls.tower.PSICallResolver.toKotlinCall$default(PSICallResolver.kt:589)
+	at org.jetbrains.kotlin.resolve.calls.tower.PSICallResolver.runResolutionAndInference(PSICallResolver.kt:109)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.doResolveCallOrGetCachedResults(CallResolver.java:602)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.lambda$computeTasksAndResolveCall$0(CallResolver.java:213)
+	at org.jetbrains.kotlin.util.PerformanceCounter.time(PerformanceCounter.kt:90)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.computeTasksAndResolveCall(CallResolver.java:211)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.computeTasksAndResolveCall(CallResolver.java:199)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.resolveFunctionCall(CallResolver.java:329)
+	at org.jetbrains.kotlin.resolve.calls.CallExpressionResolver.getResolvedCallForFunction(CallExpressionResolver.kt:86)
+	at org.jetbrains.kotlin.resolve.calls.CallExpressionResolver.getCallExpressionTypeInfoWithoutFinalTypeCheck(CallExpressionResolver.kt:208)
+	at org.jetbrains.kotlin.resolve.calls.CallExpressionResolver.getCallExpressionTypeInfo(CallExpressionResolver.kt:185)
+	at org.jetbrains.kotlin.types.expressions.BasicExpressionTypingVisitor.visitCallExpression(BasicExpressionTypingVisitor.java:731)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.visitCallExpression(ExpressionTypingVisitorDispatcher.java:396)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher$ForDeclarations.visitCallExpression(ExpressionTypingVisitorDispatcher.java:47)
+	at org.jetbrains.kotlin.psi.KtCallExpression.accept(KtCallExpression.java:35)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.lambda$getTypeInfo$0(ExpressionTypingVisitorDispatcher.java:176)
+	at org.jetbrains.kotlin.util.PerformanceCounter.time(PerformanceCounter.kt:90)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.getTypeInfo(ExpressionTypingVisitorDispatcher.java:165)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.getTypeInfo(ExpressionTypingVisitorDispatcher.java:135)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.getTypeInfo(ExpressionTypingVisitorDispatcher.java:147)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingServices.getTypeInfo(ExpressionTypingServices.java:121)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingServices.getTypeInfo(ExpressionTypingServices.java:96)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingServices.getType(ExpressionTypingServices.java:138)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingServices.safeGetType(ExpressionTypingServices.java:81)
+	at org.jetbrains.kotlin.resolve.VariableTypeAndInitializerResolver.resolveInitializerType(VariableTypeAndInitializerResolver.kt:178)
+	at org.jetbrains.kotlin.resolve.VariableTypeAndInitializerResolver.resolveTypeNullable$lambda$1(VariableTypeAndInitializerResolver.kt:94)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$LockBasedLazyValue.invoke(LockBasedStorageManager.java:408)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$LockBasedNotNullLazyValue.invoke(LockBasedStorageManager.java:527)
+	at org.jetbrains.kotlin.types.DeferredType.getDelegate(DeferredType.java:108)
+	at org.jetbrains.kotlin.types.WrappedType.getAttributes(KotlinType.kt:135)
+	at org.jetbrains.kotlin.types.KotlinType.getAnnotations(KotlinType.kt:57)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.forceResolveAllContents(ForceResolveUtil.java:109)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.doForceResolveAllContents(ForceResolveUtil.java:96)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.forceResolveAllContents(ForceResolveUtil.java:42)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.forceResolveAllContents(ForceResolveUtil.java:52)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.forceResolveAllContents(ForceResolveUtil.java:47)
+	at org.jetbrains.kotlin.resolve.lazy.descriptors.LazyClassDescriptor.doForceResolveAllContents(LazyClassDescriptor.java:733)
+	at org.jetbrains.kotlin.resolve.lazy.descriptors.LazyClassDescriptor.lambda$new$4(LazyClassDescriptor.java:222)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$LockBasedLazyValue.invoke(LockBasedStorageManager.java:408)
+	at org.jetbrains.kotlin.resolve.lazy.descriptors.LazyClassDescriptor.forceResolveAllContents(LazyClassDescriptor.java:721)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.doForceResolveAllContents(ForceResolveUtil.java:78)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.forceResolveAllContents(ForceResolveUtil.java:42)
+	at org.jetbrains.kotlin.resolve.jvm.extensions.PartialAnalysisHandlerExtension.doAnalysis$lambda$0(PartialAnalysisHandlerExtension.kt:73)
+	at org.jetbrains.kotlin.resolve.jvm.extensions.PartialAnalysisHandlerExtension.doForEachDeclaration(PartialAnalysisHandlerExtension.kt:126)
+	at org.jetbrains.kotlin.resolve.jvm.extensions.PartialAnalysisHandlerExtension.doForEachDeclaration(PartialAnalysisHandlerExtension.kt:141)
+	at org.jetbrains.kotlin.resolve.jvm.extensions.PartialAnalysisHandlerExtension.doAnalysis(PartialAnalysisHandlerExtension.kt:68)
+	at org.jetbrains.kotlin.kapt3.AbstractKapt3Extension.doAnalysis(Kapt3Extension.kt:130)
+	at org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration(TopDownAnalyzerFacadeForJVM.kt:112)
+	at org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration$default(TopDownAnalyzerFacadeForJVM.kt:75)
+	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.analyze$lambda$12(KotlinToJVMBytecodeCompiler.kt:373)
+	at org.jetbrains.kotlin.cli.common.messages.AnalyzerWithCompilerReport.analyzeAndReport(AnalyzerWithCompilerReport.kt:115)
+	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.analyze(KotlinToJVMBytecodeCompiler.kt:364)
+	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.runFrontendAndGenerateIrUsingClassicFrontend(KotlinToJVMBytecodeCompiler.kt:195)
+	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.compileModules$cli(KotlinToJVMBytecodeCompiler.kt:106)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:176)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:50)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:104)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:48)
+	at org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:101)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:453)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:62)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.doCompile(IncrementalCompilerRunner.kt:506)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:423)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally$lambda$9$compile(IncrementalCompilerRunner.kt:249)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally(IncrementalCompilerRunner.kt:267)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:120)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:676)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92)
+	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1661)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.io.FileNotFoundException: C:\Users\jonat\AndroidStudioProjects\Soundly\app\build\tmp\kapt3\incrementalData\debug\com\soundly\player\PlayerUiState.class (El sistema no puede encontrar la ruta especificada)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(Unknown Source)
+	at java.base/java.io.FileInputStream.<init>(Unknown Source)
+	at org.jetbrains.kotlin.com.intellij.openapi.util.io.FileUtil.loadFileBytes(FileUtil.java:204)
+	at org.jetbrains.kotlin.com.intellij.openapi.vfs.local.CoreLocalVirtualFile.contentsToByteArray(CoreLocalVirtualFile.java:98)
+	at org.jetbrains.kotlin.load.kotlin.VirtualFileKotlinClass.getFileContents(VirtualFileKotlinClass.kt:36)
+	... 144 more
+
+----
+expression.kt
+<File name: PlaybackManager.kt, Physical: true>
+@Singleton
+class PlaybackManager @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val repository: MusicRepository
+) {
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private var progressJob: Job? = null
+
+    private val _uiState = MutableStateFlow(<ELEMENT>PlayerUiState()</ELEMENT>)
+    val uiState: StateFlow<PlayerUiState> = _uiState
+
+    private val audioAttrs = AudioAttributes.Builder()
+        .setUsage(C.USAGE_MEDIA)
+        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+        .build()
+
+    private val player: ExoPlayer = ExoPlayer.Builder(context)
+        .setAudioAttributes(audioAttrs, true)
+        .setHandleAudioBecomingNoisy(true)
+        .build()
+
+    var mediaSession: MediaSession? = null
+        private set
+
+    private var notificationManager: PlayerNotificationManager? = null
+    private var playlist: List<Song> = emptyList()
+    private var hasInitializedQueue = false
+    private var restoredQueue = false
+    private var lastPersistedPositionMs: Long = 0L
+    private var lastPersistWallTimeMs: Long = 0L
+    private var sleepTimerJob: Job? = null
+    private var sleepTargetRealtimeMs: Long? = null
+
+    init {
+        player.addListener(object : Player.Listener {
+            override fun onEvents(player: Player, events: Player.Events) {
+                if (events.containsAny(Player.EVENT_MEDIA_ITEM_TRANSITION, Player.EVENT_POSITION_DISCONTINUITY, Player.EVENT_MEDIA_METADATA_CHANGED)) {
+                    updateMetadata()
+                }
+                if (events.containsAny(Player.EVENT_PLAY_WHEN_READY_CHANGED, Player.EVENT_PLAYBACK_STATE_CHANGED, Player.EVENT_IS_PLAYING_CHANGED, Player.EVENT_TIMELINE_CHANGED)) {
+                    pushPlaybackState()
+                    handleProgressTicker()
+                }
+            }
+
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_ENDED && player.repeatMode == Player.REPEAT_MODE_ONE) {
+                    player.seekTo(player.currentMediaItemIndex, 0L)
+                    player.playWhenReady = true
+                }
+            }
+        })
+
+        scope.launch {
+            repository.librarySongsFlow.collect { songs ->
+                if (songs.isNotEmpty()) {
+                    playlist = songs
+                    if (!restoredQueue) {
+                        restoreSavedQueue(songs)
+                    }
+                }
+            }
+        }
+    }
+
+    fun ensureSession(serviceContext: Context = context) {
+        if (mediaSession != null && notificationManager != null) return
+
+        val sessionActivity = PendingIntent.getActivity(
+            serviceContext,
+            0,
+            Intent(serviceContext, MainActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        if (mediaSession == null) {
+            mediaSession = MediaSession.Builder(serviceContext, player)
+                .setSessionActivity(sessionActivity)
+                .build()
+        }
+
+        attachNotification(serviceContext)
+    }
+
+    fun startForegroundPlaceholder(service: PlaybackService) {
+        // Minimal notification to satisfy startForegroundService timeout; updated later by PlayerNotificationManager.
+        createChannel(service)
+        val notification = NotificationCompat.Builder(service, CHANNEL_ID)
+            .setContentTitle("Reproducción")
+            .setContentText("Inicializando reproductor")
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setOngoing(true)
+            .build()
+        service.startForeground(NOTIFICATION_ID, notification)
+    }
+
+    fun playPause() {
+        if (player.playWhenReady) {
+            player.pause()
+            persistCurrentPosition()
+        } else {
+            ensureServiceRunning()
+            ensureSession()
+            player.playWhenReady = true
+            player.play()
+        }
+    }
+
+    fun play(song: Song, queue: List<Song>) {
+        normalizeRepeatForManualAction()
+        val keepShuffle = player.shuffleModeEnabled
+        val keepRepeat = player.repeatMode
+        val items = queue.map { it.toMediaItem() }
+        val startIndex = queue.indexOfFirst { it.id == song.id }.coerceAtLeast(0)
+        player.setMediaItems(items, startIndex, 0L)
+        player.shuffleModeEnabled = keepShuffle
+        player.repeatMode = keepRepeat
+        hasInitializedQueue = true
+        playlist = queue
+        player.prepare()
+        player.playWhenReady = true
+        player.play()
+        updateMetadata()
+        ensureServiceRunning()
+        ensureSession()
+        persistState(queue, song.id, 0L, keepShuffle, keepRepeat)
+    }
+
+    fun next() {
+        normalizeRepeatForManualAction()
+        if (player.hasNextMediaItem()) {
+            player.seekToNextMediaItem()
+            player.playWhenReady = true
+        }
+    }
+
+    fun previous() {
+        normalizeRepeatForManualAction()
+        if (player.hasPreviousMediaItem()) {
+            player.seekToPreviousMediaItem()
+            player.playWhenReady = true
+        } else {
+            player.seekTo(0)
+        }
+    }
+
+    fun toggleShuffle() {
+        player.shuffleModeEnabled = !player.shuffleModeEnabled
+        persistCurrentPosition()
+        pushPlaybackState()
+    }
+
+    fun cycleRepeatMode() {
+        val next = when (player.repeatMode) {
+            Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
+            Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
+            else -> Player.REPEAT_MODE_OFF
+        }
+        player.repeatMode = next
+        persistCurrentPosition()
+        pushPlaybackState()
+    }
+
+    fun seekTo(positionMs: Long) {
+        player.seekTo(positionMs.coerceAtLeast(0L))
+        persistCurrentPosition()
+    }
+
+    private fun updateMetadata() {
+        val mediaMetadata = player.currentMediaItem?.mediaMetadata ?: player.mediaMetadata
+        _uiState.value = _uiState.value.copy(
+            title = mediaMetadata.title?.toString().orEmpty(),
+            artist = mediaMetadata.artist?.toString().orEmpty(),
+            artworkUri = mediaMetadata.artworkUri,
+            durationMs = if (player.duration != C.TIME_UNSET) player.duration else 0L,
+            canSkipNext = player.hasNextMediaItem(),
+            canSkipPrevious = player.hasPreviousMediaItem()
+        )
+        pushPlaybackState()
+    }
+
+    private fun pushPlaybackState() {
+        val duration = if (player.duration != C.TIME_UNSET) player.duration else 0L
+        val sleepRemaining = sleepTargetRealtimeMs?.let { target ->
+            val rem = target - System.currentTimeMillis()
+            rem.coerceAtLeast(0L)
+        }
+        _uiState.value = _uiState.value.copy(
+            isPlaying = player.isPlaying,
+            positionMs = player.currentPosition.coerceAtLeast(0L),
+            bufferedPositionMs = player.bufferedPosition.coerceAtLeast(0L),
+            durationMs = duration,
+            isBuffering = player.playbackState == Player.STATE_BUFFERING,
+            isShuffleEnabled = player.shuffleModeEnabled,
+            repeatMode = player.repeatMode,
+            sleepRemainingMs = sleepRemaining
+        )
+    }
+
+    private fun attachNotification(ctx: Context) {
+        if (notificationManager != null || mediaSession == null) return
+
+        createChannel(ctx)
+
+        // Asegura permiso antes de notificar (Android 9+ requiere permiso declarativo ya en el manifest)
+        val descriptionAdapter = object : PlayerNotificationManager.MediaDescriptionAdapter {
+            override fun getCurrentContentTitle(player: Player): CharSequence {
+                return player.mediaMetadata.title ?: ""
+            }
+
+            override fun createCurrentContentIntent(player: Player): PendingIntent? {
+                return mediaSession?.sessionActivity
+            }
+
+            override fun getCurrentContentText(player: Player): CharSequence? {
+                return player.mediaMetadata.artist
+            }
+
+            override fun getCurrentLargeIcon(
+                player: Player,
+                callback: PlayerNotificationManager.BitmapCallback
+            ) = null
+        }
+
+        notificationManager = PlayerNotificationManager.Builder(
+            ctx,
+            NOTIFICATION_ID,
+            CHANNEL_ID
+        )
+            .setMediaDescriptionAdapter(descriptionAdapter)
+            .setNotificationListener(object : PlayerNotificationManager.NotificationListener {
+                override fun onNotificationPosted(
+                    notificationId: Int,
+                    notification: android.app.Notification,
+                    ongoing: Boolean
+                ) {
+                    if (ongoing && ctx is PlaybackService) {
+                        ctx.startForeground(notificationId, notification)
+                    } else if (ongoing) {
+                        NotificationManagerCompat.from(ctx).notify(notificationId, notification)
+                    }
+                }
+
+                override fun onNotificationCancelled(notificationId: Int, dismissedByUser: Boolean) {
+                    stopService()
+                    if (ctx is PlaybackService) {
+                        ctx.stopForeground(MediaSessionService.STOP_FOREGROUND_REMOVE)
+                    }
+                }
+            })
+            .setChannelImportance(NotificationManager.IMPORTANCE_LOW)
+            .build()
+            .apply {
+                mediaSession?.sessionCompatToken?.let { setMediaSessionToken(it) }
+                setUseNextAction(true)
+                setUsePreviousAction(true)
+                setSmallIcon(R.mipmap.ic_launcher)
+                setPlayer(player)
+            }
+    }
+
+    private fun ensureServiceRunning() {
+        ContextCompat.startForegroundService(
+            context,
+            Intent(context, PlaybackService::class.java)
+        )
+    }
+
+    private fun stopService() {
+        context.stopService(Intent(context, PlaybackService::class.java))
+    }
+
+    fun onServiceDestroyed() {
+        notificationManager?.setPlayer(null)
+        notificationManager = null
+    }
+
+    fun handleTaskRemoved(service: PlaybackService) {
+        persistCurrentPosition()
+        player.pause()
+        notificationManager?.setPlayer(null)
+        notificationManager = null
+        service.stopForeground(MediaSessionService.STOP_FOREGROUND_REMOVE)
+        service.stopSelf()
+    }
+
+    fun scheduleSleepTimer(durationMs: Long) {
+        sleepTimerJob?.cancel()
+        if (durationMs <= 0) return
+        sleepTargetRealtimeMs = System.currentTimeMillis() + durationMs
+        sleepTimerJob = scope.launch {
+            delay(durationMs)
+            player.pause()
+            persistCurrentPosition()
+            stopService()
+            sleepTargetRealtimeMs = null
+            pushPlaybackState()
+        }
+        pushPlaybackState()
+        // ticker para UI
+        scope.launch {
+            while (sleepTargetRealtimeMs != null) {
+                pushPlaybackState()
+                delay(1000)
+            }
+        }
+    }
+
+    fun cancelSleepTimer() {
+        sleepTimerJob?.cancel()
+        sleepTimerJob = null
+        sleepTargetRealtimeMs = null
+        pushPlaybackState()
+    }
+
+    fun release() {
+        notificationManager?.setPlayer(null)
+        mediaSession?.release()
+        player.release()
+    }
+
+    private fun persistState(queue: List<Song>, currentId: Long, position: Long, shuffle: Boolean, repeat: Int) {
+        if (queue.isEmpty()) return
+        val ids = queue.joinToString(",") { it.id.toString() }
+        scope.launch(Dispatchers.IO) {
+            context.playbackDataStore.edit { prefs ->
+                prefs[KEY_QUEUE_IDS] = ids
+                prefs[KEY_CURRENT_ID] = currentId
+                prefs[KEY_POSITION] = position
+                prefs[KEY_SHUFFLE] = shuffle
+                prefs[KEY_REPEAT] = repeat.toLong()
+            }
+        }
+        lastPersistedPositionMs = position
+        lastPersistWallTimeMs = System.currentTimeMillis()
+    }
+
+    private fun persistCurrentPosition() {
+        val currentId = player.currentMediaItem?.mediaId?.toLongOrNull() ?: return
+        if (playlist.isEmpty()) return
+        val shuffle = player.shuffleModeEnabled
+        val repeat = player.repeatMode
+        persistState(playlist, currentId, player.currentPosition.coerceAtLeast(0L), shuffle, repeat)
+    }
+
+    private fun maybePersistProgress() {
+        val now = System.currentTimeMillis()
+        val pos = player.currentPosition.coerceAtLeast(0L)
+        val timeSince = now - lastPersistWallTimeMs
+        val deltaPos = pos - lastPersistedPositionMs
+        if (timeSince >= 5000 || deltaPos >= 5000) {
+            persistCurrentPosition()
+        }
+    }
+
+    private suspend fun restoreSavedQueue(currentSongs: List<Song>) {
+        val prefs = try { context.playbackDataStore.data.first() } catch (_: Exception) { return }
+        val idsStr = prefs[KEY_QUEUE_IDS] ?: return
+        val ids = idsStr.split(",").mapNotNull { it.toLongOrNull() }
+        if (ids.isEmpty()) return
+        val queue = ids.mapNotNull { id -> currentSongs.find { it.id == id } }
+        if (queue.isEmpty()) return
+
+        val currentId = prefs[KEY_CURRENT_ID] ?: queue.first().id
+        val position = prefs[KEY_POSITION] ?: 0L
+        val shuffle = prefs[KEY_SHUFFLE] ?: false
+        val repeat = (prefs[KEY_REPEAT] ?: Player.REPEAT_MODE_OFF.toLong()).toInt()
+        val startIndex = queue.indexOfFirst { it.id == currentId }.coerceAtLeast(0)
+
+        playlist = queue
+        player.setMediaItems(queue.map { it.toMediaItem() }, startIndex, position)
+        player.shuffleModeEnabled = shuffle
+        player.repeatMode = repeat
+        player.prepare()
+        hasInitializedQueue = true
+        restoredQueue = true
+        updateMetadata()
+        pushPlaybackState()
+        lastPersistedPositionMs = position
+        lastPersistWallTimeMs = System.currentTimeMillis()
+    }
+
+    private fun Song.toMediaItem(): MediaItem {
+        val artworkUri = repository.getAlbumArtUri(albumId)
+        val metadata = MediaMetadata.Builder()
+            .setTitle(title)
+            .setArtist(artist)
+            .setAlbumTitle(album)
+            .setArtworkUri(artworkUri)
+            .build()
+        return MediaItem.Builder()
+            .setUri(Uri.fromFile(File(path)))
+            .setMediaId(id.toString())
+            .setMediaMetadata(metadata)
+            .build()
+    }
+
+    private fun normalizeRepeatForManualAction() {
+        if (player.repeatMode == Player.REPEAT_MODE_ONE) {
+            player.repeatMode = Player.REPEAT_MODE_ALL
+            pushPlaybackState()
+            persistCurrentPosition()
+        }
+    }
+
+    private fun handleProgressTicker() {
+        if (player.isPlaying) {
+            if (progressJob?.isActive != true) {
+                progressJob = scope.launch {
+                    while (player.isPlaying) {
+                        pushPlaybackState()
+                        maybePersistProgress()
+                        delay(1000)
+                    }
+                }
+            }
+        } else {
+            progressJob?.cancel()
+            progressJob = null
+        }
+    }
+
+    companion object {
+        private const val CHANNEL_ID = "soundly_playback"
+        private const val NOTIFICATION_ID = 33
+        private val KEY_QUEUE_IDS = stringPreferencesKey("queue_ids")
+        private val KEY_CURRENT_ID = longPreferencesKey("current_id")
+        private val KEY_POSITION = longPreferencesKey("position_ms")
+        private val KEY_SHUFFLE = booleanPreferencesKey("shuffle_enabled")
+        private val KEY_REPEAT = longPreferencesKey("repeat_mode")
+
+        private fun createChannel(ctx: Context) {
+            val manager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (manager.getNotificationChannel(CHANNEL_ID) == null) {
+                val channel = NotificationChannel(
+                    CHANNEL_ID,
+                    "Reproducción",
+                    NotificationManager.IMPORTANCE_LOW
+                ).apply {
+                    description = "Controles de reproducción"
+                }
+                manager.createNotificationChannel(channel)
+            }
+        }
+    }
+}
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.logOrThrowException(ExpressionTypingVisitorDispatcher.java:261)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.lambda$getTypeInfo$0(ExpressionTypingVisitorDispatcher.java:225)
+	at org.jetbrains.kotlin.util.PerformanceCounter.time(PerformanceCounter.kt:90)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.getTypeInfo(ExpressionTypingVisitorDispatcher.java:165)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.getTypeInfo(ExpressionTypingVisitorDispatcher.java:135)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingServices.getTypeInfo(ExpressionTypingServices.java:126)
+	at org.jetbrains.kotlin.resolve.calls.tower.PSICallResolver.resolveValueArgument(PSICallResolver.kt:818)
+	at org.jetbrains.kotlin.resolve.calls.tower.PSICallResolver.resolveArgumentsInParenthesis(PSICallResolver.kt:754)
+	at org.jetbrains.kotlin.resolve.calls.tower.PSICallResolver.toKotlinCall(PSICallResolver.kt:613)
+	at org.jetbrains.kotlin.resolve.calls.tower.PSICallResolver.toKotlinCall$default(PSICallResolver.kt:589)
+	at org.jetbrains.kotlin.resolve.calls.tower.PSICallResolver.runResolutionAndInference(PSICallResolver.kt:109)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.doResolveCallOrGetCachedResults(CallResolver.java:602)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.lambda$computeTasksAndResolveCall$0(CallResolver.java:213)
+	at org.jetbrains.kotlin.util.PerformanceCounter.time(PerformanceCounter.kt:90)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.computeTasksAndResolveCall(CallResolver.java:211)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.computeTasksAndResolveCall(CallResolver.java:199)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.resolveFunctionCall(CallResolver.java:329)
+	at org.jetbrains.kotlin.resolve.calls.CallExpressionResolver.getResolvedCallForFunction(CallExpressionResolver.kt:86)
+	at org.jetbrains.kotlin.resolve.calls.CallExpressionResolver.getCallExpressionTypeInfoWithoutFinalTypeCheck(CallExpressionResolver.kt:208)
+	at org.jetbrains.kotlin.resolve.calls.CallExpressionResolver.getCallExpressionTypeInfo(CallExpressionResolver.kt:185)
+	at org.jetbrains.kotlin.types.expressions.BasicExpressionTypingVisitor.visitCallExpression(BasicExpressionTypingVisitor.java:731)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.visitCallExpression(ExpressionTypingVisitorDispatcher.java:396)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher$ForDeclarations.visitCallExpression(ExpressionTypingVisitorDispatcher.java:47)
+	at org.jetbrains.kotlin.psi.KtCallExpression.accept(KtCallExpression.java:35)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.lambda$getTypeInfo$0(ExpressionTypingVisitorDispatcher.java:176)
+	at org.jetbrains.kotlin.util.PerformanceCounter.time(PerformanceCounter.kt:90)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.getTypeInfo(ExpressionTypingVisitorDispatcher.java:165)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.getTypeInfo(ExpressionTypingVisitorDispatcher.java:135)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.getTypeInfo(ExpressionTypingVisitorDispatcher.java:147)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingServices.getTypeInfo(ExpressionTypingServices.java:121)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingServices.getTypeInfo(ExpressionTypingServices.java:96)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingServices.getType(ExpressionTypingServices.java:138)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingServices.safeGetType(ExpressionTypingServices.java:81)
+	at org.jetbrains.kotlin.resolve.VariableTypeAndInitializerResolver.resolveInitializerType(VariableTypeAndInitializerResolver.kt:178)
+	at org.jetbrains.kotlin.resolve.VariableTypeAndInitializerResolver.resolveTypeNullable$lambda$1(VariableTypeAndInitializerResolver.kt:94)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$LockBasedLazyValue.invoke(LockBasedStorageManager.java:408)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$LockBasedNotNullLazyValue.invoke(LockBasedStorageManager.java:527)
+	at org.jetbrains.kotlin.types.DeferredType.getDelegate(DeferredType.java:108)
+	at org.jetbrains.kotlin.types.WrappedType.getAttributes(KotlinType.kt:135)
+	at org.jetbrains.kotlin.types.KotlinType.getAnnotations(KotlinType.kt:57)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.forceResolveAllContents(ForceResolveUtil.java:109)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.doForceResolveAllContents(ForceResolveUtil.java:96)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.forceResolveAllContents(ForceResolveUtil.java:42)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.forceResolveAllContents(ForceResolveUtil.java:52)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.forceResolveAllContents(ForceResolveUtil.java:47)
+	at org.jetbrains.kotlin.resolve.lazy.descriptors.LazyClassDescriptor.doForceResolveAllContents(LazyClassDescriptor.java:733)
+	at org.jetbrains.kotlin.resolve.lazy.descriptors.LazyClassDescriptor.lambda$new$4(LazyClassDescriptor.java:222)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$LockBasedLazyValue.invoke(LockBasedStorageManager.java:408)
+	at org.jetbrains.kotlin.resolve.lazy.descriptors.LazyClassDescriptor.forceResolveAllContents(LazyClassDescriptor.java:721)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.doForceResolveAllContents(ForceResolveUtil.java:78)
+	at org.jetbrains.kotlin.resolve.lazy.ForceResolveUtil.forceResolveAllContents(ForceResolveUtil.java:42)
+	at org.jetbrains.kotlin.resolve.jvm.extensions.PartialAnalysisHandlerExtension.doAnalysis$lambda$0(PartialAnalysisHandlerExtension.kt:73)
+	at org.jetbrains.kotlin.resolve.jvm.extensions.PartialAnalysisHandlerExtension.doForEachDeclaration(PartialAnalysisHandlerExtension.kt:126)
+	at org.jetbrains.kotlin.resolve.jvm.extensions.PartialAnalysisHandlerExtension.doForEachDeclaration(PartialAnalysisHandlerExtension.kt:141)
+	at org.jetbrains.kotlin.resolve.jvm.extensions.PartialAnalysisHandlerExtension.doAnalysis(PartialAnalysisHandlerExtension.kt:68)
+	at org.jetbrains.kotlin.kapt3.AbstractKapt3Extension.doAnalysis(Kapt3Extension.kt:130)
+	at org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration(TopDownAnalyzerFacadeForJVM.kt:112)
+	at org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration$default(TopDownAnalyzerFacadeForJVM.kt:75)
+	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.analyze$lambda$12(KotlinToJVMBytecodeCompiler.kt:373)
+	at org.jetbrains.kotlin.cli.common.messages.AnalyzerWithCompilerReport.analyzeAndReport(AnalyzerWithCompilerReport.kt:115)
+	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.analyze(KotlinToJVMBytecodeCompiler.kt:364)
+	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.runFrontendAndGenerateIrUsingClassicFrontend(KotlinToJVMBytecodeCompiler.kt:195)
+	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.compileModules$cli(KotlinToJVMBytecodeCompiler.kt:106)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:176)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:50)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:104)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:48)
+	at org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:101)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:453)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:62)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.doCompile(IncrementalCompilerRunner.kt:506)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:423)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally$lambda$9$compile(IncrementalCompilerRunner.kt:249)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally(IncrementalCompilerRunner.kt:267)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:120)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:676)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92)
+	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1661)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.IllegalStateException: Could not read file: C:/Users/jonat/AndroidStudioProjects/Soundly/app/build/tmp/kapt3/incrementalData/debug/com/soundly/player/PlayerUiState.class; size in bytes: 0; file type: CLASS
+	at org.jetbrains.kotlin.load.kotlin.VirtualFileKotlinClass$Factory.logFileReadingErrorMessage(VirtualFileKotlinClass.kt:77)
+	at org.jetbrains.kotlin.load.kotlin.VirtualFileKotlinClass$Factory.access$logFileReadingErrorMessage(VirtualFileKotlinClass.kt:46)
+	at org.jetbrains.kotlin.load.kotlin.VirtualFileKotlinClass.getFileContents(VirtualFileKotlinClass.kt:38)
+	at org.jetbrains.kotlin.load.kotlin.FileBasedKotlinClass.loadClassAnnotations(FileBasedKotlinClass.java:138)
+	at org.jetbrains.kotlin.load.kotlin.AbstractBinaryClassAnnotationLoader.loadClassAnnotations(AbstractBinaryClassAnnotationLoader.kt:61)
+	at org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedClassDescriptor.annotations$lambda$5(DeserializedClassDescriptor.kt:98)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$LockBasedLazyValue.invoke(LockBasedStorageManager.java:408)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$LockBasedNotNullLazyValue.invoke(LockBasedStorageManager.java:527)
+	at org.jetbrains.kotlin.storage.StorageKt.getValue(storage.kt:42)
+	at org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedAnnotations.getAnnotations(DeserializedAnnotations.kt:28)
+	at org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedAnnotations.iterator(DeserializedAnnotations.kt:32)
+	at org.jetbrains.kotlin.descriptors.annotations.Annotations$DefaultImpls.findAnnotation(Annotations.kt:124)
+	at org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedAnnotations.findAnnotation(DeserializedAnnotations.kt:24)
+	at org.jetbrains.kotlin.resolve.SinceKotlinUtilKt.getOwnSinceKotlinVersion$consider(sinceKotlinUtil.kt:75)
+	at org.jetbrains.kotlin.resolve.SinceKotlinUtilKt.getOwnSinceKotlinVersion(sinceKotlinUtil.kt:87)
+	at org.jetbrains.kotlin.resolve.SinceKotlinUtilKt.checkSinceKotlinVersionAccessibility(sinceKotlinUtil.kt:34)
+	at org.jetbrains.kotlin.resolve.deprecation.DeprecationResolver.isHiddenBecauseOfKotlinVersionAccessibility$lambda$3(DeprecationResolver.kt:117)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$MapBasedMemoizedFunction.invoke(LockBasedStorageManager.java:578)
+	at org.jetbrains.kotlin.storage.LockBasedStorageManager$MapBasedMemoizedFunctionToNotNull.invoke(LockBasedStorageManager.java:681)
+	at org.jetbrains.kotlin.resolve.deprecation.DeprecationResolver.isHiddenInResolution(DeprecationResolver.kt:159)
+	at org.jetbrains.kotlin.resolve.deprecation.DeprecationResolver.isHiddenInResolution(DeprecationResolver.kt:145)
+	at org.jetbrains.kotlin.resolve.deprecation.DeprecationResolver.isHiddenInResolution$default(DeprecationResolver.kt:137)
+	at org.jetbrains.kotlin.resolve.calls.tower.KotlinResolutionStatelessCallbacksImpl.isHiddenInResolution(KotlinResolutionStatelessCallbacksImpl.kt:66)
+	at org.jetbrains.kotlin.resolve.calls.model.SimpleCandidateFactory.createCandidate(SimpleCandidateFactory.kt:158)
+	at org.jetbrains.kotlin.resolve.calls.model.SimpleCandidateFactory.createCandidate(SimpleCandidateFactory.kt:110)
+	at org.jetbrains.kotlin.resolve.calls.model.SimpleCandidateFactory.createCandidate(SimpleCandidateFactory.kt:29)
+	at org.jetbrains.kotlin.resolve.calls.tower.AbstractSimpleScopeTowerProcessor.createCandidates(ScopeTowerProcessors.kt:124)
+	at org.jetbrains.kotlin.resolve.calls.tower.NoExplicitReceiverScopeTowerProcessor.simpleProcess(ScopeTowerProcessors.kt:195)
+	at org.jetbrains.kotlin.resolve.calls.tower.SimpleScopeTowerProcessor.process(ScopeTowerProcessors.kt:109)
+	at org.jetbrains.kotlin.resolve.calls.tower.PrioritizedCompositeScopeTowerProcessor.process(ScopeTowerProcessors.kt:41)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver.processTowerData(TowerResolver.kt:383)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver.access$processTowerData(TowerResolver.kt:95)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver$Task.process(TowerResolver.kt:207)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver$Task.process(TowerResolver.kt:216)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver$Task.run$processImportingScope(TowerResolver.kt)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver$Task.run$processScopes(TowerResolver.kt:282)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver$Task.run(TowerResolver.kt:305)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver.run(TowerResolver.kt:114)
+	at org.jetbrains.kotlin.resolve.calls.tower.TowerResolver.runResolve(TowerResolver.kt:101)
+	at org.jetbrains.kotlin.resolve.calls.KotlinCallResolver.resolveCall(KotlinCallResolver.kt:184)
+	at org.jetbrains.kotlin.resolve.calls.KotlinCallResolver.resolveAndCompleteCall(KotlinCallResolver.kt:41)
+	at org.jetbrains.kotlin.resolve.calls.tower.PSICallResolver.runResolutionAndInference(PSICallResolver.kt:114)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.doResolveCallOrGetCachedResults(CallResolver.java:602)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.lambda$computeTasksAndResolveCall$0(CallResolver.java:213)
+	at org.jetbrains.kotlin.util.PerformanceCounter.time(PerformanceCounter.kt:90)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.computeTasksAndResolveCall(CallResolver.java:211)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.computeTasksAndResolveCall(CallResolver.java:199)
+	at org.jetbrains.kotlin.resolve.calls.CallResolver.resolveFunctionCall(CallResolver.java:329)
+	at org.jetbrains.kotlin.resolve.calls.CallExpressionResolver.getResolvedCallForFunction(CallExpressionResolver.kt:86)
+	at org.jetbrains.kotlin.resolve.calls.CallExpressionResolver.getCallExpressionTypeInfoWithoutFinalTypeCheck(CallExpressionResolver.kt:208)
+	at org.jetbrains.kotlin.resolve.calls.CallExpressionResolver.getCallExpressionTypeInfo(CallExpressionResolver.kt:185)
+	at org.jetbrains.kotlin.types.expressions.BasicExpressionTypingVisitor.visitCallExpression(BasicExpressionTypingVisitor.java:731)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.visitCallExpression(ExpressionTypingVisitorDispatcher.java:396)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher$ForDeclarations.visitCallExpression(ExpressionTypingVisitorDispatcher.java:47)
+	at org.jetbrains.kotlin.psi.KtCallExpression.accept(KtCallExpression.java:35)
+	at org.jetbrains.kotlin.types.expressions.ExpressionTypingVisitorDispatcher.lambda$getTypeInfo$0(ExpressionTypingVisitorDispatcher.java:176)
+	... 91 more
+Caused by: java.io.FileNotFoundException: C:\Users\jonat\AndroidStudioProjects\Soundly\app\build\tmp\kapt3\incrementalData\debug\com\soundly\player\PlayerUiState.class (El sistema no puede encontrar la ruta especificada)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(Unknown Source)
+	at java.base/java.io.FileInputStream.<init>(Unknown Source)
+	at org.jetbrains.kotlin.com.intellij.openapi.util.io.FileUtil.loadFileBytes(FileUtil.java:204)
+	at org.jetbrains.kotlin.com.intellij.openapi.vfs.local.CoreLocalVirtualFile.contentsToByteArray(CoreLocalVirtualFile.java:98)
+	at org.jetbrains.kotlin.load.kotlin.VirtualFileKotlinClass.getFileContents(VirtualFileKotlinClass.kt:36)
+	... 144 more
+
+
+error message: Daemon compilation failed: null
+java.lang.Exception
+	at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:69)
+	at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:65)
+	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemon(GradleKotlinCompilerWork.kt:240)
+	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemonOrFallbackImpl(GradleKotlinCompilerWork.kt:159)
+	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.run(GradleKotlinCompilerWork.kt:111)
+	at org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction.execute(GradleCompilerRunnerWithWorkers.kt:76)
+	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:63)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:66)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:62)
+	at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:100)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:62)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:200)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:195)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.call(DefaultBuildOperationExecutor.java:73)
+	at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:59)
+	at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:187)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecutionQueue.java:120)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:162)
+	at org.gradle.internal.Factories$1.create(Factories.java:31)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:264)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:128)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:133)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:157)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:126)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.nio.file.NoSuchFileException: C:\Users\jonat\AppData\Local\Temp\kotlin-backups18154650131597897874\42.backup -> C:\Users\jonat\AndroidStudioProjects\Soundly\app\build\tmp\kapt3\incrementalData\debug\com\soundly\player\PlaybackManager$Companion.class
+	at java.base/sun.nio.fs.WindowsException.translateToIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(Unknown Source)
+	at java.base/sun.nio.fs.WindowsFileCopy.move(Unknown Source)
+	at java.base/sun.nio.fs.WindowsFileSystemProvider.move(Unknown Source)
+	at java.base/java.nio.file.Files.move(Unknown Source)
+	at org.jetbrains.kotlin.incremental.RecoverableCompilationTransaction.revertChanges(CompilationTransaction.kt:231)
+	at org.jetbrains.kotlin.incremental.RecoverableCompilationTransaction.close(CompilationTransaction.kt:256)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally(IncrementalCompilerRunner.kt:747)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:120)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:676)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92)
+	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1661)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+
+

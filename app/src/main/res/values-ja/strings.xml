@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Soundly</string>
+    <string name="onboarding_title">ようこそ</string>
+    <string name="onboarding_subtitle">Soundlyは、あなたの体験と個性のために考えられた音楽プレーヤーです。</string>
+    <string name="onboarding_continue_button">続行</string>
+    <string name="permission_screen_back">戻る</string>
+    <string name="permission_screen_title">権限</string>
+    <string name="permission_screen_storage_title">ストレージへのアクセス</string>
+    <string name="permission_screen_storage_description">Soundlyがローカルの音楽を読み取り、自動的に整理できるようにします。</string>
+    <string name="permission_screen_notifications_title">通知を許可</string>
+    <string name="permission_screen_notifications_description">音楽の再生中にSoundlyがコントロールと通知を表示できるようにします。</string>
+    <string name="permission_screen_explanation">音楽にアクセスして通知を送信するために要求された権限を付与してください。</string>
+    <string name="permission_screen_grant_permission_button">権限を付与</string>
+    <string name="cd_profile_image_placeholder">プロフィール画像のプレースホルダー</string>
+    <string name="cd_profile_image">プロフィール画像</string>
+    <string name="profile_screen_title">プロフィール</string>
+    <string name="profile_screen_subtitle">より良い体験のために、プロフィールを完成または編集してください。</string>
+    <string name="profile_screen_username_label">ユーザー名</string>
+    <string name="profile_screen_button_ready">準備完了</string>
+    <string name="profile_screen_button_save">保存して続行</string>
+    <string name="exit_dialog_title">アプリを終了</string>
+    <string name="exit_dialog_text">本当にアプリを終了しますか？</string>
+    <string name="exit_dialog_confirm">終了</string>
+    <string name="exit_dialog_cancel">キャンセル</string>
+    <string name="profile_screen_back">戻る</string>
+    <string name="profile_exit_dialog_title">アプリケーションを終了しますか？</string>
+    <string name="profile_exit_dialog_text">今終了すると、進行状況が失われます</string>
+    <string name="profile_complete_title">完了</string>
+    <string name="profile_add_username">ユーザー名を追加してください</string>
+    <string name="profile_completed_subtitle">プロフィールが完成しました。続行できます</string>
+    <string name="cd_camera_icon">カメラアイコン</string>
+    <string name="change_image">画像を変更</string>
+    <string name="confirm">確認</string>
+    <string name="edit">編集</string>
+</resources>
