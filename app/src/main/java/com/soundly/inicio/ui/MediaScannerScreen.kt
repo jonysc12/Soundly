@@ -56,11 +56,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.unit.dp
+import com.soundly.R
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.draw.clip
+import com.soundly.ui.componentes.agslFrostedGlass
 import com.soundly.data.model.MusicScanReport
 import com.soundly.data.model.Song
 import com.soundly.data.repository.MusicRepository
+import com.soundly.ui.screens.settings.SettingsLayout
+import com.soundly.ui.theme.LocalIsDarkTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -154,139 +167,166 @@ fun MediaScannerScreen(
         }
     }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp)
+    val isDark = LocalIsDarkTheme.current
+
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val screenWidth = maxWidth
+        val screenHeight = maxHeight
+
+        SettingsLayout(
+            title = "",
+            onBack = onBack
         ) {
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = "Escaneo de medios",
-                style = MaterialTheme.typography.displaySmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = "Importa la musica guardada en tu dispositivo con una configuracion simple.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Card(
-                shape = RoundedCornerShape(22.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = stringResource(R.string.media_scanner_title),
+                    style = MaterialTheme.typography.displaySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = stringResource(R.string.media_scanner_description),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Card(
+                    shape = RoundedCornerShape(22.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
-                    Box(
+                    Row(
                         modifier = Modifier
-                            .size(42.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.Folder,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                        Box(
+                            modifier = Modifier
+                                .size(42.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = CircleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Folder,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
 
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "Fuente local",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "MediaStore de Android",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-
-            Card(
-                shape = RoundedCornerShape(22.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = "Ajustes",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f))
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("Ignorar carpetas temporales", style = MaterialTheme.typography.bodyLarge)
                             Text(
-                                "Excluye audios de WhatsApp, Telegram y cache.",
+                                text = stringResource(R.string.media_scanner_local_source),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = stringResource(R.string.media_scanner_android_mediastore),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        Switch(checked = ignoreTempFolders, onCheckedChange = { ignoreTempFolders = it })
                     }
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f))
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Ignorar Audios de menos de 60 segundos", style = MaterialTheme.typography.bodyLarge)
-                        }
-                        Switch(checked = ignoreShortAudios, onCheckedChange = { ignoreShortAudios = it })
-                    }
+                }
 
-                    Button(
-                        onClick = { if (!isScanning) startScan() },
-                        modifier = Modifier.fillMaxWidth().height(52.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.onBackground,
-                            contentColor = MaterialTheme.colorScheme.background
-                        )
+                Card(
+                    shape = RoundedCornerShape(22.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.Refresh,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
+                        Text(
+                            text = stringResource(R.string.media_scanner_settings),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                        Spacer(modifier = Modifier.size(8.dp))
-                        Text("Iniciar escaneo")
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    stringResource(R.string.media_scanner_ignore_temp),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                Text(
+                                    stringResource(R.string.media_scanner_ignore_temp_desc),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Switch(
+                                checked = ignoreTempFolders,
+                                onCheckedChange = { ignoreTempFolders = it })
+                        }
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    stringResource(R.string.media_scanner_ignore_short),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                            Switch(
+                                checked = ignoreShortAudios,
+                                onCheckedChange = { ignoreShortAudios = it })
+                        }
                     }
                 }
             }
+        }
+
+        // Botón flotante al estilo Onboarding
+        val borderAlpha = if (isDark) 0.3f else 0.05f
+        val containerColor =
+            if (isDark) Color.White.copy(alpha = 0.15f) else Color.White.copy(alpha = 0.5f)
+        val contentColor = MaterialTheme.colorScheme.onSurface
+
+        Box(
+            modifier = Modifier
+                .size(90.dp)
+                .offset(
+                    x = screenWidth * 0.82f - 45.dp,
+                    y = screenHeight * 0.85f - 45.dp
+                )
+                .clip(CircleShape)
+                .agslFrostedGlass(radius = 20f, tint = Color.Transparent)
+                .border(
+                    1.dp,
+                    contentColor.copy(alpha = borderAlpha),
+                    CircleShape
+                )
+                .background(containerColor, CircleShape)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = { if (!isScanning) startScan() }
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Refresh,
+                contentDescription = stringResource(R.string.media_scanner_start_scan_cd),
+                modifier = Modifier.size(36.dp),
+                tint = contentColor
+            )
         }
     }
 
@@ -355,7 +395,7 @@ private fun MediaScanControlDialog(
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            shape = RoundedCornerShape(22.dp),
+            shape = RoundedCornerShape(32.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -366,15 +406,15 @@ private fun MediaScanControlDialog(
                         .padding(horizontal = 16.dp, vertical = 14.dp)
                 ) {
                     Text(
-                        text = "scan music",
+                        text = stringResource(R.string.media_scanner_dialog_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = when (section) {
-                            DialogSection.Scan -> "Escaneo y resumen"
-                            DialogSection.Folders -> "Administrar carpetas"
-                            DialogSection.Songs -> "Administrar canciones"
+                            DialogSection.Scan -> stringResource(R.string.media_scanner_dialog_scan_summary)
+                            DialogSection.Folders -> stringResource(R.string.media_scanner_dialog_manage_folders)
+                            DialogSection.Songs -> stringResource(R.string.media_scanner_dialog_manage_songs)
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -427,7 +467,7 @@ private fun MediaScanControlDialog(
                                     containerColor = Color(0xFF1E88E5),
                                     contentColor = Color.White
                                 )
-                            ) { Text("Confirmar") }
+                            ) { Text(stringResource(R.string.media_scanner_dialog_confirm)) }
 
                             FilledTonalButton(
                                 onClick = onOpenManage,
@@ -437,7 +477,7 @@ private fun MediaScanControlDialog(
                                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                            ) { Text("Administrar") }
+                            ) { Text(stringResource(R.string.media_scanner_dialog_manage)) }
                         }
 
                         DialogSection.Folders -> {
@@ -448,7 +488,7 @@ private fun MediaScanControlDialog(
                                     containerColor = Color(0xFF1E88E5),
                                     contentColor = Color.White
                                 )
-                            ) { Text("Aplicar") }
+                            ) { Text(stringResource(R.string.media_scanner_dialog_apply)) }
 
                             FilledTonalButton(
                                 onClick = onBackToScan,
@@ -457,7 +497,7 @@ private fun MediaScanControlDialog(
                                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                            ) { Text("Volver") }
+                            ) { Text(stringResource(R.string.media_scanner_dialog_back)) }
                         }
 
                         DialogSection.Songs -> {
@@ -468,7 +508,7 @@ private fun MediaScanControlDialog(
                                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                            ) { Text("Volver") }
+                            ) { Text(stringResource(R.string.media_scanner_dialog_back)) }
                         }
                     }
                 }
@@ -486,6 +526,7 @@ private fun ScanSection(
     ignoreTempFolders: Boolean,
     ignoreShortAudios: Boolean
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier.padding(horizontal = 14.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -508,29 +549,29 @@ private fun ScanSection(
             }
             Text(
                 text = when {
-                    isScanning -> "Escaneando archivos..."
-                    scanReport != null -> "Escaneo completo"
-                    else -> "Listo para escanear"
+                    isScanning -> stringResource(R.string.media_scanner_dialog_scanning)
+                    scanReport != null -> stringResource(R.string.media_scanner_dialog_complete)
+                    else -> stringResource(R.string.media_scanner_dialog_ready)
                 },
                 style = MaterialTheme.typography.bodyMedium
             )
         }
 
         val entries = buildList {
-            add("Filtro carpetas temporales: ${if (ignoreTempFolders) "Activo" else "Inactivo"}")
-            add("Filtro audios < 60s: ${if (ignoreShortAudios) "Activo" else "Inactivo"}")
+            add(context.getString(R.string.media_scanner_report_filter_temp, if (ignoreTempFolders) context.getString(R.string.active) else context.getString(R.string.inactive)))
+            add(context.getString(R.string.media_scanner_report_filter_short, if (ignoreShortAudios) context.getString(R.string.active) else context.getString(R.string.inactive)))
             addAll(discoveredSongs.takeLast(24))
             if (!isScanning && scanReport != null) {
-                add("----- Resultado del escaneo -----")
-                add("Escaneadas: ${scanReport.scannedSongs}")
-                add("Importadas: ${scanReport.importedSongs}")
-                add("Bloqueadas por carpetas: ${scanReport.blockedByTempFolders}")
-                add("Bloqueadas por audios < 60s: ${scanReport.blockedByShortDuration}")
-                add("Total bloqueadas: ${scanReport.blockedSongs}")
+                add(context.getString(R.string.media_scanner_report_result_header))
+                add(context.getString(R.string.media_scanner_report_scanned, scanReport.scannedSongs))
+                add(context.getString(R.string.media_scanner_report_imported, scanReport.importedSongs))
+                add(context.getString(R.string.media_scanner_report_blocked_temp, scanReport.blockedByTempFolders))
+                add(context.getString(R.string.media_scanner_report_blocked_short, scanReport.blockedByShortDuration))
+                add(context.getString(R.string.media_scanner_report_total_blocked, scanReport.blockedSongs))
             }
         }
 
-        Text("Detalle del escaneo", style = MaterialTheme.typography.titleSmall)
+        Text(stringResource(R.string.media_scanner_dialog_detail), style = MaterialTheme.typography.titleSmall)
         LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 220.dp)) {
             items(entries) { item ->
                 Text("- $item", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -551,7 +592,7 @@ private fun FolderSection(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            "Selecciona carpetas para excluir y abre su contenido para controlar canciones individuales.",
+            stringResource(R.string.media_scanner_dialog_folders_desc),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -565,7 +606,7 @@ private fun FolderSection(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(folder.folderPath, style = MaterialTheme.typography.bodySmall)
                         Text(
-                            "Canciones: ${folder.songs.size} | Bloqueadas manualmente: ${folder.songs.count { blockedSongIds.contains(it.id) }}",
+                            stringResource(R.string.media_scanner_dialog_songs_count, folder.songs.size, folder.songs.count { blockedSongIds.contains(it.id) }),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -580,7 +621,7 @@ private fun FolderSection(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Visibility,
-                            contentDescription = "Ver contenido"
+                            contentDescription = stringResource(R.string.media_scanner_dialog_see_content_cd)
                         )
                     }
                 }
@@ -600,7 +641,7 @@ private fun SongsSection(
         modifier = Modifier.padding(horizontal = 14.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(selectedFolder?.folderPath ?: "No hay carpeta seleccionada", style = MaterialTheme.typography.bodySmall)
+        Text(selectedFolder?.folderPath ?: stringResource(R.string.media_scanner_dialog_no_folder_selected), style = MaterialTheme.typography.bodySmall)
         LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 280.dp)) {
             items(selectedFolder?.songs ?: emptyList()) { song ->
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {

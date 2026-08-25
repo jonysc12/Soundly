@@ -75,10 +75,11 @@ fun rememberDominantColor(uri: Uri?): Color {
 fun rememberAdaptedDominant(
     rawColor: Color,
     isDarkTheme: Boolean,
-    fallback: Color
+    fallback: Color,
+    isVivid: Boolean = false
 ): Color {
-    val adjusted = remember(rawColor, isDarkTheme) {
-        if (rawColor == Color.Transparent) fallback else rawColor.adaptForTheme(isDarkTheme)
+    val adjusted = remember(rawColor, isDarkTheme, isVivid) {
+        if (rawColor == Color.Transparent) fallback else rawColor.adaptForTheme(isDarkTheme, isVivid)
     }
     val spring = spring<Color>(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioMediumBouncy)
     val animated by animateColorAsState(targetValue = adjusted, animationSpec = spring, label = "dominantAnimated")
@@ -94,11 +95,12 @@ private val SPRING_COLOR_SLOW = spring<Color>(stiffness = Spring.StiffnessVeryLo
 fun rememberAnimatedDominant(
     rawColor: Color,
     isDarkTheme: Boolean,
-    fallback: Color
+    fallback: Color,
+    isVivid: Boolean = false
 ): Color {
-    val adapted = remember(rawColor, isDarkTheme, fallback) {
+    val adapted = remember(rawColor, isDarkTheme, fallback, isVivid) {
         val base = if (rawColor == Color.Transparent) fallback else rawColor
-        base.adaptForTheme(isDarkTheme)
+        base.adaptForTheme(isDarkTheme, isVivid)
     }
     val animated by animateColorAsState(
         targetValue = adapted,
@@ -111,18 +113,41 @@ fun rememberAnimatedDominant(
 fun adaptDominantInstant(
     rawColor: Color,
     isDarkTheme: Boolean,
-    fallback: Color
+    fallback: Color,
+    isVivid: Boolean = false
 ): Color {
     val base = if (rawColor == Color.Transparent) fallback else rawColor
-    return base.adaptForTheme(isDarkTheme)
+    return base.adaptForTheme(isDarkTheme, isVivid)
 }
 
-private fun Color.adaptForTheme(isDark: Boolean): Color {
+private fun Color.adaptForTheme(isDark: Boolean, isVivid: Boolean = false): Color {
+    val hsv = FloatArray(3)
+    android.graphics.Color.colorToHSV(this.toArgb(), hsv)
+    
+    if (isVivid) {
+        if (isDark) {
+            // MODO OSCURO VIVO:
+            // Saturación alta para que resalte contra el negro
+            hsv[1] = (hsv[1] * 1.5f).coerceIn(0.25f, 1f)
+            // Brillo controlado
+            if (hsv[2] < 0.40f) hsv[2] = 0.45f
+            if (hsv[2] > 0.80f) hsv[2] = 0.70f
+        } else {
+            // MODO CLARO VIVO:
+            // Forzamos saturación muy alta para que los colores sean eléctricos
+            hsv[1] = (hsv[1] * 1.8f).coerceIn(0.60f, 1f)
+            
+            // Mantenemos el brillo en un rango medio-bajo para que cuando se use
+            // como texto sobre fondo claro, o como acentos, tenga fuerza.
+            hsv[2] = hsv[2].coerceIn(0.35f, 0.65f)
+        }
+        
+        return Color(android.graphics.Color.HSVToColor(hsv))
+    }
+
     val lum = luminance()
     return when {
-        // En tema oscuro preferimos bajar el brillo cuando el color es muy claro
         isDark && lum > 0.78f -> lerp(this, Color.Black, 0.32f)
-        // En tema claro aclaramos colores demasiado oscuros
         !isDark && lum < 0.18f -> lerp(this, Color.White, 0.32f)
         else -> this
     }

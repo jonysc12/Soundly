@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="downloading">Descargando (%d)</string>
+    <string name="downloaded">Descargado (%d)</string>
+    <string name="no_active_downloads">No hay descargas activas</string>
+    <string name="no_downloaded_songs">No hay canciones descargadas</string>
+    <string name="manager">Administrador</string>
+    <string name="delete">Eliminar</string>
+    <string name="search_placeholder">Busca algo o pega un link</string>
+    <string name="clear">Limpiar</string>
+    <string name="searching">Buscando en Soundly Cloud...</string>
+    <string name="no_results">No se encontraron resultados</string>
+    <string name="download_all">Descargar Todo</string>
+    <string name="no_songs_in_content">No hay canciones en este contenido</string>
+    <string name="loading_artist_profile">Cargando perfil de %s...</string>
+    <string name="subscribers">suscriptores</string>
+    <string name="popular_songs">Canciones populares</string>
+    <string name="albums_playlists">Álbumes / Playlists</string>
+    <string name="explore">Explorar</string>
+    <string name="back">Regresar</string>
+    <string name="downloads">Descargas</string>
+    <string name="download">Descargar</string>
+    <string name="category_songs">Canciones</string>
+    <string name="category_albums">Álbumes</string>
+    <string name="category_artists">Artistas</string>
+    <string name="category_playlists">Playlists</string>
+    <string name="loading_playlist_error">Error al cargar playlist: %s</string>
+    <string name="unknown">Desconocido</string>
+    <string name="untitled">Sin título</string>
+    <string name="cleaning">Limpiar</string>
+    <string name="soundly_cloud">Soundly Cloud</string>
+</resources>

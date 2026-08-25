@@ -1,8 +1,16 @@
 package com.soundly.ui.componentes
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -11,6 +19,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +28,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
@@ -32,6 +42,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,11 +59,15 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlin.math.abs
+
+import androidx.compose.ui.res.stringResource
+import com.soundly.R
 
 data class ListOptionsLeadingAction(
     val icon: ImageVector,
@@ -79,7 +94,7 @@ sealed interface ListOptionsTrailingAction {
         val selectedOptionId: String,
         val onOptionSelected: (String) -> Unit,
         val icon: ImageVector = Icons.Rounded.Menu,
-        val contentDescription: String = "Abrir opciones"
+        val contentDescription: String
     ) : ListOptionsTrailingAction
 
     data class Toggle(
@@ -216,44 +231,57 @@ fun List_options(
                 DropdownMenu(
                     expanded = showMenuPopup,
                     onDismissRequest = { showMenuPopup = false },
-                    containerColor = Color.Transparent, // 🔥 quitamos el fondo interno
-                    shape = RoundedCornerShape(0.dp),   // 🔥 eliminamos la forma interna
-                    shadowElevation = 0.dp              // 🔥 quitamos sombra default
+                    containerColor = Color.Transparent,
+                    shape = RoundedCornerShape(0.dp),
+                    shadowElevation = 0.dp
                 ) {
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(24.dp))
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
-                            .padding(vertical = 6.dp)
+                            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                            .padding(vertical = 8.dp, horizontal = 8.dp)
                     ) {
-                        Column {
+                        Column(
+                            modifier = Modifier.width(IntrinsicSize.Max),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
                             menuAction.options.forEach { item ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = item.label,
-                                            style = if (item.id == menuAction.selectedOptionId) {
-                                                MaterialTheme.typography.titleMedium
-                                            } else {
-                                                MaterialTheme.typography.bodyLarge
-                                            }
-                                        )
-                                    },
+                                val isSelected = item.id == menuAction.selectedOptionId
+                                
+                                val textColor by animateColorAsState(
+                                    targetValue = if (isSelected) MaterialTheme.colorScheme.primary 
+                                                 else MaterialTheme.colorScheme.onSurface,
+                                    label = "menu_item_text"
+                                )
+                                
+                                val itemBgColor by animateColorAsState(
+                                    targetValue = if (isSelected) MaterialTheme.colorScheme.surfaceContainerHigh
+                                                 else Color.Transparent,
+                                    label = "menu_item_bg"
+                                )
+
+                                Surface(
                                     onClick = {
                                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                         menuAction.onOptionSelected(item.id)
                                         showMenuPopup = false
                                     },
-                                    leadingIcon = {
-                                        if (item.id == menuAction.selectedOptionId) {
-                                            Icon(
-                                                imageVector = Icons.Rounded.Done,
-                                                contentDescription = null,
-                                                tint = MaterialTheme.colorScheme.primary
-                                            )
-                                        }
+                                    shape = CircleShape,
+                                    color = itemBgColor,
+                                    modifier = Modifier.fillMaxWidth().height(48.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier.padding(horizontal = 20.dp),
+                                        contentAlignment = Alignment.CenterStart
+                                    ) {
+                                        Text(
+                                            text = item.label,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = textColor,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                        )
                                     }
-                                )
+                                }
                             }
                         }
                     }
@@ -398,11 +426,22 @@ private fun AnimatedTrailingButton(
 
         Spacer(Modifier.width(6.dp))
 
-        Text(
-            text = label,
-            color = onColor,
-            style = MaterialTheme.typography.bodyMedium
-        )
+        AnimatedContent(
+            targetState = label,
+            transitionSpec = {
+                (fadeIn(animationSpec = tween(220, delayMillis = 90)) +
+                        slideInVertically(animationSpec = tween(220, delayMillis = 90)) { height -> height / 2 })
+                    .togetherWith(fadeOut(animationSpec = tween(220)) +
+                            slideOutVertically(animationSpec = tween(220)) { height -> -height / 2 })
+            },
+            label = "trailing_button_label"
+        ) { targetLabel ->
+            Text(
+                text = targetLabel,
+                color = onColor,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
     }
 }
 
@@ -445,12 +484,12 @@ private fun PreviewListOptions() {
         leadingActions = listOf(
             ListOptionsLeadingAction(
                 icon = Icons.Rounded.PlayArrow,
-                contentDescription = "Reproducir",
+                contentDescription = stringResource(R.string.cd_play),
                 onClick = {}
             ),
             ListOptionsLeadingAction(
                 icon = Icons.Rounded.Shuffle,
-                contentDescription = "Aleatorio",
+                contentDescription = stringResource(R.string.cd_shuffle),
                 onClick = {}
             )
         ),
@@ -461,7 +500,8 @@ private fun PreviewListOptions() {
                 ListOptionsMenuItem("z_a", "Z-A")
             ),
             selectedOptionId = "a_z",
-            onOptionSelected = {}
+            onOptionSelected = {},
+            contentDescription = stringResource(R.string.cd_open_options)
         )
     )
 }

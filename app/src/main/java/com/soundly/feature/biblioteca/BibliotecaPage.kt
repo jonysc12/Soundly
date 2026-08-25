@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -20,10 +21,16 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.soundly.R
 import com.soundly.data.model.Playlist
+import kotlinx.coroutines.delay
+import androidx.compose.runtime.produceState
+import androidx.compose.foundation.layout.Box
 import com.soundly.feature.biblioteca.pages.AlbumsListPage
 import com.soundly.feature.biblioteca.pages.ArtistsListPage
 import com.soundly.feature.biblioteca.pages.FoldersListPage
@@ -32,8 +39,11 @@ import com.soundly.feature.biblioteca.pages.TodoPage
 import com.soundly.feature.library.LibraryViewModel
 import com.soundly.feature.library.pages.AlbumDetailScreen
 import com.soundly.feature.library.pages.ArtistDetailScreen
+import com.soundly.feature.library.pages.FolderDetailScreen
+import com.soundly.feature.library.pages.PlaylistDetailScreen
 import com.soundly.ui.componentes.LibraryFilter
 import com.soundly.ui.componentes.OptionPillsRow
+import com.soundly.ui.navigation.LocalBackStackCoordinator
 
 private sealed interface BibliotecaDetailDestination {
     data class PlaylistDetail(val id: String) : BibliotecaDetailDestination
@@ -76,20 +86,31 @@ fun BibliotecaPage(
     libraryViewModel: LibraryViewModel = hiltViewModel(),
     onDetailVisibilityChanged: (Boolean) -> Unit = {},
     onArtistEdgeToEdgeChanged: (Boolean) -> Unit = {},
-    isHostPageVisible: Boolean = true,
     onPlaySong: (com.soundly.data.model.Song, List<com.soundly.data.model.Song>) -> Unit = { _, _ -> },
-    onPlayCollection: (List<com.soundly.data.model.Song>, Boolean) -> Unit = { _, _ -> }
+    onPlayCollection: (List<com.soundly.data.model.Song>, Boolean) -> Unit = { _, _ -> },
+    onViewQueue: () -> Unit = {},
+    externalArtistRequest: Long? = null,
+    onExternalRequestConsumed: () -> Unit = {},
+    onCurrentArtistChanged: (Long?) -> Unit = {},
+    isHostPageVisible: Boolean = true
 ) {
     val detailStack = rememberSaveable(saver = bibliotecaDetailStackSaver) {
         mutableStateListOf<BibliotecaDetailDestination>()
     }
     val currentDetail = detailStack.lastOrNull()
+
+    val onDetailVisibilityChangedStable = remember(onDetailVisibilityChanged) { { v: Boolean -> onDetailVisibilityChanged(v) } }
+    val onArtistEdgeToEdgeChangedStable = remember(onArtistEdgeToEdgeChanged) { { v: Boolean -> onArtistEdgeToEdgeChanged(v) } }
+    val onPlaySongStable = remember(onPlaySong) { { s: com.soundly.data.model.Song, q: List<com.soundly.data.model.Song> -> onPlaySong(s, q) } }
+    val onPlayCollectionStable = remember(onPlayCollection) { { q: List<com.soundly.data.model.Song>, b: Boolean -> onPlayCollection(q, b) } }
+    val onViewQueueStable = remember(onViewQueue) { { onViewQueue() } }
+
+    LaunchedEffect(currentDetail) {
+        onCurrentArtistChanged((currentDetail as? BibliotecaDetailDestination.ArtistDetail)?.id)
+    }
+
     val isDetailVisible = currentDetail != null
     val isArtistDetailVisible = currentDetail is BibliotecaDetailDestination.ArtistDetail
-
-    val playlists by viewModel.playlists.collectAsState()
-    val userImageUri by viewModel.userImageUri.collectAsState()
-    val userName by viewModel.userName.collectAsState()
 
     val openDetail: (BibliotecaDetailDestination) -> Unit = remember(detailStack) {
         { destination ->
@@ -98,29 +119,41 @@ fun BibliotecaPage(
             }
         }
     }
-    val popDetail: () -> Unit = remember(detailStack) {
-        {
-            if (detailStack.isNotEmpty()) {
-                detailStack.removeAt(detailStack.lastIndex)
-            }
+
+    LaunchedEffect(externalArtistRequest) {
+        externalArtistRequest?.let {
+            openDetail(BibliotecaDetailDestination.ArtistDetail(it))
+            onExternalRequestConsumed()
+        }
+    }
+
+    val playlists by viewModel.playlists.collectAsStateWithLifecycle()
+    val userImageUri by viewModel.userImageUri.collectAsStateWithLifecycle()
+    val userName by viewModel.userName.collectAsStateWithLifecycle()
+    val popDetail: () -> Unit = {
+        if (detailStack.isNotEmpty()) {
+            detailStack.removeAt(detailStack.lastIndex)
         }
     }
 
     LaunchedEffect(isDetailVisible) {
-        onDetailVisibilityChanged(isDetailVisible)
+        onDetailVisibilityChangedStable(isDetailVisible)
     }
     LaunchedEffect(isArtistDetailVisible) {
-        onArtistEdgeToEdgeChanged(isArtistDetailVisible)
+        onArtistEdgeToEdgeChangedStable(isArtistDetailVisible)
     }
+
+    val backStackCoordinator = LocalBackStackCoordinator.current
+    val backHandlerEnabled = detailStack.isNotEmpty() && isHostPageVisible && !backStackCoordinator.isOverlayActive
 
     DisposableEffect(Unit) {
         onDispose {
-            onDetailVisibilityChanged(false)
-            onArtistEdgeToEdgeChanged(false)
+            onDetailVisibilityChangedStable(false)
+            onArtistEdgeToEdgeChangedStable(false)
         }
     }
 
-    BackHandler(enabled = isDetailVisible, onBack = popDetail)
+    BackHandler(enabled = backHandlerEnabled, onBack = popDetail)
 
     AnimatedContent(
         targetState = currentDetail,
@@ -134,8 +167,9 @@ fun BibliotecaPage(
                 onAlbumClick = { openDetail(BibliotecaDetailDestination.AlbumDetail(it)) },
                 onArtistClick = { openDetail(BibliotecaDetailDestination.ArtistDetail(it)) },
                 onBack = popDetail,
-                onPlaySong = onPlaySong,
-                onPlayCollection = onPlayCollection
+                onViewQueue = onViewQueueStable,
+                onPlaySong = onPlaySongStable,
+                onPlayCollection = onPlayCollectionStable
             )
 
             is BibliotecaDetailDestination.ArtistDetail -> ArtistDetailScreen(
@@ -144,9 +178,9 @@ fun BibliotecaPage(
                 onAlbumClick = { openDetail(BibliotecaDetailDestination.AlbumDetail(it)) },
                 onArtistClick = { openDetail(BibliotecaDetailDestination.ArtistDetail(it)) },
                 onBack = popDetail,
-                applySystemBarStyle = isHostPageVisible,
-                onPlaySong = onPlaySong,
-                onPlayCollection = onPlayCollection
+                onViewQueue = onViewQueueStable,
+                onPlaySong = onPlaySongStable,
+                onPlayCollection = onPlayCollectionStable
             )
 
             is BibliotecaDetailDestination.PlaylistDetail -> {
@@ -154,7 +188,7 @@ fun BibliotecaPage(
                 val songs by viewModel.getSongsForPlaylist(destination.id).collectAsState(initial = emptyList())
 
                 if (playlist != null) {
-                    AlbumDetailScreen(
+                    PlaylistDetailScreen(
                         playlist = playlist,
                         songs = songs,
                         ownerName = userName,
@@ -164,6 +198,7 @@ fun BibliotecaPage(
                         onAlbumClick = { openDetail(BibliotecaDetailDestination.AlbumDetail(it)) },
                         onArtistClick = { openDetail(BibliotecaDetailDestination.ArtistDetail(it)) },
                         onBack = popDetail,
+                        onViewQueue = onViewQueue,
                         onPlaySong = onPlaySong,
                         onPlayCollection = onPlayCollection
                     )
@@ -171,13 +206,14 @@ fun BibliotecaPage(
             }
 
             is BibliotecaDetailDestination.FolderDetail -> {
-                AlbumDetailScreen(
+                FolderDetailScreen(
                     folderPath = destination.path,
                     viewModel = viewModel,
                     libraryViewModel = libraryViewModel,
                     onAlbumClick = { openDetail(BibliotecaDetailDestination.AlbumDetail(it)) },
                     onArtistClick = { openDetail(BibliotecaDetailDestination.ArtistDetail(it)) },
                     onBack = popDetail,
+                    onViewQueue = onViewQueue,
                     onPlaySong = onPlaySong,
                     onPlayCollection = onPlayCollection
                 )
@@ -202,12 +238,14 @@ private fun BibliotecaMainContent(
     onArtistClick: (Long) -> Unit,
     onFolderClick: (String) -> Unit
 ) {
-    val selectedFilter by viewModel.selectedFilter.collectAsState()
-    val playlists by viewModel.playlists.collectAsState()
-    val albums by viewModel.favoriteAlbums.collectAsState()
-    val artists by viewModel.favoriteArtists.collectAsState()
-    val folders by viewModel.folders.collectAsState()
-    val favoriteFolderPaths by viewModel.favoriteFolderPaths.collectAsState()
+    val context = LocalContext.current
+    val selectedFilter by viewModel.selectedFilter.collectAsStateWithLifecycle()
+    val importState by viewModel.importState.collectAsStateWithLifecycle()
+    val playlists by viewModel.playlists.collectAsStateWithLifecycle()
+    val albums by viewModel.favoriteAlbums.collectAsStateWithLifecycle()
+    val artists by viewModel.favoriteArtists.collectAsStateWithLifecycle()
+    val folders by viewModel.folders.collectAsStateWithLifecycle()
+    val favoriteFolderPaths by viewModel.favoriteFolderPaths.collectAsStateWithLifecycle()
     val favoriteFolders = remember(folders, favoriteFolderPaths) {
         folders.filter { it.path in favoriteFolderPaths }
     }
@@ -219,10 +257,10 @@ private fun BibliotecaMainContent(
     val showMenu = remember { androidx.compose.runtime.mutableStateOf(false) }
     val menuData = remember { androidx.compose.runtime.mutableStateOf<LibraryItemMenuData?>(null) }
 
-    val pinnedPlaylists by viewModel.pinnedPlaylistIds.collectAsState()
-    val pinnedAlbums by viewModel.pinnedAlbumIds.collectAsState()
-    val pinnedArtists by viewModel.pinnedArtistIds.collectAsState()
-    val pinnedFolders by viewModel.pinnedFolderPaths.collectAsState()
+    val pinnedPlaylists by viewModel.pinnedPlaylistIds.collectAsStateWithLifecycle()
+    val pinnedAlbums by viewModel.pinnedAlbumIds.collectAsStateWithLifecycle()
+    val pinnedArtists by viewModel.pinnedArtistIds.collectAsStateWithLifecycle()
+    val pinnedFolders by viewModel.pinnedFolderPaths.collectAsStateWithLifecycle()
 
     LibraryItemMenuBottomSheet(
         visible = showMenu.value,
@@ -246,6 +284,16 @@ private fun BibliotecaMainContent(
                 if (typeStr.isNotEmpty() && id.isNotEmpty()) {
                     viewModel.togglePin(typeStr, id)
                 }
+            }
+        },
+        onShowOnHomeClick = {
+            menuData.value?.let { data ->
+                val id = when (val t = data.type) {
+                    is LibraryItemMenuType.UserPlaylist -> t.id
+                    is LibraryItemMenuType.AutoPlaylist -> t.id
+                    else -> null
+                }
+                id?.let { viewModel.togglePlaylistShowOnHome(it) }
             }
         },
         onEditClick = {
@@ -272,7 +320,11 @@ private fun BibliotecaMainContent(
     CreatePlaylistBottomSheet(
         visible = showCreatePlaylistSheet.value,
         onDismiss = { showCreatePlaylistSheet.value = false },
-        onCreatePlaylist = viewModel::createPlaylist
+        onCreatePlaylist = viewModel::createPlaylist,
+        onImportPlaylist = viewModel::importPlaylist,
+        importState = importState,
+        onClearImportState = viewModel::clearImportState,
+        onCreatePlaylistWithSongs = viewModel::createPlaylistWithSongs
     )
 
     CreatePlaylistBottomSheet(
@@ -316,19 +368,25 @@ private fun BibliotecaMainContent(
                 onFolderClick = onFolderClick,
                 onCreatePlaylistClick = { showCreatePlaylistSheet.value = true },
                 onPlaylistLongClick = { playlist ->
+                    val playlistName = if (playlist.id == com.soundly.data.repository.MusicRepository.LIKED_SONGS_PLAYLIST_ID) {
+                        context.getString(R.string.liked_songs_title)
+                    } else {
+                        playlist.name
+                    }
                     menuData.value = LibraryItemMenuData(
-                        title = playlist.name,
-                        subtitle = if (playlist.isAutoGenerated) "Colección automática" else "${playlist.songCount} canciones",
+                        title = playlistName,
+                        subtitle = if (playlist.isAutoGenerated) context.getString(R.string.library_auto_collection) else context.getString(R.string.songs_count, playlist.songCount),
                         artworkUri = if (playlist.isAutoGenerated) R.drawable.playlist_favicon else playlist.artworkUri,
                         type = if (playlist.isAutoGenerated) LibraryItemMenuType.AutoPlaylist(playlist.id) else LibraryItemMenuType.UserPlaylist(playlist.id),
-                        isPinned = playlist.id in pinnedPlaylists
+                        isPinned = playlist.id in pinnedPlaylists,
+                        isFromHome = playlist.showOnHome
                     )
                     showMenu.value = true
                 },
                 onAlbumLongClick = { album ->
                     menuData.value = LibraryItemMenuData(
                         title = album.name,
-                        subtitle = "${album.artist} • ${album.songCount} canciones",
+                        subtitle = "${album.artist} • ${context.getString(R.string.songs_count, album.songCount)}",
                         artworkUri = viewModel.getAlbumArtUri(album.id),
                         type = LibraryItemMenuType.Album(album.id),
                         isPinned = album.id.toString() in pinnedAlbums
@@ -338,7 +396,7 @@ private fun BibliotecaMainContent(
                 onArtistLongClick = { artist ->
                     menuData.value = LibraryItemMenuData(
                         title = artist.name,
-                        subtitle = "Artista • ${artist.songCount} canciones",
+                        subtitle = "${context.getString(R.string.library_label_artist)} • ${context.getString(R.string.songs_count, artist.songCount)}",
                         artworkUri = viewModel.getArtistArtUri(artist.id),
                         type = LibraryItemMenuType.Artist(artist.id),
                         isPinned = artist.id.toString() in pinnedArtists
@@ -348,7 +406,7 @@ private fun BibliotecaMainContent(
                 onFolderLongClick = { folder ->
                     menuData.value = LibraryItemMenuData(
                         title = folder.name,
-                        subtitle = "Carpeta • ${folder.songCount} canciones",
+                        subtitle = "${context.getString(R.string.library_label_folder)} • ${context.getString(R.string.songs_count, folder.songCount)}",
                         artworkUri = null,
                         type = LibraryItemMenuType.Folder(folder.path),
                         isPinned = folder.path in pinnedFolders,
@@ -364,12 +422,18 @@ private fun BibliotecaMainContent(
                 onPlaylistClick = onPlaylistClick,
                 onCreatePlaylistClick = { showCreatePlaylistSheet.value = true },
                 onPlaylistLongClick = { playlist ->
+                    val playlistName = if (playlist.id == com.soundly.data.repository.MusicRepository.LIKED_SONGS_PLAYLIST_ID) {
+                        context.getString(R.string.liked_songs_title)
+                    } else {
+                        playlist.name
+                    }
                     menuData.value = LibraryItemMenuData(
-                        title = playlist.name,
-                        subtitle = if (playlist.isAutoGenerated) "Colección automática" else "${playlist.songCount} canciones",
+                        title = playlistName,
+                        subtitle = if (playlist.isAutoGenerated) context.getString(R.string.library_auto_collection) else context.getString(R.string.songs_count, playlist.songCount),
                         artworkUri = if (playlist.isAutoGenerated) R.drawable.playlist_favicon else playlist.artworkUri,
                         type = if (playlist.isAutoGenerated) LibraryItemMenuType.AutoPlaylist(playlist.id) else LibraryItemMenuType.UserPlaylist(playlist.id),
-                        isPinned = playlist.id in pinnedPlaylists
+                        isPinned = playlist.id in pinnedPlaylists,
+                        isFromHome = playlist.showOnHome
                     )
                     showMenu.value = true
                 },
@@ -383,7 +447,7 @@ private fun BibliotecaMainContent(
                 onAlbumLongClick = { album ->
                     menuData.value = LibraryItemMenuData(
                         title = album.name,
-                        subtitle = "${album.artist} • ${album.songCount} canciones",
+                        subtitle = "${album.artist} • ${context.getString(R.string.songs_count, album.songCount)}",
                         artworkUri = viewModel.getAlbumArtUri(album.id),
                         type = LibraryItemMenuType.Album(album.id),
                         isPinned = album.id.toString() in pinnedAlbums
@@ -400,7 +464,7 @@ private fun BibliotecaMainContent(
                 onArtistLongClick = { artist ->
                     menuData.value = LibraryItemMenuData(
                         title = artist.name,
-                        subtitle = "Artista • ${artist.songCount} canciones",
+                        subtitle = "${context.getString(R.string.library_label_artist)} • ${context.getString(R.string.songs_count, artist.songCount)}",
                         artworkUri = viewModel.getArtistArtUri(artist.id),
                         type = LibraryItemMenuType.Artist(artist.id),
                         isPinned = artist.id.toString() in pinnedArtists
@@ -416,7 +480,7 @@ private fun BibliotecaMainContent(
                 onFolderLongClick = { folder ->
                     menuData.value = LibraryItemMenuData(
                         title = folder.name,
-                        subtitle = "Carpeta • ${folder.songCount} canciones",
+                        subtitle = "${context.getString(R.string.library_label_folder)} • ${context.getString(R.string.songs_count, folder.songCount)}",
                         artworkUri = null,
                         type = LibraryItemMenuType.Folder(folder.path),
                         isPinned = folder.path in pinnedFolders,

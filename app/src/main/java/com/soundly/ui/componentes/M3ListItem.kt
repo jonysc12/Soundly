@@ -13,23 +13,25 @@ import androidx.compose.ui.Alignment
 
 @Composable
 fun M3ListItem(
-    icon: ImageVector,
+    icon: ImageVector? = null,
     title: String,
     description: String,
     modifier: Modifier = Modifier,
+    color: androidx.compose.ui.graphics.Color = androidx.compose.ui.graphics.Color.Transparent,
     shape: Shape = MaterialTheme.shapes.extraLarge,
     drawDivider: Boolean = false,
     enabled: Boolean = true,
     tempIcon: ImageVector? = null,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    trailingContent: @Composable (() -> Unit)? = null
 ) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick, enabled = enabled),
         shape = shape,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-        tonalElevation = 2.dp
+        color = color,
+        tonalElevation = 0.dp
     ) {
         Column {
             Row(
@@ -38,15 +40,18 @@ fun M3ListItem(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Crossfade(targetState = tempIcon, label = "icon-fade") { iconState ->
-                    Icon(
-                        imageVector = iconState ?: icon,
-                        contentDescription = null,
-                        tint = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                    )
+                if (icon != null || tempIcon != null) {
+                    Crossfade(targetState = tempIcon, label = "icon-fade") { iconState ->
+                        Icon(
+                            imageVector = iconState ?: icon!!,
+                            contentDescription = null,
+                            tint = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                        )
+                    }
                 }
 
                 Column(
+                    modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
@@ -61,9 +66,13 @@ fun M3ListItem(
                         color = if (enabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                     )
                 }
+
+                if (trailingContent != null) {
+                    trailingContent()
+                }
             }
             if (drawDivider) {
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier.padding(start = 56.dp),
                     color = MaterialTheme.colorScheme.outlineVariant
                 )

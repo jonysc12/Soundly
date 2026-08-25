@@ -1,0 +1,527 @@
+<resources>
+    <string name="app_name">Soundly</string>
+    <string name="onboarding_title">Selamat Datang</string>
+    <string name="onboarding_subtitle">Soundly, pemutar musik yang dirancang untuk pengalaman dan kepribadian Anda.</string>
+    <string name="onboarding_continue_button">Lanjutkan</string>
+    <string name="permission_screen_back">Kembali</string>
+    <string name="permission_screen_title">Izin</string>
+    <string name="permission_screen_storage_title">Akses Penyimpanan</string>
+    <string name="permission_screen_storage_description">Memungkinkan Soundly untuk membaca musik lokal Anda dan mengaturnya secara otomatis.</string>
+    <string name="permission_screen_notifications_title">Izinkan Notifikasi</string>
+    <string name="permission_screen_notifications_description">Memungkinkan Soundly untuk menampilkan kontrol dan notifikasi saat Anda memutar musik.</string>
+    <string name="permission_screen_bluetooth_title">Konektivitas Bluetooth</string>
+    <string name="permission_screen_bluetooth_description">Memungkinkan Soundly untuk terhubung ke perangkat audio Bluetooth dan mengontrol pemutaran dengan benar.</string>
+    <string name="permission_screen_explanation">Berikan izin yang diminta untuk mengakses musik Anda dan mengirimkan notifikasi kepada Anda.</string>
+    <string name="permission_screen_note">Catatan penting: Agar ini berfungsi pada versi Android modern (12 ke atas), pastikan Anda telah menerima izin \"Perangkat Terdekat\" (Bluetooth) di dalam aplikasi, karena ini diperlukan untuk mendeteksi koneksi tersebut.</string>
+    <string name="permission_screen_section_scanning">Pemindaian</string>
+    <string name="permission_screen_section_functions">Fungsi</string>
+    <string name="permission_screen_grant_permission_button">Berikan Izin</string>
+    <string name="cd_profile_image_placeholder">Placeholder gambar profil</string>
+    <string name="cd_profile_image">Gambar profil</string>
+    <string name="profile_screen_title">Profil</string>
+    <string name="profile_screen_subtitle">Untuk mendapatkan pengalaman yang lebih baik, lengkapi atau edit profil Anda.</string>
+    <string name="profile_screen_username_label">Nama Pengguna</string>
+    <string name="profile_screen_button_ready">Siap</string>
+    <string name="profile_screen_button_save">Simpan dan lanjutkan</string>
+    <string name="exit_dialog_title">Keluar Aplikasi</string>
+    <string name="exit_dialog_text">Apakah Anda yakin ingin keluar dari aplikasi?</string>
+    <string name="exit_dialog_confirm">Keluar</string>
+    <string name="exit_dialog_cancel">Batal</string>
+    <string name="profile_screen_back">Kembali</string>
+    <string name="profile_exit_dialog_title">Keluar dari aplikasi?</string>
+    <string name="profile_exit_dialog_text">Jika Anda keluar sekarang, Anda akan kehilangan kemajuan Anda</string>
+    <string name="profile_complete_title">Selesai</string>
+    <string name="profile_add_username">Tambahkan nama pengguna Anda</string>
+    <string name="profile_completed_subtitle">Profil selesai, sekarang Anda dapat melanjutkan</string>
+    <string name="cd_camera_icon">Ikon kamera</string>
+    <string name="change_image">Ubah gambar</string>
+    <string name="confirm">Konfirmasi</string>
+    <string name="edit">Edit</string>
+
+    <!-- Language Selection -->
+    <string name="language_selection_title">Bahasa</string>
+    <string name="language_selection_header">bahasa</string>
+    <string name="language_selection_description">Pilih bahasa pilihan untuk antarmuka aplikasi. Anda dapat mengubahnya nanti di pengaturan.</string>
+    <string name="language_selection_system">Sistem</string>
+    <string name="language_selection_system_desc">Default</string>
+    <string name="language_selection_select">Pilih bahasa Anda</string>
+    <string name="language_selection_see_more">Lihat lebih banyak</string>
+    <string name="language_selection_see_more_desc">Tampilkan semua bahasa yang tersedia</string>
+    <string name="language_selection_see_less">Lihat lebih sedikit</string>
+    <string name="language_selection_see_less_desc">Sembunyikan bahasa tambahan</string>
+
+    <!-- Media Scanner -->
+    <string name="media_scanner_title">Pemindaian Media</string>
+    <string name="media_scanner_description">Impor musik yang tersimpan di perangkat Anda dengan pengaturan sederhana.</string>
+    <string name="media_scanner_local_source">Sumber lokal</string>
+    <string name="media_scanner_android_mediastore">Android MediaStore</string>
+    <string name="media_scanner_settings">Pengaturan</string>
+    <string name="media_scanner_ignore_temp">Abaikan folder sementara</string>
+    <string name="media_scanner_ignore_temp_desc">Mengecualikan audio dari WhatsApp, Telegram, dan cache.</string>
+    <string name="media_scanner_ignore_short">Abaikan Audio di bawah 60 detik</string>
+    <string name="media_scanner_start_scan_cd">Mulai pemindaian</string>
+    <string name="media_scanner_dialog_title">pindai musik</string>
+    <string name="media_scanner_dialog_scan_summary">Pemindaian dan ringkasan</string>
+    <string name="media_scanner_dialog_manage_folders">Kelola folder</string>
+    <string name="media_scanner_dialog_manage_songs">Kelola lagu</string>
+    <string name="media_scanner_dialog_scanning">Memindai file...</string>
+    <string name="media_scanner_dialog_complete">Pemindaian selesai</string>
+    <string name="media_scanner_dialog_ready">Siap memindai</string>
+    <string name="media_scanner_dialog_detail">Detail pemindaian</string>
+    <string name="media_scanner_dialog_confirm">Konfirmasi</string>
+    <string name="media_scanner_dialog_manage">Kelola</string>
+    <string name="media_scanner_dialog_apply">Terapkan</string>
+    <string name="media_scanner_dialog_back">Kembali</string>
+    <string name="media_scanner_dialog_folders_desc">Pilih folder yang ingin dikecualikan dan buka isinya untuk mengontrol lagu satu per satu.</string>
+    <string name="media_scanner_dialog_no_folder_selected">Tidak ada folder yang dipilih</string>
+    <string name="media_scanner_dialog_see_content_cd">Lihat isi</string>
+    <string name="media_scanner_dialog_songs_count">Lagu: %1$d | Diblokir secara manual: %2$d</string>
+    <string name="media_scanner_report_filter_temp">Filter folder sementara: %1$s</string>
+    <string name="media_scanner_report_filter_short"><![CDATA[Filter audio < 60 detik: %1$s]]></string>
+    <string name="media_scanner_report_result_header">----- Hasil Pemindaian -----</string>
+    <string name="media_scanner_report_scanned">Dipindai: %1$d</string>
+    <string name="media_scanner_report_imported">Diimpor: %1$d</string>
+    <string name="media_scanner_report_blocked_temp">Diblokir oleh folder: %1$d</string>
+    <string name="media_scanner_report_blocked_short">Diblokir oleh audio <![CDATA[< 60 detik: %1$d]]></string>
+    <string name="media_scanner_report_total_blocked">Total diblokir: %1$d</string>
+    <string name="active">Aktif</string>
+    <string name="inactive">Tidak Aktif</string>
+
+    <!-- Buttons -->
+    <string name="button_cancel">Batal</string>
+    <string name="button_close">Tutup</string>
+    <string name="button_delete">Hapus</string>
+    <string name="button_save">Simpan</string>
+    <string name="button_ready">Siap</string>
+    <string name="button_see_all">Lihat semua</string>
+    <string name="button_see_less">Lihat lebih sedikit</string>
+    <string name="button_see_more_bio">Baca biografi lengkap</string>
+    <string name="button_search_again">Cari lagi</string>
+
+    <!-- Library Options & Labels -->
+    <string name="library_option_songs">Lagu</string>
+    <string name="library_option_albums">Album</string>
+    <string name="library_option_artists">Artis</string>
+    <string name="library_btn_play">Putar</string>
+    <string name="library_btn_shuffle">Acak</string>
+    <string name="library_btn_sort">Urutkan</string>
+    <string name="library_btn_format">Format</string>
+    <string name="library_auto_collection">Koleksi yang dibuat secara otomatis</string>
+    <string name="library_label_artist">Artis</string>
+    <string name="library_label_folder">Folder</string>
+
+    <!-- Filter Chips -->
+    <string name="filter_playlists">Daftar Putar</string>
+    <string name="filter_albums">Album</string>
+    <string name="filter_artists">Artis</string>
+    <string name="filter_folders">Folder</string>
+    <string name="filter_clear_desc">Bersihkan filter</string>
+
+    <!-- Sort & Layout -->
+    <string name="sort_az">A-Z</string>
+    <string name="sort_za">Z-A</string>
+    <string name="sort_recent">Baru saja ditambahkan</string>
+    <string name="sort_oldest">Paling lama ditambahkan</string>
+    <string name="layout_grid">Kisi</string>
+    <string name="layout_list">Daftar</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_close">Tutup</string>
+    <string name="cd_more_options">Opsi lainnya</string>
+    <string name="cd_refresh">Segarkan</string>
+    <string name="cd_artwork">Sampul</string>
+    <string name="cd_change_artwork">Ubah sampul</string>
+    <string name="cd_device">Perangkat</string>
+    <string name="cd_favorite">Favorit</string>
+    <string name="cd_pause">Jeda</string>
+    <string name="cd_play">Putar</string>
+
+    <!-- Search -->
+    <string name="search_explore_title">Jelajahi</string>
+    <string name="search_title">Cari</string>
+    <string name="search_section_songs">Lagu</string>
+    <string name="search_section_albums">Album</string>
+    <string name="search_section_artists">Artis</string>
+    <string name="search_section_playlists">Daftar Putar</string>
+    <string name="search_empty_title">Temukan apa yang Anda sukai</string>
+    <string name="search_empty_desc">Cari lagu, artis, atau album</string>
+    <string name="search_no_results_title">Tidak ada hasil untuk \"%1$s\"</string>
+    <string name="search_no_results_desc">Coba dengan istilah yang lebih umum</string>
+    <string name="search_cloud_title">Buka SoundlyCloud</string>
+    <string name="search_cloud_desc">Jelajahi konten cloud</string>
+
+    <!-- Library & Menu -->
+    <string name="menu_delete_from_library">Hapus dari perpustakaan</string>
+    <string name="dialog_delete_from_library_title">Hapus dari perpustakaan?</string>
+    <string name="dialog_delete_from_library_message">Lagu akan disembunyikan dari perpustakaan Anda dan tidak akan muncul lagi di daftar dan detail.</string>
+    <string name="menu_remove_from_favorites">Hapus dari favorit</string>
+    <string name="dialog_remove_from_favorites_title">Hapus dari favorit?</string>
+    <string name="dialog_remove_from_favorites_message">Lagu akan dihapus dari favorit Anda dan akan keluar dari daftar putar yang dibuat secara otomatis.</string>
+    <string name="menu_remove_from_playlist">Hapus dari daftar putar ini</string>
+    <string name="dialog_remove_from_playlist_title">Hapus dari daftar putar?</string>
+    <string name="dialog_remove_from_playlist_message">Lagu akan dihapus dari daftar putar ini.</string>
+    <string name="menu_add_to_playlist">Tambahkan ke daftar putar</string>
+    <string name="menu_save_as_playlist">Simpan di perpustakaan</string>
+    <string name="home_section_monthly_recap">Rekap Bulanan</string>
+    <string name="recap_playlist_title">Rekap Bulanan</string>
+    <string name="recap_banner_title">Rekap %1$s Anda</string>
+    <string name="recap_banner_desc">Hidupkan kembali %1$d lagu favorit Anda bulan ini</string>
+    <string name="recap_explore_now">Jelajahi sekarang</string>
+    <string name="menu_go_to_album">Buka album</string>
+    <string name="menu_go_to_artist_multiple">Buka artis...</string>
+    <string name="menu_go_to_artist">Buka artis</string>
+    <string name="menu_information">Informasi</string>
+    <string name="menu_edit">Edit</string>
+    <string name="edit_screen_title">Edit informasi</string>
+    <string name="edit_section_details">Detail lagu</string>
+    <string name="edit_section_additional">Informasi tambahan</string>
+    <string name="menu_playback_queue">Antrean pemutaran</string>
+    <string name="menu_sleep_timer">Timer tidur</string>
+    <string name="timer_description">Tentukan berapa lama lagi musik akan berhenti.</string>
+    <string name="timer_active_format">Aktif: %1$02d:%2$02d:%3$02d</string>
+    <string name="timer_cancel">Batalkan timer</string>
+    <string name="timer_choose_time">Pilih jam/menit (24 jam)</string>
+    <string name="timer_schedule">Jadwalkan</string>
+    <string name="timer_dialog_title">Timer (24 jam)</string>
+    <string name="timer_min_label">%1$d menit</string>
+    <string name="menu_add_to_library">Tambahkan ke perpustakaan Anda</string>
+    <string name="library_add_album">Tambahkan ke perpustakaan Anda</string>
+    <string name="library_remove_album">Hapus dari perpustakaan Anda</string>
+    <string name="menu_add_to_playlist_title">Tambahkan ke daftar putar</string>
+    <string name="menu_add_album_to_playlist_title">Tambahkan album ke daftar putar</string>
+    <string name="menu_add_to_playlist_desc">Pilih daftar putar untuk menambahkan lagu ini.</string>
+    <string name="menu_no_playlists">Anda belum memiliki daftar putar yang dibuat.</string>
+    <string name="dialog_info_title">Informasi</string>
+    <string name="info_label_title">Judul</string>
+    <string name="info_label_artist">Artis</string>
+    <string name="info_label_album">Album</string>
+    <string name="info_label_genre">Aliran</string>
+    <string name="info_label_year">Tahun</string>
+    <string name="info_label_composer">Komposer</string>
+    <string name="info_label_duration">Durasi</string>
+    <string name="info_label_path">Jalur</string>
+    <string name="info_value_empty">Tidak ada data</string>
+    <string name="info_value_no_title">Tanpa judul</string>
+    <string name="info_value_unknown_artist">Artis tidak dikenal</string>
+    <string name="info_bio_prefix">Kenali</string>
+    <string name="share_song_chooser_title">Bagikan lagu</string>
+    <string name="share_song_text">Saya sedang mendengarkan ini di Soundly</string>
+    <string name="dialog_select_artist_title">Pilih artis</string>
+    <string name="quick_action_play_next">Putar berikutnya</string>
+    <string name="quick_action_in_queue">Dalam antrean</string>
+    <string name="quick_action_remove_favorite">Hapus Favorit</string>
+    <string name="quick_action_favorites">Favorit</string>
+    <string name="playlist_item_already_added">Sudah ditambahkan</string>
+    <string name="playlist_item_add_here">Tambahkan di sini</string>
+    <string name="playlist_song_count">%1$d lagu</string>
+    <string name="library_empty_title">Perpustakaan Anda kosong</string>
+    <string name="library_empty_message">Mulailah dengan membuat daftar putar atau menandai konten sebagai favorit untuk melihatnya di sini.</string>
+    <string name="playlists_empty_title">Anda belum memiliki daftar putar</string>
+    <string name="playlists_empty_message">Buat yang baru atau sukai lagu agar daftar putar yang dibuat secara otomatis muncul.</string>
+    <string name="folders_empty_title">Tidak ada folder dengan musik</string>
+    <string name="folders_empty_message">Ketika Soundly mendeteksi file lokal, Anda akan melihat pengelompokannya berdasarkan folder di sini.</string>
+    <string name="artists_empty_title">Tidak ada artis favorit</string>
+    <string name="artists_empty_message">Artis yang Anda tambahkan dari Perpustakaan akan muncul di sini.</string>
+    <string name="albums_empty_title">Tidak ada album favorit</string>
+    <string name="albums_empty_message">Album yang Anda tandai dari Perpustakaan akan disimpan di sini.</string>
+
+    <!-- Device Control -->
+    <string name="device_sheet_title">Output audio</string>
+    <string name="device_sheet_searching">Mencari perangkat...</string>
+    <string name="device_sheet_no_devices_title">Tidak ada perangkat yang ditemukan</string>
+    <string name="device_sheet_no_devices_desc">Pastikan perangkat Cast atau Bluetooth Anda dinyalakan dan berada di jaringan Wi-Fi yang sama.</string>
+    <string name="device_name_default">Perangkat</string>
+    <string name="device_sheet_volume">Volume</string>
+    <string name="device_status_casting">Mentransmisikan</string>
+    <string name="device_status_connected">Terhubung</string>
+
+    <!-- Settings Style -->
+    <string name="settings_mini_player_title">Mini player</string>
+    <string name="settings_section_customization">Kustomisasi</string>
+    <string name="settings_animations_title">Animasi</string>
+    <string name="settings_coming_soon">Segera hadir...</string>
+    <string name="settings_functionality_title">Fungsionalitas</string>
+    <string name="settings_swipe_to_dismiss_title">Geser untuk menutup</string>
+    <string name="settings_swipe_to_dismiss_desc">Geser mini player ke samping untuk menghentikan musik dan menutup layanan</string>
+    <string name="settings_marquee_title">Teks berjalan</string>
+    <string name="settings_marquee_desc">Aktifkan pengguliran otomatis untuk judul dan artis</string>
+    <string name="settings_marquee_desc_player">Aktifkan pengguliran otomatis untuk teks yang panjang</string>
+    <string name="settings_style_design_title">Gaya dan desain</string>
+    <string name="settings_progress_thickness_title">Ketebalan progres</string>
+    <string name="settings_show_previous_title">Tombol sebelumnya</string>
+    <string name="settings_show_previous_desc">Aktifkan tombol kembali di mini player</string>
+    <string name="settings_artwork_shape_title">Bentuk sampul</string>
+    <string name="settings_progressbar_design_title">Desain ProgressBar</string>
+    <string name="settings_preview_title">Pratinjau</string>
+    <string name="settings_mini_player_closed_preview">Mini player ditutup (Geser)</string>
+    <string name="settings_center_text_title">Teks di tengah</string>
+    <string name="settings_center_text_desc">Menempatkan judul dan artis di tengah pemutar</string>
+    <string name="settings_carousel_title">Karusel sampul</string>
+    <string name="settings_carousel_desc">Geser di atas sampul untuk mengganti lagu</string>
+    <string name="settings_player_preview_title">Pratinjau pemutar</string>
+    <string name="player_header_playing">SEDANG DIPUTAR</string>
+    <string name="settings_progressbar_title">ProgressBar</string>
+    <string name="settings_show_thumb_title">Tampilkan thumb</string>
+    <string name="settings_show_thumb_desc">Tampilkan atau sembunyikan indikator melingkar pada bilah</string>
+    <string name="settings_bar_thickness_title">Ketebalan bilah</string>
+    <string name="settings_thickness_normal">Normal</string>
+    <string name="settings_thickness_bold">Tebal</string>
+
+    <!-- Home Sections -->
+    <string name="home_section_discover_albums">Temukan album</string>
+    <string name="home_section_discover_albums_desc">Jelajahi musik yang luar biasa</string>
+    <string name="home_section_recently_played">Baru saja diputar</string>
+    <string name="home_section_recently_played_desc">Lanjutkan dari tempat terakhir Anda berhenti</string>
+    <string name="home_section_top_artists">Artis Terpopuler</string>
+    <string name="home_section_top_artists_desc">Artis yang paling sering Anda putar</string>
+    <string name="home_section_recently_added">Baru saja ditambahkan</string>
+    <string name="home_section_recently_added_desc">Penambahan terbaru Anda</string>
+    <string name="home_section_recommended">Direkomendasikan untuk Anda</string>
+    <string name="home_section_recommended_desc">Berdasarkan apa yang Anda dengarkan</string>
+    <string name="home_section_user_playlists">Daftar Putar Anda</string>
+    <string name="home_section_user_playlists_desc">Perpustakaan pribadi Anda</string>
+    <string name="playlist_auto_generated">Dibuat otomatis</string>
+    <string name="songs_count">%1$d lagu</string>
+    <string name="button_create_playlist">Buat atau impor</string>
+    <string name="create_playlist_desc">Koleksi baru</string>
+
+    <!-- New Strings -->
+    <string name="album_detail_more_by">Lebih banyak oleh %1$s</string>
+    <string name="library_label_playlist">Daftar Putar</string>
+    <string name="label_your_profile">Profil Anda</string>
+    <string name="albums_count">%1$d album</string>
+    <string name="unknown_artist">Artis tidak dikenal</string>
+    <string name="cd_add_to_favorites">Tambahkan ke favorit</string>
+    <string name="cd_remove_from_favorites">Hapus dari favorit</string>
+    <string name="user_header_greeting">Halo, %1$s!</string>
+    <string name="user_header_motto">Musik Anda, dunia Anda.</string>
+    <string name="nav_home">Beranda</string>
+    <string name="nav_music">Musik</string>
+    <string name="nav_library">Perpustakaan</string>
+    <string name="nav_search">Cari</string>
+    <string name="lyrics_not_found">Lirik tidak ditemukan</string>
+    <string name="lyrics_closing">Menutup...</string>
+    <string name="artist_detail_more_songs">+ %1$d lagu lainnya</string>
+    <string name="library_label_albums">Album</string>
+    <string name="library_label_artists">Artis</string>
+    <string name="button_back">Kembali</string>
+    <string name="cd_shuffle">Acak</string>
+    <string name="cd_previous">Sebelumnya</string>
+    <string name="cd_next">Berikutnya</string>
+    <string name="cd_share">Bagikan</string>
+    <string name="cd_queue">Antrean</string>
+    <string name="cd_pinned">Disematkan</string>
+    <string name="cd_song_artwork">Sampul lagu</string>
+    <string name="cd_album_artwork">Sampul album</string>
+    <string name="cd_artist_image">Gambar artis</string>
+    <string name="cd_create_playlist">Buat daftar putar</string>
+    <string name="cd_playlist">Daftar putar</string>
+    <string name="cd_reorder">Urutkan ulang</string>
+    <string name="cd_open_options">Buka opsi</string>
+    <string name="label_artist">Artis</string>
+    <string name="label_autogenerated">Dibuat otomatis</string>
+    <string name="song_count_singular">%1$d lagu</string>
+    <string name="album_count_singular">%1$d album</string>
+
+    <!-- Playlist Operations -->
+    <string name="playlist_edit_title">Edit daftar putar</string>
+    <string name="playlist_create_title">Buat daftar putar baru</string>
+    <string name="playlist_edit_desc">Ubah nama atau sampul koleksi Anda agar tetap mutakhir.</string>
+    <string name="playlist_create_desc">Beri kepribadian pada daftar putar Anda dengan foto yang luar biasa dan nama yang unik untuk menyimpannya di perpustakaan Anda.</string>
+    <string name="playlist_artwork_cd">Sampul daftar putar</string>
+    <string name="playlist_add_photo">Tambah foto</string>
+    <string name="playlist_name_placeholder">Daftar Putar Favorit Saya</string>
+    <string name="playlist_error_name_empty">Tulis nama untuk daftar putar.</string>
+    <string name="playlist_error_artwork_empty">Pilih sampul untuk melanjutkan.</string>
+    <string name="playlist_error_update_failed">Tidak dapat memperbarui daftar putar.</string>
+    <string name="playlist_error_create_failed">Tidak dapat membuat daftar putar.</string>
+    <string name="playlist_btn_create">Buat</string>
+
+    <!-- Additional Menu Actions -->
+    <string name="menu_unpin">Lepas sematan</string>
+    <string name="menu_pin">Sematkan</string>
+    <string name="menu_remove_from_home">Hapus dari beranda</string>
+    <string name="menu_show_on_home">Tampilkan di beranda</string>
+    <string name="menu_delete_playlist">Hapus daftar putar</string>
+
+    <!-- Widget -->
+    <string name="widget_play_pause_cd">Putar/Jeda</string>
+    <string name="widget_pause">Jeda</string>
+    <string name="widget_play">Putar</string>
+    <!-- Generic -->
+    <string name="loading">Memuat...</string>
+
+    <!-- Lyrics -->
+    <string name="lyrics_title">Lirik</string>
+    <string name="button_show_more">Lebih banyak</string>
+
+    <!-- Soundly Cloud -->
+    <string name="soundly_cloud_card_desc">Jelajahi dan unduh musik</string>
+
+    <!-- Playlist -->
+    <string name="liked_songs_title">Lagu yang Disukai</string>
+
+    <!-- Settings Main -->
+    <string name="settings_title">Pengaturan</string>
+    <string name="settings_cloud_title">Soundly Music Cloud</string>
+    <string name="settings_enable_cloud_title">Aktifkan Soundly Cloud</string>
+    <string name="settings_cloud_desc">Dapatkan konten eksklusif dari cloud</string>
+    <string name="settings_scan_title">Pindai Perpustakaan</string>
+    <string name="settings_scan_desc">Pindai perpustakaan musik Anda</string>
+    <string name="settings_audio_title">Audio</string>
+    <string name="settings_audio_desc">Sesuaikan pengalaman audio Anda</string>
+    <string name="settings_interface_title">Antarmuka</string>
+    <string name="settings_interface_desc">Personalisasikan tampilan Soundly</string>
+    <string name="settings_check_updates_title">Periksa pembaruan</string>
+    <string name="settings_check_updates_desc">Tetap up to date dengan fitur terbaru</string>
+    <string name="settings_about_title">Tentang</string>
+    <string name="settings_about_desc">Informasi aplikasi dan versi</string>
+
+    <!-- Audio Page -->
+    <string name="audio_section_playback">Pemutaran</string>
+    <string name="audio_gapless_title">Pemutaran tanpa jeda</string>
+    <string name="audio_gapless_desc">Hilangkan keheningan di antara lagu</string>
+    <string name="audio_crossfade_title">Crossfade</string>
+    <string name="audio_crossfade_desc">Transisi halus di antara trek</string>
+    <string name="audio_crossfade_duration">Durasi</string>
+    <string name="audio_normalization_title">Normalisasi audio</string>
+    <string name="audio_normalization_desc">Pertahankan volume yang konstan</string>
+    <string name="audio_level_low">Rendah</string>
+    <string name="audio_level_normal">Normal</string>
+    <string name="audio_level_high">Tinggi</string>
+    <string name="audio_focus_title">Fokus audio</string>
+    <string name="audio_focus_desc">Jeda musik jika aplikasi lain memutar suara</string>
+    <string name="audio_connection_features">Fitur koneksi</string>
+    <string name="audio_connection_desc">Konfigurasikan interaksi perangkat</string>
+    <string name="audio_section_sound">Suara</string>
+    <string name="audio_equalizer_title">Equalizer</string>
+    <string name="audio_equalizer_desc">Sesuaikan frekuensi audio</string>
+    <string name="audio_mono_title">Audio mono</string>
+    <string name="audio_mono_desc">Gabungkan saluran kiri dan kanan</string>
+
+    <!-- Interface Page -->
+    <string name="interface_section_universal">Universal</string>
+    <string name="interface_theme_title">Tema aplikasi</string>
+    <string name="interface_theme_light">Terang</string>
+    <string name="interface_theme_dark">Gelap</string>
+    <string name="interface_theme_system">Ikuti sistem</string>
+    <string name="interface_language_title">Bahasa</string>
+    <string name="interface_language_desc">Ubah bahasa aplikasi</string>
+    <string name="interface_vivid_colors_title">Warna cerah</string>
+    <string name="interface_vivid_colors_desc">Gunakan warna yang lebih cerah di antarmuka</string>
+    <string name="interface_dynamic_colors_title">Warna M3</string>
+    <string name="interface_dynamic_colors_desc">Gunakan warna sistem (Material You)</string>
+    <string name="interface_section_home">Beranda</string>
+    <string name="interface_enable_home_title">Aktifkan Beranda</string>
+    <string name="interface_enable_home_desc">Tampilkan tab beranda di bilah navigasi</string>
+    <string name="interface_customize_home_title">Sesuaikan Beranda</string>
+    <string name="interface_customize_home_desc">Personalisasikan tampilan beranda</string>
+    <string name="interface_section_player">Pengaturan pemutar</string>
+    <string name="interface_player_title">Pemutar</string>
+    <string name="interface_player_desc">Personalisasikan pemutar</string>
+    <string name="interface_mini_player_title">Mini player</string>
+    <string name="interface_mini_player_desc">Personalisasikan mini player</string>
+    <string name="interface_lyrics_title">Lirik</string>
+    <string name="interface_lyrics_desc">Personalisasikan lirik lagu</string>
+
+    <!-- Home Settings Page -->
+    <string name="home_settings_header">Personalisasikan beranda</string>
+    <string name="home_settings_subtitles_title">Tampilkan subjudul</string>
+    <string name="home_settings_subtitles_desc">Aktifkan atau nonaktifkan deskripsi di bawah judul bagian</string>
+    <string name="home_settings_help_text">Tekan lama dan seret untuk mengatur bagian. Di bawah ini Anda akan melihat pratinjau tampilan setiap bagian.</string>
+    <string name="home_settings_restore_button">Pulihkan urutan default</string>
+    <string name="home_settings_restore_toast">Urutan beranda dipulihkan</string>
+
+    <!-- Lyrics Page -->
+    <string name="lyrics_section_animations">Animasi</string>
+    <string name="lyrics_expansion_speed_title">Kecepatan ekspansi</string>
+    <string name="lyrics_expansion_speed_desc">Sesuaikan seberapa cepat lirik mengembang</string>
+    <string name="lyrics_agsl_title">Latar belakang animasi (AGSL)</string>
+    <string name="lyrics_agsl_desc">Gunakan gelombang warna di latar belakang lirik</string>
+
+    <!-- Connection Page -->
+    <string name="connection_title">Koneksi</string>
+    <string name="connection_section_devices">Perangkat</string>
+    <string name="connection_bluetooth_autoplay_title">Pemutaran Bluetooth</string>
+    <string name="connection_bluetooth_autoplay_desc">Mulai pemutaran saat terhubung ke perangkat</string>
+    <string name="connection_allowed_devices_title">Perangkat yang diizinkan</string>
+    <string name="connection_devices_none">Tidak ada yang dipilih</string>
+    <string name="connection_devices_all">Semua dipilih</string>
+    <string name="connection_devices_count">%1$d perangkat dipilih</string>
+    <string name="connection_no_devices">Tidak ada perangkat yang dipasangkan ditemukan</string>
+
+    <!-- Equalizer Page -->
+    <string name="equalizer_title">Equalizer</string>
+    <string name="equalizer_enable_title">Aktifkan Equalizer</string>
+    <string name="equalizer_section_bands">Pita frekuensi</string>
+    <string name="equalizer_section_effects">Efek audio</string>
+    <string name="equalizer_bass_boost">Bass boost</string>
+    <string name="equalizer_virtualizer">Suara surround</string>
+    <string name="equalizer_system">Equalizer sistem</string>
+    <string name="equalizer_reset">Atur ulang</string>
+
+    <!-- Player Animations Page -->
+    <string name="animations_title">Animasi</string>
+    <string name="animations_expansion_mode_title">Mode ekspansi</string>
+    <string name="animations_mode_expansion">Ekspansi</string>
+    <string name="animations_mode_elevation">Elevasi</string>
+    <string name="animations_speed_title">Kecepatan animasi</string>
+
+    <!-- Mini Player Animations Page -->
+    <string name="player_settings_title">Pemutar</string>
+    <string name="player_section_customization">Kustomisasi</string>
+    <string name="player_animation_title">Animasi</string>
+    <string name="player_animation_desc">Personalisasikan animasi pemutar</string>
+    <string name="player_style_title">Gaya dan desain</string>
+    <string name="player_style_desc">Personalisasikan aspek visual</string>
+
+    <!-- Animation Speeds -->
+    <string name="speed_normal">Normal</string>
+    <string name="speed_slow">Lambat</string>
+
+    <!-- Progress Bar Types -->
+    <string name="pb_type_default">Material 3 (Tanpa opsi)</string>
+    <string name="pb_type_wave">Gelombang</string>
+    <string name="pb_type_plane">Bidang</string>
+
+    <!-- Mini Progress Bar Types -->
+    <string name="mini_pb_type_wave">Gelombang (Default)</string>
+    <string name="mini_pb_type_plane">Bidang</string>
+    <string name="mini_pb_type_none">Tanpa progres</string>
+
+    <!-- Mini Progress Bar Thickness -->
+    <string name="mini_thickness_normal">Normal</string>
+    <string name="mini_thickness_medium">Menengah</string>
+    <string name="mini_thickness_bold">Tebal</string>
+
+    <!-- Artwork Shapes -->
+    <string name="shape_default">Default</string>
+    <string name="shape_circle">Lingkaran</string>
+    <string name="shape_square">Persegi</string>
+    <string name="shape_arch">Lengkungan</string>
+    <string name="shape_pill">Pil</string>
+    <string name="shape_arrow">Panah</string>
+    <string name="shape_pentagon">Pentagon</string>
+    <string name="shape_cookie_4">Kue 4 sisi</string>
+    <string name="shape_cookie_6">Kue 6 sisi</string>
+    <string name="shape_cookie_7">Kue 7 sisi</string>
+    <string name="shape_clover_4">Semanggi 4 daun</string>
+
+    <!-- Mini Player Style -->
+    <string name="mini_style_solid">Padat</string>
+    <string name="mini_style_tinted">Berwarna</string>
+    <string name="mini_style_blur">Buram</string>
+
+    <!-- Search Cloud -->
+    <string name="search_mode_offline">Offline</string>
+    <string name="search_mode_online">Online</string>
+    <string name="search_section_cloud_artists">Artis di cloud</string>
+    <string name="search_section_cloud_songs">Lagu di cloud</string>
+    <string name="search_section_cloud_albums">Album di cloud</string>
+    <string name="search_section_cloud_playlists">Playlist di cloud</string>
+    <string name="search_no_results_cloud">Tidak ada hasil ditemukan di cloud.</string>
+    <string name="cloud_artist_label">Artis SoundlyCloud</string>
+    <string name="cloud_download_all">Unduh semua</string>
+    <string name="cloud_popular_songs">Lagu populer</string>
+    <string name="cloud_subscribers_label">pelanggan</string>
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="downloading">Downloading (%d)</string>
+    <string name="downloaded">Downloaded (%d)</string>
+    <string name="no_active_downloads">No active downloads</string>
+    <string name="no_downloaded_songs">No downloaded songs</string>
+    <string name="manager">Manager</string>
+    <string name="delete">Delete</string>
+    <string name="search_placeholder">Search for something or paste a link</string>
+    <string name="clear">Clear</string>
+    <string name="searching">Searching in Soundly Cloud...</string>
+    <string name="no_results">No results found</string>
+    <string name="download_all">Download All</string>
+    <string name="no_songs_in_content">No songs in this content</string>
+    <string name="loading_artist_profile">Loading %s\'s profile...</string>
+    <string name="subscribers">subscribers</string>
+    <string name="popular_songs">Popular songs</string>
+    <string name="albums_playlists">Albums / Playlists</string>
+    <string name="explore">Explore</string>
+    <string name="back">Back</string>
+    <string name="downloads">Downloads</string>
+    <string name="download">Download</string>
+    <string name="category_songs">Songs</string>
+    <string name="category_albums">Albums</string>
+    <string name="category_artists">Artists</string>
+    <string name="category_playlists">Playlists</string>
+    <string name="loading_playlist_error">Error loading playlist: %s</string>
+    <string name="unknown">Unknown</string>
+    <string name="untitled">Untitled</string>
+    <string name="cleaning">Cleaning</string>
+    <string name="soundly_cloud">Soundly Cloud</string>
+</resources>

@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 fun ScrollFadeContainer(
     listState: LazyListState? = null,
     gridState: LazyGridState? = null,
+    bottomPadding: androidx.compose.ui.unit.Dp = 0.dp,
     content: @Composable BoxScope.() -> Unit
 ) {
 
@@ -70,13 +71,13 @@ fun ScrollFadeContainer(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(20.dp)
+                    .height(32.dp)
                     .align(Alignment.BottomCenter)
                     .background(
                         Brush.verticalGradient(
                             listOf(
                                 Color.Transparent,
-                                MaterialTheme.colorScheme.background.copy(alpha = 0.95f)
+                                MaterialTheme.colorScheme.background.copy(alpha = 0.7f)
                             )
                         )
                     )

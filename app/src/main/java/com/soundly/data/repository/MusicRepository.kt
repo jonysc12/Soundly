@@ -11,7 +11,12 @@ import android.os.Looper
 import android.provider.MediaStore
 import androidx.core.content.ContextCompat
 import androidx.room.withTransaction
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.soundly.data.datasource.MediaStoreDataSource
+import com.soundly.feature.library.LibrarySortOption
 import com.soundly.data.local.FavoriteAlbumEntity
 import com.soundly.data.local.FavoriteArtistEntity
 import com.soundly.data.local.FavoriteSongEntity
@@ -25,10 +30,12 @@ import com.soundly.data.local.mapper.toDomain
 import com.soundly.data.local.mapper.toEntity
 import com.soundly.data.model.Album
 import com.soundly.data.model.Artist
+import com.soundly.data.model.LibraryCatalog
 import com.soundly.data.model.MusicScanFilters
 import com.soundly.data.model.MusicScanReport
 import com.soundly.data.model.Playlist
 import com.soundly.data.model.Song
+import com.soundly.data.model.buildLibraryCatalog
 import com.soundly.inicio.data.MediaScannerPreferences
 import com.soundly.inicio.data.MediaScannerSettings
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -40,10 +47,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -71,6 +80,20 @@ class MusicRepository @Inject constructor(
     private val _lastScanReport = MutableStateFlow<MusicScanReport?>(null)
     val lastScanReport: StateFlow<MusicScanReport?> = _lastScanReport.asStateFlow()
     val librarySongsFlow: StateFlow<List<Song>> = librarySongs.asStateFlow()
+    
+    private val _isReady = MutableStateFlow(false)
+    val isReady: StateFlow<Boolean> = _isReady.asStateFlow()
+
+    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    
+    val libraryCatalogFlow: StateFlow<LibraryCatalog> = librarySongsFlow
+        .map { songs -> buildLibraryCatalog(songs) }
+        .stateIn(
+            scope = repositoryScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = buildLibraryCatalog(emptyList())
+        )
+
     val favoriteSongIdsFlow: StateFlow<Set<Long>> = favoriteSongIds.asStateFlow()
     val favoriteAlbumIdsFlow: StateFlow<Set<Long>> = favoriteAlbumIds.asStateFlow()
     val favoriteArtistIdsFlow: StateFlow<Set<Long>> = favoriteArtistIds.asStateFlow()
@@ -87,7 +110,6 @@ class MusicRepository @Inject constructor(
             }
     }
 
-    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val refreshMutex = Mutex()
     @Volatile
     private var cacheBootstrapDone = false
@@ -102,6 +124,11 @@ class MusicRepository @Inject constructor(
         registerMediaStoreObserver()
         repositoryScope.launch {
             bootstrapFromLocalCache()
+            ensureLikedSongsPlaylist(System.currentTimeMillis())
+            _isReady.value = true // La caché inicial está lista para la UI
+            
+            // Retrasamos la sincronización pesada con MediaStore para liberar CPU al inicio
+            delay(5000)
             refreshLibrarySongs(force = true)
         }
     }
@@ -208,6 +235,69 @@ class MusicRepository @Inject constructor(
         return mediaStore.getAlbumArtUri(albumId)
     }
 
+    fun getSongsPaged(sortOption: LibrarySortOption): Flow<PagingData<Song>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 50,
+                enablePlaceholders = true,
+                initialLoadSize = 100
+            ),
+            pagingSourceFactory = {
+                when (sortOption) {
+                    LibrarySortOption.TitleAsc -> songCacheDao.observeSongsPaged()
+                    LibrarySortOption.TitleDesc -> songCacheDao.observeSongsPagedTitleDesc()
+                    LibrarySortOption.DateAddedAsc -> songCacheDao.observeSongsPagedDateAddedAsc()
+                    LibrarySortOption.DateAddedDesc -> songCacheDao.observeSongsPagedDateAddedDesc()
+                }
+            }
+        ).flow.map { pagingData ->
+            pagingData.map { it.toDomain() }
+        }
+    }
+
+    fun getAlbumsPaged(): Flow<PagingData<Album>> {
+        return libraryCatalogFlow.map { catalog ->
+            PagingData.from(catalog.albums)
+        }
+    }
+
+    fun getArtistsPaged(): Flow<PagingData<Artist>> {
+        return libraryCatalogFlow.map { catalog ->
+            PagingData.from(catalog.artists)
+        }
+    }
+
+    fun searchSongsPaged(query: String): Flow<PagingData<Song>> {
+        val dbQuery = "%${query.trim().lowercase().replace(Regex("\\s+"), "%")}%"
+        return Pager(
+            config = PagingConfig(pageSize = 50),
+            pagingSourceFactory = { songCacheDao.searchSongsPaged(dbQuery) }
+        ).flow.map { pagingData ->
+            pagingData.map { it.toDomain() }
+        }
+    }
+
+    fun searchAlbumsPaged(query: String): Flow<PagingData<Album>> {
+        val normalizedQuery = query.trim().lowercase()
+        return libraryCatalogFlow.map { catalog ->
+            val filtered = catalog.albums.filter { 
+                it.name.lowercase().contains(normalizedQuery) || 
+                it.artist.lowercase().contains(normalizedQuery)
+            }
+            PagingData.from(filtered)
+        }
+    }
+
+    fun searchArtistsPaged(query: String): Flow<PagingData<Artist>> {
+        val normalizedQuery = query.trim().lowercase()
+        return libraryCatalogFlow.map { catalog ->
+            val filtered = catalog.artists.filter { 
+                it.name.lowercase().contains(normalizedQuery)
+            }
+            PagingData.from(filtered)
+        }
+    }
+
     fun isSongFavorite(songId: Long): Boolean = favoriteSongIds.value.contains(songId)
 
     fun isAlbumFavorite(albumId: Long): Boolean = favoriteAlbumIds.value.contains(albumId)
@@ -270,6 +360,8 @@ class MusicRepository @Inject constructor(
         database.withTransaction {
             val history = libraryMetadataDao.getPlayHistory(songId)
             val now = System.currentTimeMillis()
+            
+            // 1. Registro histórico acumulado (existente)
             if (history == null) {
                 libraryMetadataDao.upsertPlayHistory(
                     PlayHistoryEntity(songId = songId, lastPlayedAt = now, playCount = 1)
@@ -279,36 +371,53 @@ class MusicRepository @Inject constructor(
                     history.copy(lastPlayedAt = now, playCount = history.playCount + 1)
                 )
             }
+            
+            // 2. Registro de evento individual para Recap Mensual
+            libraryMetadataDao.insertPlayEvent(
+                com.soundly.data.local.PlayEventEntity(songId = songId, timestamp = now)
+            )
+        }
+    }
+
+    fun observeTopSongsInRange(startTime: Long, limit: Int): Flow<List<Song>> {
+        return libraryMetadataDao.observeTopSongsInRangeJoined(startTime, limit).map { entities ->
+            entities.map { it.toDomain() }
         }
     }
 
     fun observeRecentSongs(limit: Int): Flow<List<Song>> {
-        return libraryMetadataDao.observeRecentSongs(limit).map { ids ->
-            val songs = librarySongs.value
-            ids.mapNotNull { id -> songs.find { it.id == id } }
+        return libraryMetadataDao.observeRecentSongsJoined(limit).map { entities ->
+            entities.map { it.toDomain() }
         }
     }
 
     fun observeTopSongs(limit: Int): Flow<List<Song>> {
-        return libraryMetadataDao.observeTopSongs(limit).map { ids ->
-            val songs = librarySongs.value
-            ids.mapNotNull { id -> songs.find { it.id == id } }
+        return libraryMetadataDao.observeTopSongsJoined(limit).map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
+    fun observeRecentlyAdded(limit: Int): Flow<List<Song>> {
+        return songCacheDao.getRecentlyAdded(limit).map { entities ->
+            entities.map { it.toDomain() }
         }
     }
 
     suspend fun createPlaylist(
         name: String,
-        artworkSourceUri: Uri
+        artworkSourceUri: Uri?
     ): String = withContext(Dispatchers.IO) {
         val trimmedName = name.trim()
         require(trimmedName.isNotEmpty()) { "Playlist name cannot be blank." }
 
         val playlistId = USER_PLAYLIST_ID_PREFIX + UUID.randomUUID().toString()
         val now = System.currentTimeMillis()
-        val persistedArtworkUri = persistPlaylistArtwork(
-            playlistId = playlistId,
-            sourceUri = artworkSourceUri
-        ) ?: error("Unable to persist playlist artwork.")
+        val persistedArtworkUri = artworkSourceUri?.let {
+            persistPlaylistArtwork(
+                playlistId = playlistId,
+                sourceUri = it
+            )
+        }
 
         libraryMetadataDao.upsertPlaylist(
             PlaylistEntity(
@@ -316,11 +425,33 @@ class MusicRepository @Inject constructor(
                 name = trimmedName,
                 type = USER_PLAYLIST_TYPE,
                 artworkUri = persistedArtworkUri,
+                showOnHome = true,
                 createdAt = now,
                 updatedAt = now
             )
         )
         playlistId
+    }
+
+    suspend fun createPlaylistWithSongs(
+        name: String,
+        artworkSourceUri: Uri?,
+        songIds: List<Long>
+    ): String = withContext(Dispatchers.IO) {
+        database.withTransaction {
+            val playlistId = createPlaylist(name, artworkSourceUri)
+            val now = System.currentTimeMillis()
+            val entries = songIds.map { songId ->
+                PlaylistSongEntity(
+                    playlistId = playlistId,
+                    songId = songId,
+                    addedAt = now
+                )
+            }
+            libraryMetadataDao.upsertPlaylistSongs(entries)
+            libraryMetadataDao.touchPlaylist(playlistId, now)
+            playlistId
+        }
     }
 
     suspend fun deletePlaylist(playlistId: String) = withContext(Dispatchers.IO) {
@@ -422,6 +553,11 @@ class MusicRepository @Inject constructor(
             libraryMetadataDao.touchPlaylist(playlistId, System.currentTimeMillis())
             true
         }
+    }
+
+    suspend fun togglePlaylistShowOnHome(playlistId: String) = withContext(Dispatchers.IO) {
+        val playlist = libraryMetadataDao.getPlaylistById(playlistId) ?: return@withContext
+        libraryMetadataDao.updatePlaylistShowOnHome(playlistId, !playlist.showOnHome)
     }
 
     fun playlistIdsContainingSong(songId: Long): Flow<Set<String>> {
@@ -632,6 +768,7 @@ class MusicRepository @Inject constructor(
                 name = LIKED_SONGS_PLAYLIST_NAME,
                 type = LIKED_SONGS_PLAYLIST_TYPE,
                 artworkUri = null,
+                showOnHome = true,
                 createdAt = now,
                 updatedAt = now
             )
@@ -724,6 +861,7 @@ class MusicRepository @Inject constructor(
 
     companion object {
         const val LIKED_SONGS_PLAYLIST_ID = "liked_songs"
+        const val TOP_MONTH_RECAP_ID = "top_month_recap"
         const val LIKED_SONGS_PLAYLIST_TYPE = "auto_liked_songs"
         const val USER_PLAYLIST_TYPE = "user_created"
         private const val LIKED_SONGS_PLAYLIST_NAME = "Tus me gusta"
@@ -755,6 +893,7 @@ private fun PlaylistEntity.toDomain(
             // Cache busting: append timestamp to ensure Coil reloads if file changed
             Uri.parse("$uriStr?t=$updatedAt")
         },
+        showOnHome = showOnHome,
         updatedAt = updatedAt
     )
 }

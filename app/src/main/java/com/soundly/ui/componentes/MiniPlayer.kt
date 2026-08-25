@@ -1,6 +1,7 @@
 package com.soundly.ui.componentes
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -14,55 +15,67 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.SkipNext
+import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.SmartButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.soundly.data.repository.MiniPlayerStyle
+import com.soundly.data.repository.ArtworkShape
+import com.soundly.data.repository.MiniProgressBarType
+import com.soundly.data.repository.MiniProgressBarThickness
+import com.soundly.ui.theme.rememberArtworkShape
 import kotlinx.coroutines.delay
 import com.soundly.R
 import com.soundly.ui.componentes.adaptDominantInstant
+import com.soundly.ui.componentes.blendOnSurface
+import androidx.compose.material.icons.rounded.SkipPrevious
+import androidx.compose.material3.CircularProgressIndicator
+
 
 internal object NavDimens {
     const val PILL_HEIGHT_DP = 40
@@ -90,12 +103,22 @@ internal val ArtworkExitTransition = fadeOut(tween(160)) +
         scaleOut(targetScale = 0.88f, animationSpec = tween(160))
 
 @Immutable
+data class MiniPlayerMetadata(
+    val songName: String = "Song name",
+    val artistName: String = "Artist",
+    val isPlaying: Boolean = false,
+    val artwork: Any? = R.drawable.carga,
+)
+
+// Mantenemos MiniPlayerState por compatibilidad si es necesario, pero marcamos como obsoleto o lo usamos solo como DTO
+@Immutable
 data class MiniPlayerState(
     val songName: String = "Song name",
     val artistName: String = "Artist",
     val isPlaying: Boolean = false,
     val artwork: Any? = R.drawable.carga,
-    val progress: Float = 0f, // 0..1
+    val positionMs: Long = 0L,
+    val durationMs: Long = 0L,
 )
 
 @Composable
@@ -111,14 +134,33 @@ internal fun rememberPressState(duration: Long = 100L): Pair<Boolean, () -> Unit
     return pressed to trigger
 }
 
+private data class MiniColorScheme(
+    val bg: Color,
+    val accent: Color,
+    val sub: Color,
+    val btn: Color
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MiniPlayer(
-    state: MiniPlayerState,
+    metadata: MiniPlayerMetadata,
+    progress: () -> Float,
     onPlayPauseClick: () -> Unit,
     onNextClick: () -> Unit = {},
+    onPreviousClick: () -> Unit = {},
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
+    onDismiss: () -> Unit = {},
     accentColor: Color = Color.Unspecified,
+    miniPlayerStyle: MiniPlayerStyle = MiniPlayerStyle.SOLID,
+    artworkShape: ArtworkShape = ArtworkShape.CIRCLE,
+    miniProgressBarType: MiniProgressBarType = MiniProgressBarType.WAVE,
+    miniProgressBarThickness: MiniProgressBarThickness = MiniProgressBarThickness.NORMAL,
+    showPrevious: Boolean = false,
+    swipeToDismiss: Boolean = true,
+    vividColors: Boolean = false,
+    marqueeTextEnabled: Boolean = false,
 ) {
     val haptic = LocalHapticFeedback.current
     val (isPillPressed, triggerPillPress) = rememberPressState(duration = 85L)
@@ -140,17 +182,135 @@ fun MiniPlayer(
 
     val baseSurface = MaterialTheme.colorScheme.surface
     val isDark = baseSurface.luminance() < 0.5f
-    val accentInstant = adaptDominantInstant(
-        rawColor = accentColor.takeIf { it != Color.Unspecified } ?: Color.Transparent,
-        isDarkTheme = isDark,
-        fallback = baseSurface
-    )
-    val bgColor = blendOnSurface(accentInstant, baseSurface, 0.25f)
-    val onColorBase = if (bgColor.luminance() < 0.35f) Color.White else Color.Black
-    val accentVibrant = blendOnSurface(accentInstant, onColorBase, 0.70f)
-    val subColor = accentVibrant.copy(alpha = 0.82f)
-    val buttonBg = blendOnSurface(accentInstant, MaterialTheme.colorScheme.surfaceVariant, 0.32f)
+    
+    val colorScheme = remember(accentColor, isDark, baseSurface, vividColors, miniPlayerStyle) {
+        val accentInstant = adaptDominantInstant(
+            rawColor = accentColor.takeIf { it != Color.Unspecified } ?: Color.Transparent,
+            isDarkTheme = isDark,
+            fallback = baseSurface,
+            isVivid = vividColors
+        )
+        
+        val bg: Color
+        val accent: Color
+        val sub: Color
+        val btn: Color
 
+        if (!isDark && vividColors) {
+            bg = if (miniPlayerStyle == MiniPlayerStyle.BLUR) baseSurface else blendOnSurface(accentInstant, baseSurface, 0.12f)
+            accent = accentInstant
+            sub = accent.copy(alpha = 0.80f)
+            btn = accentInstant.copy(alpha = 0.18f)
+        } else {
+            bg = when(miniPlayerStyle) {
+                MiniPlayerStyle.SOLID -> baseSurface
+                MiniPlayerStyle.TINTED -> blendOnSurface(accentInstant, baseSurface, if (vividColors) 0.65f else 0.25f)
+                MiniPlayerStyle.BLUR -> baseSurface
+            }
+            val effectiveBg = if (miniPlayerStyle == MiniPlayerStyle.BLUR) baseSurface else bg
+            val onColorBase = if (effectiveBg.luminance() < 0.52f) Color.White else Color.Black
+            val vividFactor = if (vividColors) 0.25f else 0.70f
+            accent = blendOnSurface(accentInstant, onColorBase, vividFactor)
+            sub = accent.copy(alpha = if (vividColors) 0.85f else 0.82f)
+            btn = blendOnSurface(onColorBase, effectiveBg, if (vividColors) 0.25f else 0.15f) // OPACO
+        }
+        
+        MiniColorScheme(bg, accent, sub, btn)
+    }
+
+    val rawBgColor = colorScheme.bg
+    val rawAccentVibrant = colorScheme.accent
+    val rawSubColor = colorScheme.sub
+    val rawButtonBg = colorScheme.btn
+
+    val bgColor by animateColorAsState(rawBgColor, tween(800), label = "miniBg")
+    val accentVibrant by animateColorAsState(rawAccentVibrant, tween(800), label = "miniAccent")
+    val subColor by animateColorAsState(rawSubColor, tween(800), label = "miniSub")
+    val buttonBg by animateColorAsState(rawButtonBg, tween(800), label = "miniBtn")
+
+    if (swipeToDismiss) {
+        val dismissState = rememberSwipeToDismissBoxState()
+        SwipeToDismissBox(
+            state = dismissState,
+            backgroundContent = {},
+            enableDismissFromStartToEnd = true,
+            enableDismissFromEndToStart = true,
+            modifier = modifier
+        ) {
+            LaunchedEffect(dismissState.currentValue) {
+                if (dismissState.currentValue == SwipeToDismissBoxValue.StartToEnd || 
+                    dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+                    onDismiss()
+                }
+            }
+            MiniPlayerContent(
+                pillScale = pillScale,
+                pillInteractionSource = pillInteractionSource,
+                onPillClick = onPillClick,
+                bgColor = bgColor,
+                miniPlayerStyle = miniPlayerStyle,
+                metadata = metadata,
+                onPlayPauseClick = onPlayPauseClick,
+                onNextClick = onNextClick,
+                onPreviousClick = onPreviousClick,
+                accentVibrant = accentVibrant,
+                subColor = subColor,
+                buttonBg = buttonBg,
+                artworkShape = artworkShape,
+                miniProgressBarType = miniProgressBarType,
+                miniProgressBarThickness = miniProgressBarThickness,
+                showPrevious = showPrevious,
+                marqueeTextEnabled = marqueeTextEnabled,
+                progress = progress
+            )
+        }
+    } else {
+        MiniPlayerContent(
+            modifier = modifier,
+            pillScale = pillScale,
+            pillInteractionSource = pillInteractionSource,
+            onPillClick = onPillClick,
+            bgColor = bgColor,
+            miniPlayerStyle = miniPlayerStyle,
+            metadata = metadata,
+            onPlayPauseClick = onPlayPauseClick,
+            onNextClick = onNextClick,
+            onPreviousClick = onPreviousClick,
+            accentVibrant = accentVibrant,
+            subColor = subColor,
+            buttonBg = buttonBg,
+            artworkShape = artworkShape,
+            miniProgressBarType = miniProgressBarType,
+            miniProgressBarThickness = miniProgressBarThickness,
+            showPrevious = showPrevious,
+            marqueeTextEnabled = marqueeTextEnabled,
+            progress = progress
+        )
+    }
+}
+
+@Composable
+private fun MiniPlayerContent(
+    modifier: Modifier = Modifier,
+    pillScale: Float,
+    pillInteractionSource: MutableInteractionSource,
+    onPillClick: () -> Unit,
+    bgColor: Color,
+    miniPlayerStyle: MiniPlayerStyle,
+    metadata: MiniPlayerMetadata,
+    onPlayPauseClick: () -> Unit,
+    onNextClick: () -> Unit,
+    onPreviousClick: () -> Unit,
+    accentVibrant: Color,
+    subColor: Color,
+    buttonBg: Color,
+    artworkShape: ArtworkShape,
+    miniProgressBarType: MiniProgressBarType,
+    miniProgressBarThickness: MiniProgressBarThickness,
+    showPrevious: Boolean,
+    marqueeTextEnabled: Boolean,
+    progress: () -> Float
+) {
     Surface(
         modifier = modifier
             .height(NavDimens.TOTAL_HEIGHT_DP.dp)
@@ -162,18 +322,24 @@ fun MiniPlayer(
             ),
         shape = RoundedCornerShape(50.dp),
         color = bgColor,
-        tonalElevation = 3.dp,
+        tonalElevation = if (miniPlayerStyle == MiniPlayerStyle.BLUR) 0.dp else 3.dp,
         shadowElevation = 0.dp,
     ) {
         MiniPlayerBody(
-            state = state,
+            metadata = metadata,
             onPlayPauseClick = onPlayPauseClick,
             onNextClick = onNextClick,
+            onPreviousClick = onPreviousClick,
             textColor = accentVibrant,
             subTextColor = subColor,
             buttonBg = buttonBg,
             buttonIconColor = accentVibrant,
-            progress = state.progress,
+            progress = progress,
+            artworkShape = artworkShape,
+            miniProgressBarType = miniProgressBarType,
+            miniProgressBarThickness = miniProgressBarThickness,
+            showPrevious = showPrevious,
+            marqueeTextEnabled = marqueeTextEnabled,
         )
     }
 }
@@ -184,7 +350,9 @@ private fun MiniPlayPauseButton(
     onClick: () -> Unit,
     bg: Color,
     iconColor: Color,
-    progress: Float,
+    progress: () -> Float,
+    progressBarType: MiniProgressBarType = MiniProgressBarType.WAVE,
+    progressBarThickness: MiniProgressBarThickness = MiniProgressBarThickness.NORMAL,
 ) {
     val haptic = LocalHapticFeedback.current
     val (isPressed, triggerPress) = rememberPressState(duration = 75L)
@@ -204,8 +372,6 @@ private fun MiniPlayPauseButton(
         }
     }
 
-    val clampedProgress = progress.coerceIn(0f, 1f)
-
     Box(
         modifier = Modifier
             .size(NavDimens.PILL_HEIGHT_DP.dp)
@@ -219,21 +385,36 @@ private fun MiniPlayPauseButton(
             ),
         contentAlignment = Alignment.Center,
     ) {
-        // Progress ring: single composable, amplitude animates between wavy (1f) and flat (0f)
         val animAmp by animateFloatAsState(
             targetValue = if (isPlaying) 1f else 0f,
             animationSpec = spring(dampingRatio = 0.78f, stiffness = 120f),
             label = "progressAmp"
         )
-        @OptIn(ExperimentalMaterial3ExpressiveApi::class)
-        CircularWavyProgressIndicator(
-            progress = { clampedProgress },
-            color = iconColor,
-            trackColor = iconColor.copy(alpha = 0.05f),
-            gapSize = 8.dp,
-            amplitude = { animAmp },
-            modifier = Modifier.fillMaxSize()
-        )
+        
+        when (progressBarType) {
+            MiniProgressBarType.WAVE -> {
+                @OptIn(ExperimentalMaterial3ExpressiveApi::class)
+                CircularWavyProgressIndicator(
+                    progress = progress,
+                    color = iconColor,
+                    trackColor = iconColor.copy(alpha = 0.05f),
+                    gapSize = 8.dp,
+                    amplitude = { animAmp },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            MiniProgressBarType.PLANE -> {
+                CircularProgressIndicator(
+                    progress = progress,
+                    color = iconColor,
+                    trackColor = iconColor.copy(alpha = 0.05f),
+                    strokeWidth = progressBarThickness.value.dp,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            MiniProgressBarType.NONE -> { /* No progress */ }
+        }
+
         AnimatedContent(
             targetState = isPlaying,
             transitionSpec = { PlayEnterTransition togetherWith PlayExitTransition },
@@ -241,11 +422,52 @@ private fun MiniPlayPauseButton(
         ) { playing ->
             Icon(
                 imageVector = if (playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
-                contentDescription = if (playing) "Pausar" else "Reproducir",
+                contentDescription = stringResource(if (playing) R.string.cd_pause else R.string.cd_play),
                 tint = iconColor,
                 modifier = Modifier.size(24.dp),
             )
         }
+    }
+}
+
+@Composable
+private fun MiniSkipPreviousButton(
+    onClick: () -> Unit,
+    bg: Color,
+    iconColor: Color,
+) {
+    val haptic = LocalHapticFeedback.current
+    val (isPressed, triggerPress) = rememberPressState(duration = 70L)
+    val interactionSource = remember { MutableInteractionSource() }
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.85f else 1f,
+        animationSpec = SpringBouncy,
+        label = "skipPrevScale",
+    )
+    val onBtnClick = remember(triggerPress, onClick) {
+        {
+            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            triggerPress()
+            onClick()
+        }
+    }
+    Box(
+        modifier = Modifier
+            .size((NavDimens.PILL_HEIGHT_DP - 6).dp)
+            .graphicsLayer { scaleX = scale; scaleY = scale }
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = { onBtnClick() },
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.SkipPrevious,
+            contentDescription = stringResource(R.string.cd_previous),
+            tint = iconColor,
+            modifier = Modifier.size(24.dp),
+        )
     }
 }
 
@@ -277,13 +499,13 @@ private fun MiniSkipNextButton(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = onBtnClick,
+                onClick = { onBtnClick() },
             ),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
             imageVector = Icons.Rounded.SkipNext,
-            contentDescription = "Siguiente",
+            contentDescription = stringResource(R.string.cd_next),
             tint = iconColor,
             modifier = Modifier.size(24.dp),
         )
@@ -292,16 +514,63 @@ private fun MiniSkipNextButton(
 
 @Composable
 internal fun MiniPlayerBody(
-    state: MiniPlayerState,
+    metadata: MiniPlayerMetadata,
     onPlayPauseClick: () -> Unit,
     onNextClick: () -> Unit = {},
+    onPreviousClick: () -> Unit = {},
     modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
     subTextColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     buttonBg: Color = MaterialTheme.colorScheme.surfaceVariant,
     buttonIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    progress: Float = 0f,
+    progress: () -> Float = { 0f },
+    artworkShape: ArtworkShape = ArtworkShape.CIRCLE,
+    miniProgressBarType: MiniProgressBarType = MiniProgressBarType.WAVE,
+    miniProgressBarThickness: MiniProgressBarThickness = MiniProgressBarThickness.NORMAL,
+    showPrevious: Boolean = false,
+    marqueeTextEnabled: Boolean = false,
 ) {
+    val shape = rememberArtworkShape(artworkShape)
+    var titleOverflows by remember { mutableStateOf(false) }
+    var artistOverflows by remember { mutableStateOf(false) }
+    
+    var isTitleMoving by remember { mutableStateOf(false) }
+    var isArtistMoving by remember { mutableStateOf(false) }
+
+    LaunchedEffect(metadata.songName, marqueeTextEnabled, titleOverflows) {
+        isTitleMoving = false
+        if (marqueeTextEnabled && titleOverflows) {
+            delay(1200)
+            isTitleMoving = true
+        }
+    }
+    
+    LaunchedEffect(metadata.artistName, marqueeTextEnabled, artistOverflows) {
+        isArtistMoving = false
+        if (marqueeTextEnabled && artistOverflows) {
+            delay(1200)
+            isArtistMoving = true
+        }
+    }
+
+    val titleFadeBrush = remember(isTitleMoving) {
+        Brush.horizontalGradient(
+            0f to if (isTitleMoving) Color.Transparent else Color.Black,
+            0.05f to Color.Black,
+            0.95f to Color.Black,
+            1f to if (isTitleMoving) Color.Transparent else Color.Black
+        )
+    }
+    
+    val artistFadeBrush = remember(isArtistMoving) {
+        Brush.horizontalGradient(
+            0f to if (isArtistMoving) Color.Transparent else Color.Black,
+            0.05f to Color.Black,
+            0.95f to Color.Black,
+            1f to if (isArtistMoving) Color.Transparent else Color.Black
+        )
+    }
+
     Row(
         modifier = modifier
             .fillMaxSize()
@@ -312,65 +581,119 @@ internal fun MiniPlayerBody(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        AnimatedContent(
-            targetState = state.artwork,
-            transitionSpec = { ArtworkEnterTransition togetherWith ArtworkExitTransition },
-            label = "miniArtwork",
-            modifier = Modifier
-                .padding(start = 4.dp)
-                .size(NavDimens.PILL_HEIGHT_DP.dp)
-                .clip(CircleShape),
-        ) { art ->
-            AsyncImage(
-                model = art,
-                contentDescription = "Carátula",
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(id = R.drawable.carga),
-                error = painterResource(id = R.drawable.carga),
-                modifier = Modifier.fillMaxSize(),
+        if (metadata.artwork is Color) {
+            Box(
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .size(NavDimens.PILL_HEIGHT_DP.dp)
+                    .clip(shape)
+                    .background(metadata.artwork as Color)
             )
+        } else if (metadata.artwork != null && metadata.artwork != R.drawable.carga) {
+            Box(
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .size(NavDimens.PILL_HEIGHT_DP.dp)
+                    .clip(shape)
+            ) {
+                AnimatedContent(
+                    targetState = metadata.artwork,
+                    transitionSpec = { ArtworkEnterTransition togetherWith ArtworkExitTransition },
+                    label = "miniArtwork",
+                    modifier = Modifier.fillMaxSize()
+                ) { art ->
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(art)
+                            .crossfade(true)
+                            .allowHardware(true)
+                            .build(),
+                        contentDescription = stringResource(R.string.cd_artwork),
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(id = R.drawable.carga),
+                        error = painterResource(id = R.drawable.carga),
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .size(NavDimens.PILL_HEIGHT_DP.dp)
+                    .clip(shape)
+                    .background(textColor.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.SmartButton,
+                    contentDescription = null,
+                    tint = textColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
 
         Column(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f),
             verticalArrangement = Arrangement.Center,
         ) {
             AnimatedContent(
-                targetState = state.songName,
+                targetState = metadata.songName,
                 transitionSpec = { TextEnterTransition togetherWith TextExitTransition },
                 label = "miniSongName",
             ) { name ->
+                val marqueeModifier = if (marqueeTextEnabled) Modifier.basicMarquee() else Modifier
                 Text(
                     text = name,
                     style = MaterialTheme.typography.labelLarge,
                     color = textColor,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = if (marqueeTextEnabled) TextOverflow.Visible else TextOverflow.Ellipsis,
+                    onTextLayout = { titleOverflows = it.hasVisualOverflow },
+                    modifier = Modifier
+                        .then(if (marqueeTextEnabled && isTitleMoving) Modifier.fadingEdge(titleFadeBrush) else Modifier)
+                        .then(marqueeModifier)
                 )
             }
             AnimatedContent(
-                targetState = state.artistName,
+                targetState = metadata.artistName,
                 transitionSpec = { TextEnterTransition togetherWith TextExitTransition },
                 label = "miniArtistName",
             ) { artist ->
+                val marqueeModifier = if (marqueeTextEnabled) Modifier.basicMarquee() else Modifier
                 Text(
                     text = artist,
                     style = MaterialTheme.typography.bodySmall,
                     color = subTextColor,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = if (marqueeTextEnabled) TextOverflow.Visible else TextOverflow.Ellipsis,
+                    onTextLayout = { artistOverflows = it.hasVisualOverflow },
+                    modifier = Modifier
+                        .then(if (marqueeTextEnabled && isArtistMoving) Modifier.fadingEdge(artistFadeBrush) else Modifier)
+                        .then(marqueeModifier)
                 )
             }
         }
 
+        if (showPrevious) {
+            MiniSkipPreviousButton(
+                onClick = onPreviousClick,
+                bg = Color.Transparent,
+                iconColor = buttonIconColor,
+            )
+        }
+
         MiniPlayPauseButton(
-            isPlaying = state.isPlaying,
+            isPlaying = metadata.isPlaying,
             onClick = onPlayPauseClick,
             bg = buttonBg,
             iconColor = buttonIconColor,
             progress = progress,
+            progressBarType = miniProgressBarType,
+            progressBarThickness = miniProgressBarThickness,
         )
-        Spacer(Modifier.width(0.dp))
         MiniSkipNextButton(
             onClick = onNextClick,
             bg = Color.Transparent,

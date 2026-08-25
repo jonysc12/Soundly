@@ -2,16 +2,30 @@ package com.soundly.inicio.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.soundly.data.preferences.LanguagePreferences
 import com.soundly.inicio.viewmodel.LauncherViewModel
+import com.soundly.ui.utils.LocaleManager
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 
 @Composable
 fun LauncherScreen(
     navController: NavController,
     viewModel: LauncherViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
+        // Aplicar idioma guardado si existe
+        val languageCode = LanguagePreferences.getLanguageCode(context).first()
+        if (languageCode != null) {
+            LocaleManager.applyLanguage(languageCode)
+        }
+        
+        // Aseguramos una permanencia mínima para una transición visual suave
+        delay(250)
 
         val onboardingSeen = viewModel.isOnboardingSeen()
         val permissionsGranted = viewModel.hasPermissions()

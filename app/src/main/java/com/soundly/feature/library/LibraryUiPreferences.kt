@@ -1,20 +1,22 @@
 package com.soundly.feature.library
 
 import android.content.Context
+import androidx.annotation.StringRes
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.soundly.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 private val Context.libraryUiDataStore by preferencesDataStore(name = "library_ui_prefs")
 
-enum class LibrarySortOption(val storageValue: String, val label: String) {
-    TitleAsc("title_asc", "A-Z"),
-    TitleDesc("title_desc", "Z-A"),
-    DateAddedDesc("date_added_desc", "Añadidos recientes"),
-    DateAddedAsc("date_added_asc", "Añadidos antiguos");
+enum class LibrarySortOption(val storageValue: String, @StringRes val labelResId: Int) {
+    TitleAsc("title_asc", R.string.sort_az),
+    TitleDesc("title_desc", R.string.sort_za),
+    DateAddedDesc("date_added_desc", R.string.sort_recent),
+    DateAddedAsc("date_added_asc", R.string.sort_oldest);
 
     companion object {
         fun fromStorage(value: String?): LibrarySortOption {
@@ -23,9 +25,9 @@ enum class LibrarySortOption(val storageValue: String, val label: String) {
     }
 }
 
-enum class ArtistsLayoutMode(val storageValue: String, val label: String) {
-    Grid("grid", "Cuadrícula"),
-    List("list", "Lista");
+enum class ArtistsLayoutMode(val storageValue: String, @StringRes val labelResId: Int) {
+    Grid("grid", R.string.layout_grid),
+    List("list", R.string.layout_list);
 
     companion object {
         fun fromStorage(value: String?): ArtistsLayoutMode {

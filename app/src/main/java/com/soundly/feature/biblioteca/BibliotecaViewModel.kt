@@ -9,9 +9,12 @@ import com.soundly.data.model.Artist
 import com.soundly.data.model.FolderSummary
 import com.soundly.data.model.Playlist
 import com.soundly.data.model.Song
-import com.soundly.data.model.buildLibraryCatalog
 import com.soundly.data.repository.MusicRepository
+import com.soundly.data.service.ImportedPlaylist
+import com.soundly.data.service.PlaylistImportResult
+import com.soundly.data.service.PlaylistImportService
 import com.soundly.inicio.data.ProfilePreferences
+import com.soundly.player.ArtistUiState
 import com.soundly.ui.componentes.LibraryFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -33,6 +36,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BibliotecaViewModel @Inject constructor(
     private val repository: MusicRepository,
+    private val artistRepository: com.soundly.data.repository.ArtistRepository,
+    private val importService: PlaylistImportService,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -43,17 +48,10 @@ class BibliotecaViewModel @Inject constructor(
     val userImageUri: StateFlow<Uri?> = _userImageUri.asStateFlow()
     val userName: StateFlow<String> = _userName.asStateFlow()
 
-    private val catalog = repository.librarySongsFlow
-        .mapLatest { songs ->
-            withContext(Dispatchers.Default) {
-                buildLibraryCatalog(songs)
-            }
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = buildLibraryCatalog(emptyList())
-        )
+    private val _importState = MutableStateFlow<PlaylistImportResult>(PlaylistImportResult.Idle)
+    val importState: StateFlow<PlaylistImportResult> = _importState.asStateFlow()
+
+    private val catalog: StateFlow<com.soundly.data.model.LibraryCatalog> = repository.libraryCatalogFlow
 
     val selectedFilter: StateFlow<LibraryFilter?> =
         BibliotecaUiPreferences.selectedFilterFlow(context).stateIn(
@@ -96,6 +94,9 @@ class BibliotecaViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptySet()
         )
+
+    private val _featuredArtistInfo = MutableStateFlow(ArtistUiState())
+    val featuredArtistInfo: StateFlow<ArtistUiState> = _featuredArtistInfo.asStateFlow()
 
     val playlists: StateFlow<List<Playlist>> =
         combine(repository.playlistsFlow, pinnedPlaylistIds) { list, pinned ->
@@ -158,6 +159,29 @@ class BibliotecaViewModel @Inject constructor(
             _userImageUri.value = ProfilePreferences.getImageUri(context)
             _userName.value = ProfilePreferences.getUsername(context)
         }
+        viewModelScope.launch {
+            favoriteArtists.collect { artists ->
+                if (artists.isNotEmpty() && _featuredArtistInfo.value.name.isBlank()) {
+                    fetchFeaturedArtistInfo(artists.first().name)
+                }
+            }
+        }
+    }
+
+    private fun fetchFeaturedArtistInfo(artistName: String) {
+        viewModelScope.launch {
+            _featuredArtistInfo.value = _featuredArtistInfo.value.copy(isLoading = true)
+            val info = artistRepository.getArtistInfo(artistName)
+            if (info != null) {
+                _featuredArtistInfo.value = ArtistUiState(
+                    name = info.name,
+                    description = info.bio.ifBlank { "Sin biografía disponible" },
+                    imageUrl = info.imageUrl ?: ""
+                )
+            } else {
+                _featuredArtistInfo.value = _featuredArtistInfo.value.copy(isLoading = false)
+            }
+        }
     }
 
     fun refresh() {
@@ -174,7 +198,7 @@ class BibliotecaViewModel @Inject constructor(
 
     suspend fun createPlaylist(
         name: String,
-        artworkSourceUri: Uri
+        artworkSourceUri: Uri?
     ): Result<String> = withContext(Dispatchers.IO) {
         runCatching {
             repository.createPlaylist(
@@ -182,6 +206,32 @@ class BibliotecaViewModel @Inject constructor(
                 artworkSourceUri = artworkSourceUri
             )
         }
+    }
+
+    suspend fun createPlaylistWithSongs(
+        name: String,
+        artworkSourceUri: Uri?,
+        songIds: List<Long>
+    ): Result<String> = withContext(Dispatchers.IO) {
+        runCatching {
+            repository.createPlaylistWithSongs(name, artworkSourceUri, songIds)
+        }
+    }
+
+    fun importPlaylist(uri: Uri) {
+        viewModelScope.launch {
+            _importState.value = PlaylistImportResult.Loading
+            val result = importService.importPlaylist(uri, catalog.value.songs)
+            result.onSuccess { imported ->
+                _importState.value = PlaylistImportResult.Success(imported)
+            }.onFailure { error ->
+                _importState.value = PlaylistImportResult.Error(error.message ?: "Error al importar")
+            }
+        }
+    }
+
+    fun clearImportState() {
+        _importState.value = PlaylistImportResult.Idle
     }
 
     fun deletePlaylist(playlistId: String) {
@@ -220,6 +270,12 @@ class BibliotecaViewModel @Inject constructor(
             repository.toggleArtistFavorite(artistId)
             // If it was pinned, we ensure it's unpinned when removed from favs
             BibliotecaUiPreferences.removePin(context, "artist", artistId.toString())
+        }
+    }
+
+    fun togglePlaylistShowOnHome(playlistId: String) {
+        viewModelScope.launch {
+            repository.togglePlaylistShowOnHome(playlistId)
         }
     }
 

@@ -1,71 +1,30 @@
 package com.soundly.inicio.ui
 
+import android.graphics.RuntimeShader
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -73,33 +32,93 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import androidx.core.graphics.drawable.toBitmap
+import androidx.palette.graphics.Palette
 import coil.compose.rememberAsyncImagePainter
+import coil.imageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
 import com.soundly.R
+import com.soundly.inicio.viewmodel.ProfileUiState
 import com.soundly.inicio.viewmodel.ProfileViewModel
 import com.soundly.ui.components.SoundlyColors
-import com.soundly.ui.components.SoundlyPrimaryButton
-import com.soundly.ui.components.SoundlySecondaryButton
 import com.soundly.ui.components.rememberLogoColor
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
-import kotlin.math.sqrt
-import kotlin.math.PI
+import com.soundly.ui.screens.settings.SettingsLayout
+import com.soundly.ui.componentes.agslFrostedGlass
+import com.soundly.ui.theme.LocalIsDarkTheme
+import com.soundly.ui.theme.SoundlyTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlin.math.*
+
+private const val FLUID_SHADER = """
+    uniform float2 iResolution;
+    uniform float iTime;
+    layout(color) uniform half4 color1;
+    layout(color) uniform half4 color2;
+    layout(color) uniform half4 color3;
+
+    float2 hash(float2 p) {
+        p = float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)));
+        return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+    }
+
+    float noise(float2 p) {
+        float2 i = floor(p);
+        float2 f = fract(p);
+        float2 u = f * f * (3.0 - 2.0 * f);
+        return mix(mix(dot(hash(i + float2(0.0, 0.0)), f - float2(0.0, 0.0)),
+                       dot(hash(i + float2(1.0, 0.0)), f - float2(1.0, 0.0)), u.x),
+                   mix(dot(hash(i + float2(0.0, 1.0)), f - float2(0.0, 1.0)),
+                       dot(hash(i + float2(1.0, 1.0)), f - float2(1.0, 1.0)), u.x), u.y);
+    }
+
+    half4 main(float2 fragCoord) {
+        float2 uv = fragCoord / iResolution.xy;
+        float t = iTime * 0.2;
+        
+        float n = noise(uv * 1.5 + t);
+        float n2 = noise(uv * 2.0 - t * 0.3);
+        
+        float mixVal = smoothstep(-0.3, 0.7, n + n2);
+        half4 baseColor = mix(color1, color2, mixVal);
+        
+        float mixVal2 = smoothstep(-0.1, 0.9, noise(uv * 3.0 + t * 0.1));
+        half4 finalColor = mix(baseColor, color3, mixVal2 * 0.3);
+        
+        // Ondas dinámicas en la parte inferior
+        float wave = sin(uv.x * 6.0 + t * 3.0) * 0.02;
+        wave += sin(uv.x * 3.0 - t * 2.0) * 0.03;
+        
+        // Límite de altura (aprox 12% de la pantalla)
+        float heightLimit = 0.12 + wave;
+        float mask = smoothstep(heightLimit + 0.08, heightLimit - 0.04, uv.y);
+        
+        return finalColor * mask;
+    }
+"""
 
 // Shape personalizado para polígono de N lados con esquinas redondeadas
 class RoundedPolygonShape(
@@ -119,7 +138,6 @@ class RoundedPolygonShape(
                 val angleStep = 2 * PI / sides
                 val startAngle = -PI / 2
 
-                // Calcular todos los vértices
                 val vertices = mutableListOf<Pair<Float, Float>>()
                 for (i in 0 until sides) {
                     val angle = startAngle + angleStep * i
@@ -131,23 +149,19 @@ class RoundedPolygonShape(
                     )
                 }
 
-                // Dibujar el polígono con esquinas redondeadas
                 for (i in vertices.indices) {
                     val current = vertices[i]
                     val next = vertices[(i + 1) % vertices.size]
                     val prev = vertices[(i - 1 + vertices.size) % vertices.size]
 
-                    // Calcular vectores desde el vértice actual
                     val toPrev = Pair(prev.first - current.first, prev.second - current.second)
                     val toNext = Pair(next.first - current.first, next.second - current.second)
 
-                    // Normalizar vectores
                     val toPrevLen = sqrt(toPrev.first.pow(2) + toPrev.second.pow(2))
                     val toNextLen = sqrt(toNext.first.pow(2) + toNext.second.pow(2))
                     val toPrevNorm = Pair(toPrev.first / toPrevLen, toPrev.second / toPrevLen)
                     val toNextNorm = Pair(toNext.first / toNextLen, toNext.second / toNextLen)
 
-                    // Puntos de inicio y fin del arco
                     val arcStart = Pair(
                         current.first + toPrevNorm.first * cornerRadiusPx,
                         current.second + toPrevNorm.second * cornerRadiusPx
@@ -163,11 +177,7 @@ class RoundedPolygonShape(
                         lineTo(arcStart.first, arcStart.second)
                     }
 
-                    // Dibujar arco redondeado usando quadraticBezierTo
-                    quadraticBezierTo(
-                        current.first, current.second, // Punto de control (el vértice)
-                        arcEnd.first, arcEnd.second // Punto final
-                    )
+                    quadraticBezierTo(current.first, current.second, arcEnd.first, arcEnd.second)
                 }
                 close()
             }
@@ -175,25 +185,152 @@ class RoundedPolygonShape(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ActionButton(
+    icon: ImageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+    enabled: Boolean = true,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val isDark = LocalIsDarkTheme.current
+    val borderAlpha = if (isDark) 0.3f else 0.05f
+    val containerColor = if (isDark) Color.White.copy(alpha = 0.15f) else Color.White.copy(alpha = 0.5f)
+    val contentColor = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+
+    Box(
+        modifier = modifier
+            .size(90.dp)
+            .clip(CircleShape)
+            .agslFrostedGlass(
+                radius = 25f,
+                tint = Color.Transparent
+            )
+            .border(
+                1.dp,
+                contentColor.copy(alpha = borderAlpha),
+                CircleShape
+            )
+            .background(if (enabled) containerColor else containerColor.copy(alpha = 0.05f), CircleShape)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                enabled = enabled,
+                onClick = onClick
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(36.dp),
+            tint = contentColor
+        )
+    }
+}
+
 @Composable
 fun ProfileScreen(
     navController: NavHostController,
     onProfileCreated: () -> Unit,
+    onBack: (() -> Unit)? = null,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    ProfileScreenContent(
+        uiState = uiState,
+        onBackClick = { viewModel.onBackClick() },
+        onBottomSheetDismiss = { viewModel.onBottomSheetDismiss() },
+        onExitConfirm = { 
+            if (onBack != null) onBack()
+            else viewModel.onExitConfirm()
+        },
+        onImageSelected = { viewModel.onImageSelected(it) },
+        onUsernameChanged = { viewModel.onUsernameChanged(it) },
+        onContinueClick = { viewModel.onContinueClick() },
+        onEditClick = { viewModel.onEditClick() },
+        onEditImage = { viewModel.onEditImage() },
+        onProfileCreationConfirmed = { viewModel.onProfileCreationConfirmed(onProfileCreated) }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProfileScreenContent(
+    uiState: ProfileUiState,
+    onBackClick: () -> Unit,
+    onBottomSheetDismiss: () -> Unit,
+    onExitConfirm: () -> Unit,
+    onImageSelected: (Uri?) -> Unit,
+    onUsernameChanged: (String) -> Unit,
+    onContinueClick: () -> Unit,
+    onEditClick: () -> Unit,
+    onEditImage: () -> Unit,
+    onProfileCreationConfirmed: () -> Unit
+) {
     val sheetState = rememberModalBottomSheetState()
-    val extractedColor = rememberLogoColor()
+    val isDark = LocalIsDarkTheme.current
+    val context = LocalContext.current
+    
+    var effectColors by remember { mutableStateOf<List<Color>>(emptyList()) }
 
-    val buttonColor = extractedColor?.let { color ->
-        SoundlyColors.adaptBlueForTheme(color)
-    } ?: MaterialTheme.colorScheme.primary
+    LaunchedEffect(uiState.imageUri, isDark) {
+        val uri = uiState.imageUri
+        if (uri != null) {
+            val loader = context.imageLoader
+            val request = ImageRequest.Builder(context)
+                .data(uri)
+                .allowHardware(false)
+                .crossfade(true)
+                .build()
+            
+            val result = withContext(Dispatchers.IO) { loader.execute(request) }
+            if (result is SuccessResult) {
+                val bitmap = result.drawable.toBitmap()
+                val palette = Palette.from(bitmap).generate()
+                
+                val dominant = palette.getDominantColor(if (isDark) 0xFF000000.toInt() else 0xFFFFFFFF.toInt())
+                val vibrant = palette.getVibrantColor(dominant)
+                val lightVibrant = palette.getLightVibrantColor(vibrant)
+                val darkVibrant = palette.getDarkVibrantColor(dominant)
+                
+                effectColors = if (isDark) {
+                    listOf(
+                        Color(vibrant).copy(alpha = 0.7f), 
+                        Color(lightVibrant).copy(alpha = 0.4f), 
+                        Color(darkVibrant).copy(alpha = 0.2f)
+                    )
+                } else {
+                    // Colores más visibles y vibrantes en modo claro
+                    listOf(
+                        Color(vibrant).copy(alpha = 0.6f), 
+                        Color(lightVibrant).copy(alpha = 0.4f), 
+                        Color(dominant).copy(alpha = 0.2f)
+                    )
+                }
+            }
+        } else {
+            effectColors = emptyList()
+        }
+    }
 
-    // Manejo del botón de retroceso del sistema
-    BackHandler { viewModel.onBackClick() }
+    val animatedC1 by animateColorAsState(
+        targetValue = effectColors.getOrElse(0) { Color.Transparent },
+        animationSpec = tween(1000),
+        label = "color1"
+    )
+    val animatedC2 by animateColorAsState(
+        targetValue = effectColors.getOrElse(1) { Color.Transparent },
+        animationSpec = tween(1000),
+        label = "color2"
+    )
+    val animatedC3 by animateColorAsState(
+        targetValue = effectColors.getOrElse(2) { Color.Transparent },
+        animationSpec = tween(1000),
+        label = "color3"
+    )
 
-    // Animación de rotación infinita para paso 3
+    BackHandler { onBackClick() }
+
     val rotation = remember { Animatable(0f) }
     LaunchedEffect(uiState.step) {
         if (uiState.step == 3) {
@@ -209,7 +346,6 @@ fun ProfileScreen(
         }
     }
 
-    // Animación de escala para transiciones
     val imageScale by animateFloatAsState(
         targetValue = when (uiState.step) {
             1 -> 1f
@@ -223,7 +359,6 @@ fun ProfileScreen(
         label = "imageScale"
     )
 
-    // Animación de pulso para paso 3
     val pulseScale = remember { Animatable(1f) }
     LaunchedEffect(uiState.step) {
         if (uiState.step == 3) {
@@ -241,13 +376,11 @@ fun ProfileScreen(
         }
     }
 
-    // Animación de elevación para el contenedor de imagen
     val elevation by animateDpAsState(
         targetValue = if (uiState.step == 3) 16.dp else 4.dp,
         label = "elevation"
     )
 
-    // Animación de radio de esquina para el polígono
     val animatedRadius = remember { Animatable(72f) }
     LaunchedEffect(uiState.step) {
         if (uiState.step == 3) {
@@ -259,31 +392,19 @@ fun ProfileScreen(
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri -> viewModel.onImageSelected(uri) }
+        onResult = { uri -> onImageSelected(uri) }
     )
 
     val haptic = LocalHapticFeedback.current
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(onClick = { viewModel.onBackClick() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.profile_screen_back)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
-            )
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && uiState.imageUri != null && effectColors.isNotEmpty()) {
+            FluidBackgroundEffect(colors = listOf(animatedC1, animatedC2, animatedC3))
         }
-    ) { padding ->
+
         if (uiState.showBottomSheet) {
             ModalBottomSheet(
-                onDismissRequest = { viewModel.onBottomSheetDismiss() },
+                onDismissRequest = { onBottomSheetDismiss() },
                 sheetState = sheetState
             ) {
                 Column(
@@ -304,13 +425,13 @@ fun ProfileScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     Box(modifier = Modifier.fillMaxWidth()) {
                         TextButton(
-                            onClick = { viewModel.onBottomSheetDismiss() },
+                            onClick = { onBottomSheetDismiss() },
                             modifier = Modifier.align(Alignment.CenterStart)
                         ) {
                             Text(stringResource(R.string.exit_dialog_cancel))
                         }
                         TextButton(
-                            onClick = { viewModel.onExitConfirm() },
+                            onClick = { onExitConfirm() },
                             modifier = Modifier.align(Alignment.CenterEnd)
                         ) {
                             Text(stringResource(R.string.exit_dialog_confirm))
@@ -320,395 +441,238 @@ fun ProfileScreen(
             }
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 24.dp)
+        SettingsLayout(
+            title = stringResource(R.string.profile_screen_title),
+            onBack = { onBackClick() },
+            containerColor = Color.Transparent
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState()),
+            AnimatedContent(
+                targetState = uiState.step,
+                transitionSpec = {
+                    val enterTransition = if (targetState > initialState) {
+                        slideInHorizontally(
+                            animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy),
+                            initialOffsetX = { it }
+                        ) + fadeIn(animationSpec = tween(400))
+                    } else {
+                        slideInHorizontally(
+                            animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioLowBouncy),
+                            initialOffsetX = { -it }
+                        ) + fadeIn(animationSpec = tween(400))
+                    }
+
+                    val exitTransition = if (targetState > initialState) {
+                        slideOutHorizontally(
+                            animationSpec = spring(stiffness = Spring.StiffnessLow),
+                            targetOffsetX = { -it }
+                        ) + fadeOut(animationSpec = tween(300))
+                    } else {
+                        slideOutHorizontally(
+                            animationSpec = spring(stiffness = Spring.StiffnessLow),
+                            targetOffsetX = { it }
+                        ) + fadeOut(animationSpec = tween(300))
+                    }
+
+                    enterTransition togetherWith exitTransition
+                },
+                label = "stepTransition"
+            ) { currentStep ->
+                Column {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    val subtitle = when (currentStep) {
+                        1 -> stringResource(R.string.profile_screen_subtitle)
+                        2 -> stringResource(R.string.profile_add_username)
+                        else -> stringResource(R.string.profile_completed_subtitle)
+                    }
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 8.dp).alpha(0.8f)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
             ) {
-                // Animación de contenido con transiciones
-                Spacer(modifier = Modifier.height(8.dp))
-                ProfileStepProgress(
-                    currentStep = uiState.step,
-                    activeColor = buttonColor
-                )
-
-                AnimatedContent(
-                    targetState = uiState.step,
-                    transitionSpec = {
-                        (slideInVertically(
-                            animationSpec = spring(
-                                dampingRatio = Spring.DampingRatioMediumBouncy,
-                                stiffness = Spring.StiffnessMedium
-                            ),
-                            initialOffsetY = { it }
-                        ) + fadeIn(
-                            animationSpec = tween(300)
-                        )).togetherWith(
-                            slideOutVertically(
-                                animationSpec = tween(200),
-                                targetOffsetY = { -it }
-                            ) + fadeOut(
-                                animationSpec = tween(200)
-                            )
-                        )
-                    },
-                    label = "stepTransition"
-                ) { currentStep ->
-                    Column {
-                        Spacer(modifier = Modifier.height(24.dp))
-                        when (currentStep) {
-                            1 -> {
-                                Text(
-                                    text = stringResource(R.string.profile_screen_title),
-                                    style = MaterialTheme.typography.displaySmall,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = stringResource(R.string.profile_screen_subtitle),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-
-                            2 -> {
-                                Text(
-                                    text = stringResource(R.string.profile_complete_title),
-                                    style = MaterialTheme.typography.displaySmall,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = stringResource(R.string.profile_add_username),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-
-                            3 -> {
-                                Text(
-                                    text = uiState.username,
-                                    style = MaterialTheme.typography.displaySmall,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = stringResource(R.string.profile_completed_subtitle),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-                        }
-                    }
+                val containerShape = when (uiState.step) {
+                    1 -> CircleShape
+                    2 -> RoundedCornerShape(40.dp)
+                    else -> RoundedPolygonShape(7, animatedRadius.value)
                 }
+                val imageShape = if (uiState.step == 2) RoundedCornerShape(40.dp) else CircleShape
 
-                Spacer(modifier = Modifier.height(32.dp))
+                var isImagePressed by remember { mutableStateOf(false) }
 
-                // CONTENEDOR DE IMAGEN - CENTRADO HORIZONTALMENTE
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 0.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    // Determinar la forma según el paso
-                    val containerShape = when (uiState.step) {
-                        1 -> CircleShape
-                        2 -> RoundedCornerShape(40.dp)
-                        else -> RoundedPolygonShape(7, animatedRadius.value)
-                    }
-
-                    // Determinar la forma de la imagen según el paso
-                    val imageShape = when (uiState.step) {
-                        1 -> CircleShape
-                        2 -> RoundedCornerShape(40.dp)
-                        else -> CircleShape
-                    }
-
-                    var isImagePressed by remember { mutableStateOf(false) }
-
-                    if (uiState.imageUri == null || (uiState.step == 1 && uiState.isEditingImage)) {
-                        // Placeholder inicial o modo edición
-                        Box(
-                            modifier = Modifier
-                                .size(260.dp)
-                                .scale(imageScale)
-                                .clip(containerShape)
-                                .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                                .pointerInput(Unit) {
-                                    detectTapGestures(
-                                        onPress = {
-                                            isImagePressed = true
-                                            try {
-                                                awaitRelease()
-                                            } finally {
-                                                isImagePressed = false
-                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            }
-                                        }
-                                    )
-                                }
-                                .graphicsLayer {
-                                    scaleX = if (isImagePressed) 1.05f else 1f
-                                    scaleY = if (isImagePressed) 1.05f else 1f
-                                }
-                                .clickable {
-                                    photoPickerLauncher.launch(
-                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                    )
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.CameraAlt,
-                                contentDescription = stringResource(R.string.cd_camera_icon),
-                                modifier = Modifier.size(60.dp)
-                            )
-                        }
-                    } else if (uiState.imageUri != null && !uiState.isEditingImage) {
-                        // Contenedor que rota (solo si no estamos en modo edición)
-                        Box(
-                            modifier = Modifier
-                                .size(260.dp)
-                                .scale(imageScale * pulseScale.value)
-                                .graphicsLayer {
-                                    if (uiState.step == 3) {
-                                        rotationZ = rotation.value
-                                    }
-                                }
-                                .clip(containerShape)
-                                .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                                .shadow(elevation = elevation, shape = containerShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            // La imagen con contra-rotación
-                            Box(
-                                modifier = Modifier
-                                    .size(if (uiState.step == 3) 280.dp else 260.dp)
-                                    .graphicsLayer {
-                                        if (uiState.step == 3) {
-                                            rotationZ = -rotation.value
-                                        }
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                // Crossfade para cambio suave de imagen
-                                Crossfade(targetState = uiState.imageUri, label = "imageTransition") { uri ->
-                                    if (uri != null) {
-                                        Image(
-                                            painter = rememberAsyncImagePainter(uri),
-                                            contentDescription = stringResource(R.string.cd_profile_image),
-                                            modifier = Modifier
-                                                .size(if (uiState.step == 3) 280.dp else 260.dp)
-                                                .clip(imageShape),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        if (uiState.step == 1 || uiState.step == 3) {
-                            Box(
-                                modifier = Modifier
-                                    .size(260.dp)
-                                    .scale(imageScale)
-                                    .clip(containerShape)
-                                    .pointerInput(Unit) {
-                                        detectTapGestures(
-                                            onPress = {
-                                                isImagePressed = true
-                                                try {
-                                                    awaitRelease()
-                                                } finally {
-                                                    isImagePressed = false
-                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                                }
-                                            }
-                                        )
-                                    }
-                                    .graphicsLayer {
-                                        scaleX = if (isImagePressed) 1.05f else 1f
-                                        scaleY = if (isImagePressed) 1.05f else 1f
-                                    }
-                                    .clickable {
-                                        if (uiState.step == 3) {
-                                            viewModel.onEditClick()
-                                        } else {
-                                            viewModel.onEditImage()
-                                        }
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                // Overlay semi-transparente para indicar que es clickable
-                                if (uiState.step == 1) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .background(
-                                                MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.3f)
-                                            ),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.CameraAlt,
-                                            contentDescription = stringResource(R.string.change_image),
-                                            modifier = Modifier.size(60.dp),
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // Campo de texto solo para paso 2
-                AnimatedVisibility(
-                    visible = uiState.step == 2 && !uiState.isUsernameConfirmed,
-                    enter = fadeIn(animationSpec = tween(300)) + slideInVertically(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessMedium
-                        ),
-                        initialOffsetY = { it }
-                    ),
-                    exit = fadeOut(animationSpec = tween(200)) + slideOutVertically(
-                        animationSpec = tween(200),
-                        targetOffsetY = { -it }
-                    )
-                ) {
-                    OutlinedTextField(
-                        value = uiState.username,
-                        onValueChange = { viewModel.onUsernameChanged(it) },
+                if (uiState.imageUri == null || (uiState.step == 1 && uiState.isEditingImage)) {
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .navigationBarsPadding(),
-                        label = { Text(stringResource(R.string.profile_screen_username_label)) },
-                        singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
-                        enabled = !uiState.isUsernameConfirmed
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-
-                // Botones según el paso
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            when (uiState.step) {
-                1 -> {
-                    if (uiState.imageUri != null) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .navigationBarsPadding(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            SoundlyPrimaryButton(
-                                extractedColor = extractedColor,
-                                onClick = { viewModel.onContinueClick() },
-                                modifier = Modifier.widthIn(min = 168.dp),
-                                text = stringResource(R.string.onboarding_continue_button)
-                            )
-                        }
-                    }
-                }
-
-                2 -> {
-                    if (!uiState.isUsernameConfirmed) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .navigationBarsPadding(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            SoundlyPrimaryButton(
-                                extractedColor = extractedColor,
-                                onClick = { viewModel.onContinueClick() },
-                                modifier = Modifier.widthIn(min = 168.dp),
-                                text = stringResource(R.string.onboarding_continue_button),
-                                enabled = uiState.username.isNotBlank()
-                            )
-                        }
-                    }
-                }
-
-                3 -> {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .navigationBarsPadding(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+                            .size(260.dp)
+                            .scale(imageScale)
+                            .clip(containerShape)
+                            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onPress = {
+                                        isImagePressed = true
+                                        try { awaitRelease() } finally {
+                                            isImagePressed = false
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        }
+                                    }
+                                )
+                            }
+                            .clickable {
+                                photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                            },
+                        contentAlignment = Alignment.Center
                     ) {
-                        SoundlySecondaryButton(
-                            extractedColor = extractedColor,
-                            onClick = { viewModel.onEditClick() },
-                            modifier = Modifier.widthIn(min = 56.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = stringResource(R.string.edit),
-                                modifier = Modifier.size(21.dp)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(16.dp))
-
-                        SoundlyPrimaryButton(
-                            extractedColor = extractedColor,
-                            onClick = { viewModel.onProfileCreationConfirmed(onProfileCreated) },
-                            modifier = Modifier.widthIn(min = 168.dp),
-                            text = stringResource(R.string.onboarding_continue_button)
+                        Icon(Icons.Filled.CameraAlt, null, modifier = Modifier.size(60.dp))
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .size(260.dp)
+                            .scale(imageScale * pulseScale.value)
+                            .graphicsLayer { if (uiState.step == 3) rotationZ = rotation.value }
+                            .clip(containerShape)
+                            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                            .shadow(elevation = elevation, shape = containerShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = rememberAsyncImagePainter(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(uiState.imageUri)
+                                    .allowHardware(true)
+                                    .build()
+                            ),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(if (uiState.step == 3) 280.dp else 260.dp)
+                                .graphicsLayer { if (uiState.step == 3) rotationZ = -rotation.value }
+                                .clip(imageShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    
+                    if (uiState.step == 1 || uiState.step == 3) {
+                        Box(
+                            modifier = Modifier
+                                .size(260.dp)
+                                .clip(containerShape)
+                                .clickable {
+                                    if (uiState.step == 3) onEditClick() else onEditImage()
+                                }
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
+
+            AnimatedVisibility(visible = uiState.step == 2 && !uiState.isUsernameConfirmed) {
+                OutlinedTextField(
+                    value = uiState.username,
+                    onValueChange = { onUsernameChanged(it) },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                    label = { Text(stringResource(R.string.profile_screen_username_label)) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(16.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(140.dp))
+        }
+
+        val showFab = when(uiState.step) {
+            1 -> uiState.imageUri != null
+            2 -> uiState.username.isNotBlank() && !uiState.isUsernameConfirmed
+            3 -> true
+            else -> false
+        }
+
+        if (showFab) {
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                val startX = 0.82f
+                val startY = 0.85f
+                
+                Row(
+                    modifier = Modifier
+                        .offset(
+                            x = maxWidth * startX - (if (uiState.step == 3) 145.dp else 45.dp),
+                            y = maxHeight * startY - 45.dp
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    if (uiState.step == 3) {
+                        ActionButton(
+                            icon = Icons.Default.Edit,
+                            onClick = { onEditClick() },
+                            modifier = Modifier.size(64.dp)
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                    }
+                    
+                    ActionButton(
+                        icon = if (uiState.step == 3) Icons.Default.Check else Icons.AutoMirrored.Rounded.ArrowForward,
+                        onClick = { 
+                            if (uiState.step < 3) onContinueClick()
+                            else onProfileCreationConfirmed()
+                        }
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun ProfileStepProgress(
-    currentStep: Int,
-    activeColor: Color,
-    totalSteps: Int = 3
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = "Paso $currentStep de $totalSteps",
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            for (step in 1..totalSteps) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(8.dp)
-                        .clip(RoundedCornerShape(999.dp))
-                        .background(
-                            if (step <= currentStep) activeColor
-                            else MaterialTheme.colorScheme.surfaceContainerHighest
-                        )
-                )
-            }
+private fun FluidBackgroundEffect(colors: List<Color>) {
+    val infiniteTransition = rememberInfiniteTransition(label = "fluid")
+    val time by infiniteTransition.animateFloat(
+        initialValue = 0f, targetValue = 100f,
+        animationSpec = infiniteRepeatable(tween(60000, easing = LinearEasing)),
+        label = "time"
+    )
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val shader = remember { RuntimeShader(FLUID_SHADER) }
+        Canvas(modifier = Modifier.fillMaxSize().onSizeChanged { size ->
+            shader.setFloatUniform("iResolution", size.width.toFloat(), size.height.toFloat())
+        }) {
+            shader.setFloatUniform("iTime", time)
+            shader.setColorUniform("color1", colors[0].toArgb())
+            shader.setColorUniform("color2", colors[1].toArgb())
+            shader.setColorUniform("color3", colors[2].toArgb())
+            drawRect(brush = ShaderBrush(shader))
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileScreenPreview() {
+    SoundlyTheme {
+        ProfileScreenContent(
+            uiState = ProfileUiState(
+                step = 1,
+                username = "Usuario de Prueba"
+            ),
+            onBackClick = {},
+            onBottomSheetDismiss = {},
+            onExitConfirm = {},
+            onImageSelected = {},
+            onUsernameChanged = {},
+            onContinueClick = {},
+            onEditClick = {},
+            onEditImage = {},
+            onProfileCreationConfirmed = {}
+        )
     }
 }

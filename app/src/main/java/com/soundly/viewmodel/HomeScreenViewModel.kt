@@ -14,7 +14,8 @@ import javax.inject.Inject
 
 data class HomeUiState(
     val username: String = "",
-    val imageUri: Uri? = null
+    val imageUri: Uri? = null,
+    val lastUpdated: Long = 0L
 )
 
 @HiltViewModel
@@ -26,15 +27,18 @@ class HomeScreenViewModel @Inject constructor(
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
-        loadProfile()
+        observeProfile()
     }
 
-    private fun loadProfile() {
+    private fun observeProfile() {
         viewModelScope.launch {
-            _uiState.value = HomeUiState(
-                username = ProfilePreferences.getUsername(application),
-                imageUri = ProfilePreferences.getImageUri(application)
-            )
+            ProfilePreferences.getProfileFlow(application).collect { (username, imageUri, lastUpdated) ->
+                _uiState.value = HomeUiState(
+                    username = username,
+                    imageUri = imageUri,
+                    lastUpdated = lastUpdated
+                )
+            }
         }
     }
 }

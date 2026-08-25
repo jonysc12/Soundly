@@ -17,17 +17,21 @@ object LyricsParser {
     private val backgroundSpeakerRegex = Regex("""^(bg|chorus|harm|harmony)$""", RegexOption.IGNORE_CASE)
     private val ttmlTagRegex = Regex("""<tt(\s|>)|<body(\s|>)|<p(\s|>)""", RegexOption.IGNORE_CASE)
 
-    fun parse(content: String?, formatHint: LyricsFormat = LyricsFormat.UNKNOWN): LyricsUiState {
+    fun parse(
+        content: String?,
+        formatHint: LyricsFormat = LyricsFormat.UNKNOWN,
+        mainArtists: List<String> = emptyList()
+    ): LyricsUiState {
         if (content.isNullOrBlank()) return LyricsUiState()
         val normalized = content.replace("\uFEFF", "").trim()
         if (normalized.isBlank()) return LyricsUiState()
 
         val detectedFormat = detectFormat(normalized, formatHint)
         val parsed = when (detectedFormat) {
-            LyricsFormat.TTML -> parseTtml(normalized)
+            LyricsFormat.TTML -> parseTtml(normalized, mainArtists)
             LyricsFormat.PLAIN -> parsePlain(normalized)
             LyricsFormat.OTHER -> parseOther(normalized)
-            else -> parseTimedLyrics(normalized, detectedFormat)
+            else -> parseTimedLyrics(normalized, detectedFormat, mainArtists)
         }
 
         return parsed.copy(
@@ -107,7 +111,11 @@ object LyricsParser {
             format = LyricsFormat.OTHER
         )
 
-    private fun parseTimedLyrics(content: String, formatHint: LyricsFormat): LyricsUiState {
+    private fun parseTimedLyrics(
+        content: String,
+        formatHint: LyricsFormat,
+        mainArtists: List<String> = emptyList()
+    ): LyricsUiState {
         val rawEntries = mutableListOf<RawLyricEntry>()
         val plainTextLines = mutableListOf<String>()
         var currentLanguage: String? = null
@@ -187,8 +195,8 @@ object LyricsParser {
             }
         }
 
-        val mergedEntries = mergeTranslations(rawEntries.sortedBy { it.timestampMs })
-        val structuredLines = buildStructuredLines(mergedEntries)
+        val mergedEntries = mergeTranslations(rawEntries.sortedBy { it.timestampMs }, mainArtists)
+        val structuredLines = buildStructuredLines(mergedEntries, mainArtists)
         val syncedLines = structuredLines.map { line ->
             LyricLine(
                 timestampMs = line.startMs,
@@ -212,7 +220,7 @@ object LyricsParser {
         )
     }
 
-    private fun parseTtml(content: String): LyricsUiState {
+    private fun parseTtml(content: String, mainArtists: List<String> = emptyList()): LyricsUiState {
         val parser = Xml.newPullParser()
         parser.setInput(StringReader(content))
 
@@ -220,7 +228,7 @@ object LyricsParser {
         var eventType = parser.eventType
         while (eventType != XmlPullParser.END_DOCUMENT) {
             if (eventType == XmlPullParser.START_TAG && parser.name.equals("p", ignoreCase = true)) {
-                readTtmlParagraph(parser)?.let(lines::add)
+                readTtmlParagraph(parser, mainArtists)?.let(lines::add)
             }
             eventType = parser.next()
         }
@@ -250,7 +258,7 @@ object LyricsParser {
         )
     }
 
-    private fun readTtmlParagraph(parser: XmlPullParser): StructuredLyricLine? {
+    private fun readTtmlParagraph(parser: XmlPullParser, mainArtists: List<String>): StructuredLyricLine? {
         val paragraphStart = parseTtmlTime(parser.getAttributeValue(null, "begin"))
         val explicitEnd = parseTtmlTime(parser.getAttributeValue(null, "end"))
         val durationMs = parseTtmlTime(parser.getAttributeValue(null, "dur"))
@@ -314,7 +322,7 @@ object LyricsParser {
             endMs = maxOf(endMs, paragraphStart + 1L),
             words = normalizedWords,
             speaker = speaker,
-            lane = resolveLane(speaker)
+            lane = resolveLane(speaker, mainArtists)
         )
     }
 
@@ -331,16 +339,20 @@ object LyricsParser {
         return builder.toString().normalizeWhitespace()
     }
 
-    private fun buildStructuredLines(entries: List<RawLyricEntry>): List<StructuredLyricLine> {
+    private fun buildStructuredLines(entries: List<RawLyricEntry>, mainArtists: List<String>): List<StructuredLyricLine> {
         if (entries.isEmpty()) return emptyList()
 
         return entries.mapIndexed { index, entry ->
             val startMs = entry.timestampMs
-            val nextStartMs = entries
-                .getOrNull(index + 1)
-                ?.timestampMs
-                ?.takeIf { it > startMs }
-            val endMs = nextStartMs ?: (startMs + estimateLineDuration(entry.text))
+            
+            // Buscar el próximo inicio de línea que sea realmente posterior (no en el mismo bloque de tiempo)
+            val nextSignificantStartMs = entries.asSequence()
+                .drop(index + 1)
+                .map { it.timestampMs }
+                .firstOrNull { it > startMs + 100L } // Al menos 100ms de diferencia
+            
+            val endMs = nextSignificantStartMs ?: (startMs + estimateLineDuration(entry.text))
+
             val explicitWords = parseExplicitTimedWords(entry.text)
             val words = if (explicitWords.isNotEmpty()) {
                 normalizeExplicitWords(explicitWords, fallbackEndMs = endMs)
@@ -363,7 +375,7 @@ object LyricsParser {
                 endMs = maxOf(endMs, startMs + 1L),
                 words = words,
                 speaker = entry.speaker,
-                lane = resolveLane(entry.speaker)
+                lane = resolveLane(entry.speaker, mainArtists)
             )
         }
     }
@@ -445,7 +457,7 @@ object LyricsParser {
         }
     }
 
-    private fun mergeTranslations(entries: List<RawLyricEntry>): List<RawLyricEntry> {
+    private fun mergeTranslations(entries: List<RawLyricEntry>, mainArtists: List<String>): List<RawLyricEntry> {
         if (entries.isEmpty()) return emptyList()
 
         return entries
@@ -454,12 +466,12 @@ object LyricsParser {
             .values
             .flatMap { timestampGroup ->
                 val backgroundTexts = timestampGroup
-                    .filter { resolveLane(it.speaker) == LyricLane.BACKGROUND }
+                    .filter { resolveLane(it.speaker, mainArtists) == LyricLane.BACKGROUND }
                     .map { it.text.trim() }
                     .filter { it.isNotBlank() }
 
                 timestampGroup
-                    .filter { resolveLane(it.speaker) != LyricLane.BACKGROUND }
+                    .filter { resolveLane(it.speaker, mainArtists) != LyricLane.BACKGROUND }
                     .groupBy { it.speaker }
                     .toSortedMap(compareBy<String?> { it.orEmpty() })
                     .values
@@ -634,7 +646,7 @@ object LyricsParser {
                     endMs = line.endMs,
                     syllables = line.words.map { word ->
                         KaraokeSyllable(
-                            content = word.text,
+                            text = word.text,
                             startMs = word.startMs,
                             endMs = word.endMs
                         )
@@ -645,12 +657,40 @@ object LyricsParser {
             }
         )
 
-    private fun resolveLane(speaker: String?): LyricLane = when (speaker?.trim()?.lowercase()) {
-        "v1", "left", "l", "singer1" -> LyricLane.LEFT
-        "v2", "right", "r", "singer2" -> LyricLane.RIGHT
-        "v3", "duet", "both", "all", "together" -> LyricLane.DUET
-        "bg", "background", "chorus", "harmony" -> LyricLane.BACKGROUND
-        else -> LyricLane.CENTER
+    private fun resolveLane(speaker: String?, mainArtists: List<String> = emptyList()): LyricLane {
+        if (speaker == null) return LyricLane.CENTER
+        val normalizedSpeaker = speaker.trim().lowercase().removeSurrounding("[", "]").removeSurrounding("(", ")")
+        
+        // 1. Prioridad a tags explícitos de posición
+        when (normalizedSpeaker) {
+            "v1", "left", "l", "singer1" -> return LyricLane.LEFT
+            "v2", "right", "r", "singer2" -> return LyricLane.RIGHT
+            "v3", "duet", "both", "all", "together" -> return LyricLane.DUET
+            "bg", "background", "chorus", "harmony" -> return LyricLane.BACKGROUND
+        }
+
+        // 2. Mapeo inteligente por nombre de artista (Fuzzy Matching)
+        if (mainArtists.size >= 2) {
+            val artists = mainArtists.map { it.lowercase().trim() }
+            val a1 = artists[0]
+            val a2 = artists[1]
+            
+            // Caso: El nombre del speaker es parte del nombre del artista 1 (o viceversa)
+            val isA1 = normalizedSpeaker.length > 2 && (a1.contains(normalizedSpeaker) || normalizedSpeaker.contains(a1))
+            val isA2 = normalizedSpeaker.length > 2 && (a2.contains(normalizedSpeaker) || normalizedSpeaker.contains(a2))
+
+            if (isA1 && isA2) return LyricLane.DUET
+            if (isA1) return LyricLane.LEFT
+            if (isA2) return LyricLane.RIGHT
+            
+            // Caso: Comparación por primera palabra (ej. "Tito Double P" -> "Tito")
+            val firstWordA1 = a1.substringBefore(" ")
+            val firstWordA2 = a2.substringBefore(" ")
+            if (firstWordA1.length > 2 && (normalizedSpeaker.contains(firstWordA1) || firstWordA1.contains(normalizedSpeaker))) return LyricLane.LEFT
+            if (firstWordA2.length > 2 && (normalizedSpeaker.contains(firstWordA2) || firstWordA2.contains(normalizedSpeaker))) return LyricLane.RIGHT
+        }
+
+        return LyricLane.CENTER
     }
 
     private data class RawLyricEntry(

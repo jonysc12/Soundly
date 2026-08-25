@@ -1,7 +1,0 @@
-﻿Compiled from "CarouselItemScope.kt"
-public interface androidx.compose.material3.carousel.CarouselItemScope {
-  public abstract androidx.compose.material3.carousel.CarouselItemDrawInfo getCarouselItemDrawInfo();
-  public abstract androidx.compose.ui.Modifier maskClip(androidx.compose.ui.Modifier, androidx.compose.ui.graphics.Shape, androidx.compose.runtime.Composer, int);
-  public abstract androidx.compose.ui.Modifier maskBorder(androidx.compose.ui.Modifier, androidx.compose.foundation.BorderStroke, androidx.compose.ui.graphics.Shape, androidx.compose.runtime.Composer, int);
-  public abstract androidx.compose.foundation.shape.GenericShape rememberMaskShape(androidx.compose.ui.graphics.Shape, androidx.compose.runtime.Composer, int);
-}

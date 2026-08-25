@@ -41,15 +41,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.res.stringResource
+import com.soundly.R
 import com.soundly.ui.componentes.MiniPlayerState
 import com.soundly.ui.componentes.NavDimens
 import com.soundly.ui.componentes.rememberPressState
 import com.soundly.ui.componentes.rememberAnimatedDominant
+import com.soundly.ui.componentes.adaptDominantInstant
+
 import com.soundly.ui.componentes.blendOnSurface
+import com.soundly.feature.search.SearchViewModel
+import com.soundly.data.repository.MiniPlayerStyle
+import com.soundly.data.repository.ArtworkShape
+import com.soundly.data.repository.MiniProgressBarType
+import com.soundly.data.repository.MiniProgressBarThickness
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-
-private const val SEARCH_PAGE_INDEX = 3
 
 private val SpringSnappy = spring<Float>(dampingRatio = 0.90f, stiffness = 550f)
 private val SpringBouncy = spring<Float>(dampingRatio = 0.58f, stiffness = 370f)
@@ -81,44 +89,80 @@ private val SearchCircleSpring = spring<Float>(dampingRatio = 0.40f, stiffness =
 
 @Immutable
 data class NavItem(
-    val label: String,
+    val labelRes: Int,
     val icon: ImageVector,
     val index: Int,
 )
 
-val navItems = listOf(
-    NavItem("Inicio", Icons.Rounded.Home, 0),
-    NavItem("Librería", Icons.Rounded.MusicNote, 1),
-    NavItem("Biblioteca", Icons.Rounded.LibraryMusic, 2),
+val defaultNavItems = listOf(
+    NavItem(R.string.nav_home, Icons.Rounded.Home, 0),
+    NavItem(R.string.nav_music, Icons.Rounded.MusicNote, 1),
+    NavItem(R.string.nav_library, Icons.Rounded.LibraryMusic, 2),
 )
 
-private val NAV_LAST_INDEX = navItems.lastIndex
+val LocalNavStackHeight = compositionLocalOf { 0.dp }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SoundlyNavStack(
     pagerState: PagerState,
-    miniPlayerState: MiniPlayerState,
+    miniPlayerMetadata: MiniPlayerMetadata,
+    miniPlayerProgress: () -> Float,
     onPlayPause: () -> Unit,
     onSearchToggle: () -> Unit,
     modifier: Modifier = Modifier,
     onMiniPlayerClick: () -> Unit = {},
     miniPlayerModifier: Modifier = Modifier,
+    onNext: () -> Unit = {},
     showMini: Boolean = true,
     accentColor: Color = Color.Unspecified,
+    searchViewModel: SearchViewModel? = null,
+    miniPlayerStyle: MiniPlayerStyle = MiniPlayerStyle.SOLID,
+    artworkShape: ArtworkShape = ArtworkShape.CIRCLE,
+    miniProgressBarType: MiniProgressBarType = MiniProgressBarType.WAVE,
+    miniProgressBarThickness: MiniProgressBarThickness = MiniProgressBarThickness.NORMAL,
+    showMiniPrevious: Boolean = false,
+    swipeToDismiss: Boolean = true,
+    vividColors: Boolean = false,
+    onPrevious: () -> Unit = {},
+    onDismiss: () -> Unit = {},
+    showHomePage: Boolean = true,
 ) {
     var navWidthPx by remember { mutableIntStateOf(0) }
     val density = LocalDensity.current
 
+    val currentNavItems = remember(showHomePage) {
+        if (showHomePage) {
+            defaultNavItems
+        } else {
+            defaultNavItems.filter { it.labelRes != R.string.nav_home }
+                .mapIndexed { index, item -> item.copy(index = index) }
+        }
+    }
+
     Column(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        val miniWidthDp = with(density) { navWidthPx.toDp() }
-
         if (showMini) {
-            CollapsedMiniPlaceholder(
+            val miniWidthDp = with(density) { navWidthPx.toDp() }
+            MiniPlayer(
+                metadata = miniPlayerMetadata,
+                progress = miniPlayerProgress,
+                onPlayPauseClick = onPlayPause,
+                onNextClick = onNext,
+                onPreviousClick = onPrevious,
+                onClick = onMiniPlayerClick,
+                accentColor = accentColor,
+                miniPlayerStyle = miniPlayerStyle,
+                artworkShape = artworkShape,
+                miniProgressBarType = miniProgressBarType,
+                miniProgressBarThickness = miniProgressBarThickness,
+                showPrevious = showMiniPrevious,
+                swipeToDismiss = swipeToDismiss,
+                vividColors = vividColors,
+                onDismiss = onDismiss,
                 modifier = miniPlayerModifier.then(
                     if (navWidthPx > 0) Modifier.width(miniWidthDp) else Modifier.fillMaxWidth()
                 )
@@ -131,9 +175,14 @@ fun SoundlyNavStack(
             pagerState = pagerState,
             accentColor = accentColor,
             onSearchToggle = onSearchToggle,
-            modifier = Modifier.onSizeChanged { size ->
-                if (size.width != navWidthPx) navWidthPx = size.width
-            },
+            searchViewModel = searchViewModel,
+            miniPlayerStyle = miniPlayerStyle,
+            vividColors = vividColors,
+            navItems = currentNavItems,
+            modifier = Modifier
+                .onSizeChanged { size -> 
+                    if (navWidthPx != size.width) navWidthPx = size.width 
+                }
         )
     }
 }
@@ -145,10 +194,18 @@ fun SoundlyBottomNav(
     modifier: Modifier = Modifier,
     onSearchToggle: () -> Unit = {},
     accentColor: Color = Color.Unspecified,
+    searchViewModel: SearchViewModel? = null,
+    miniPlayerStyle: MiniPlayerStyle = MiniPlayerStyle.SOLID,
+    vividColors: Boolean = false,
+    navItems: List<NavItem> = defaultNavItems,
 ) {
     val scope = rememberCoroutineScope()
-    val isSearchExpanded by remember(pagerState) { derivedStateOf { pagerState.currentPage == SEARCH_PAGE_INDEX } }
-    val lastContentPage by remember(pagerState) { derivedStateOf { pagerState.currentPage.coerceAtMost(NAV_LAST_INDEX) } }
+    val navLastIndex = navItems.size - 1
+    val searchPageIndex = navItems.size
+    
+    // Check if we are in the Search tab to expand the bar
+    val isSearchExpanded by remember(pagerState, searchPageIndex) { derivedStateOf { pagerState.currentPage == searchPageIndex } }
+    val lastContentPage by remember(pagerState, navLastIndex) { derivedStateOf { pagerState.currentPage.coerceAtMost(navLastIndex) } }
 
     val navigateTo: (Int) -> Unit = remember(scope, pagerState) {
         { page -> scope.launch { pagerState.animateScrollToPage(page = page, animationSpec = PagerSpring) } }
@@ -158,15 +215,35 @@ fun SoundlyBottomNav(
     val accentInstant = adaptDominantInstant(
         rawColor = accentColor.takeIf { it != Color.Unspecified } ?: Color.Transparent,
         isDarkTheme = isDark,
-        fallback = baseSurface
+        fallback = baseSurface,
+        isVivid = vividColors
     )
-    val navBg = blendOnSurface(accentInstant, baseSurface, 0.25f)
-    val navPill = blendOnSurface(accentInstant, MaterialTheme.colorScheme.surfaceVariant, 0.40f)
-    val onNav = if (navBg.luminance() < 0.35f) Color.White else Color.Black
-    val onAccent = if (navPill.luminance() < 0.35f) Color.White else Color.Black
-    val accentVibrant = blendOnSurface(accentInstant, onAccent, 0.70f)
-    val mutedTint = blendOnSurface(accentInstant, onNav, 0.25f)
-    val onNavMuted = mutedTint
+    
+    val navBg: Color
+    val navPill: Color
+    val onNavBase: Color
+    val accentVibrant: Color
+    val onNavMuted: Color
+
+    if (!isDark && vividColors) {
+        navBg = if (miniPlayerStyle == MiniPlayerStyle.BLUR) Color.Transparent else blendOnSurface(accentInstant, baseSurface, 0.12f)
+        navPill = accentInstant.copy(alpha = 0.18f)
+        onNavBase = accentInstant
+        accentVibrant = accentInstant
+        onNavMuted = accentInstant.copy(alpha = 0.60f)
+    } else {
+        navBg = when(miniPlayerStyle) {
+            MiniPlayerStyle.SOLID -> baseSurface
+            MiniPlayerStyle.TINTED -> blendOnSurface(accentInstant, baseSurface, if (vividColors) 0.65f else 0.25f)
+            MiniPlayerStyle.BLUR -> Color.Transparent
+        }
+        navPill = blendOnSurface(accentInstant, MaterialTheme.colorScheme.surfaceVariant, if (vividColors) 0.65f else 0.40f)
+        onNavBase = if (navBg.luminance() < 0.52f) Color.White else Color.Black
+        val vividFactor = if (vividColors) 0.25f else 0.70f
+        accentVibrant = blendOnSurface(accentInstant, onNavBase, vividFactor)
+        val mutedFactor = if (vividColors) 0.45f else 0.25f
+        onNavMuted = blendOnSurface(accentInstant, onNavBase, mutedFactor)
+    }
 
     Row(
         modifier = modifier,
@@ -186,13 +263,17 @@ fun SoundlyBottomNav(
                     pillColor = navPill,
                     textColor = accentVibrant,
                     mutedColor = onNavMuted,
+                    miniPlayerStyle = miniPlayerStyle,
+                    navItems = navItems,
                 )
             } else {
                 CollapsedNavDot(
                     currentPage = lastContentPage,
                     onClick = onSearchToggle,
                     bg = navBg,
-                    contentColor = accentVibrant
+                    contentColor = accentVibrant,
+                    miniPlayerStyle = miniPlayerStyle,
+                    navItems = navItems,
                 )
             }
         }
@@ -207,15 +288,22 @@ fun SoundlyBottomNav(
             },
             label = "searchToggle",
         ) { expanded ->
-            if (!expanded) SearchCircle(onClick = onSearchToggle, bg = navBg, contentColor = onNavMuted)
-            else SearchBar(onClose = onSearchToggle, bg = navBg, contentColor = accentVibrant, onColor = onNav)
+            if (!expanded) SearchCircle(onClick = onSearchToggle, bg = navBg, contentColor = onNavMuted, miniPlayerStyle = miniPlayerStyle)
+            else SearchBar(onClose = onSearchToggle, bg = navBg, contentColor = accentVibrant, onColor = onNavBase, viewModel = searchViewModel, miniPlayerStyle = miniPlayerStyle)
         }
     }
 }
 
 @Composable
-private fun CollapsedNavDot(currentPage: Int, onClick: () -> Unit, bg: Color, contentColor: Color) {
-    val currentItem = remember(currentPage) { navItems.getOrElse(currentPage) { navItems[0] } }
+private fun CollapsedNavDot(
+    currentPage: Int,
+    onClick: () -> Unit,
+    bg: Color,
+    contentColor: Color,
+    miniPlayerStyle: MiniPlayerStyle = MiniPlayerStyle.SOLID,
+    navItems: List<NavItem> = defaultNavItems
+) {
+    val currentItem = remember(currentPage, navItems) { navItems.getOrElse(currentPage) { navItems.firstOrNull() ?: defaultNavItems[0] } }
     val haptic = LocalHapticFeedback.current
     val (isPressed, triggerPress) = rememberPressState(duration = 90L)
     val interactionSource = remember { MutableInteractionSource() }
@@ -224,6 +312,7 @@ private fun CollapsedNavDot(currentPage: Int, onClick: () -> Unit, bg: Color, co
         animationSpec = SpringSnappy,
         label = "dotScale",
     )
+
     Surface(
         modifier = Modifier
             .size(NavDimens.TOTAL_HEIGHT_DP.dp)
@@ -239,7 +328,7 @@ private fun CollapsedNavDot(currentPage: Int, onClick: () -> Unit, bg: Color, co
             ),
         shape = CircleShape,
         color = bg,
-        tonalElevation = 3.dp,
+        tonalElevation = if (miniPlayerStyle == MiniPlayerStyle.BLUR) 0.dp else 3.dp,
         shadowElevation = 0.dp,
     ) {
         Box(
@@ -255,7 +344,7 @@ private fun CollapsedNavDot(currentPage: Int, onClick: () -> Unit, bg: Color, co
             ) {
                 Icon(
                     imageVector = currentItem.icon,
-                    contentDescription = currentItem.label,
+                    contentDescription = stringResource(currentItem.labelRes),
                     tint = contentColor,
                     modifier = Modifier.size(20.dp),
                 )
@@ -265,13 +354,14 @@ private fun CollapsedNavDot(currentPage: Int, onClick: () -> Unit, bg: Color, co
 }
 
 @Composable
-private fun SearchBar(onClose: () -> Unit, bg: Color, contentColor: Color, onColor: Color) {
+private fun SearchBar(onClose: () -> Unit, bg: Color, contentColor: Color, onColor: Color, viewModel: SearchViewModel? = null, miniPlayerStyle: MiniPlayerStyle = MiniPlayerStyle.SOLID) {
     val haptic = LocalHapticFeedback.current
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     val (isPressed, triggerPress) = rememberPressState(duration = 75L)
     val interactionSource = remember { MutableInteractionSource() }
-    var query by remember { mutableStateOf("") }
+    
+    val query by viewModel?.query?.collectAsState() ?: remember { mutableStateOf("") }
 
     val surfaceScale by animateFloatAsState(
         targetValue = if (isPressed) 0.975f else 1f,
@@ -288,24 +378,18 @@ private fun SearchBar(onClose: () -> Unit, bg: Color, contentColor: Color, onCol
     val onSurfVarColor = contentColor
     val onSurfColor = onColor
 
-    // Pedir foco automáticamente al expandirse
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
-
     Surface(
         modifier = Modifier
             .height(NavDimens.TOTAL_HEIGHT_DP.dp)
             .graphicsLayer { val s = surfaceScale; scaleX = s; scaleY = s },
         shape = RoundedCornerShape(50.dp),
         color = bg,
-        tonalElevation = 3.dp,
+        tonalElevation = if (miniPlayerStyle == MiniPlayerStyle.BLUR) 0.dp else 3.dp,
         shadowElevation = 0.dp,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxHeight()
-                .background(bg)
                 .padding(horizontal = 20.dp)
                 .widthIn(min = 250.dp, max = 340.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -319,7 +403,7 @@ private fun SearchBar(onClose: () -> Unit, bg: Color, contentColor: Color, onCol
             )
             BasicTextField(
                 value = query,
-                onValueChange = { query = it },
+                onValueChange = { viewModel?.onQueryChange(it) },
                 singleLine = true,
                 textStyle = MaterialTheme.typography.bodyLarge.copy(color = onSurfColor),
                 modifier = Modifier
@@ -335,7 +419,7 @@ private fun SearchBar(onClose: () -> Unit, bg: Color, contentColor: Color, onCol
                     ) {
                         if (query.isEmpty()) {
                             Text(
-                                text = "Buscar canciones...",
+                                text = stringResource(R.string.nav_search) + "...",
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = onSurfColor.copy(alpha = 0.55f),
                                 maxLines = 1,
@@ -359,7 +443,7 @@ private fun SearchBar(onClose: () -> Unit, bg: Color, contentColor: Color, onCol
                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             triggerPress()
                             closeRotation += 90
-                            query = ""
+                            viewModel?.onQueryChange("")
                             focusManager.clearFocus()
                             onClose()
                         },
@@ -368,7 +452,7 @@ private fun SearchBar(onClose: () -> Unit, bg: Color, contentColor: Color, onCol
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Close,
-                    contentDescription = "Cerrar búsqueda",
+                    contentDescription = stringResource(R.string.button_close),
                     tint = onSurfVarColor,
                     modifier = Modifier.size(18.dp),
                 )
@@ -386,47 +470,52 @@ private fun GooglePhotosNavBar(
     pillColor: Color,
     textColor: Color,
     mutedColor: Color,
+    miniPlayerStyle: MiniPlayerStyle = MiniPlayerStyle.SOLID,
+    navItems: List<NavItem> = defaultNavItems,
 ) {
-    val scrollPos by remember(pagerState) {
-        derivedStateOf {
-            val page = pagerState.currentPage.coerceAtMost(NAV_LAST_INDEX)
-            val offset = if (pagerState.currentPage >= SEARCH_PAGE_INDEX) 0f else pagerState.currentPageOffsetFraction.coerceIn(-0.5f, 0.5f)
-            (page + offset).coerceIn(0f, NAV_LAST_INDEX.toFloat())
+    val navLastIndex = navItems.size - 1
+    val scrollPosProvider = remember(pagerState, navLastIndex) {
+        {
+            val page = pagerState.currentPage.coerceAtMost(navLastIndex)
+            val offset = if (pagerState.currentPage >= navItems.size) 0f else pagerState.currentPageOffsetFraction.coerceIn(-0.5f, 0.5f)
+            (page + offset).coerceIn(0f, navLastIndex.toFloat())
         }
     }
-    val overshoot = rememberPillOvershoot(scrollPos)
-    val surfColor = navBg
+    
+    val overshootProvider = rememberPillOvershoot(scrollPosProvider)
 
     Surface(
+        modifier = Modifier,
         shape = RoundedCornerShape(50.dp),
-        color = surfColor,
-        tonalElevation = 3.dp,
+        color = navBg,
+        tonalElevation = if (miniPlayerStyle == MiniPlayerStyle.BLUR) 0.dp else 3.dp,
         shadowElevation = 0.dp,
     ) {
         NavBarLayout(
-            scrollPos = scrollPos,
-            overshoot = overshoot,
+            scrollPosProvider = scrollPosProvider,
+            overshootProvider = overshootProvider,
             pillColor = pillColor,
+            navItemsCount = navItems.size,
             modifier = Modifier.padding(NavDimens.NAV_PADDING_DP.dp),
         ) {
             navItems.forEachIndexed { index, item ->
-                val selected by remember(pagerState, index) {
-                    derivedStateOf { index == pagerState.currentPage.coerceAtMost(NAV_LAST_INDEX) }
+                val selected by remember(pagerState, index, navLastIndex) {
+                    derivedStateOf { index == pagerState.currentPage.coerceAtMost(navLastIndex) }
                 }
-            NavTabItem(
-                item = item,
-                selected = selected,
-                pillTextColor = textColor,
-                inactiveColor = mutedColor,
-                onClick = onItemSelected,
-            )
+                NavTabItem(
+                    item = item,
+                    selected = selected,
+                    pillTextColor = textColor,
+                    inactiveColor = mutedColor,
+                    onClick = onItemSelected,
+                )
+            }
         }
-    }
     }
 }
 
 @Composable
-private fun SearchCircle(onClick: () -> Unit, bg: Color, contentColor: Color) {
+private fun SearchCircle(onClick: () -> Unit, bg: Color, contentColor: Color, miniPlayerStyle: MiniPlayerStyle = MiniPlayerStyle.SOLID) {
     val haptic = LocalHapticFeedback.current
     val (isPressed, triggerPress) = rememberPressState(duration = 110L)
     val interactionSource = remember { MutableInteractionSource() }
@@ -436,7 +525,6 @@ private fun SearchCircle(onClick: () -> Unit, bg: Color, contentColor: Color) {
         label = "searchCircleScale",
     )
     val onSurfVarColor = contentColor
-    val surfColor = bg
 
     Surface(
         modifier = Modifier
@@ -452,14 +540,14 @@ private fun SearchCircle(onClick: () -> Unit, bg: Color, contentColor: Color) {
                 },
             ),
         shape = CircleShape,
-        color = surfColor,
-        tonalElevation = 3.dp,
+        color = bg,
+        tonalElevation = if (miniPlayerStyle == MiniPlayerStyle.BLUR) 0.dp else 3.dp,
         shadowElevation = 0.dp,
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
             Icon(
                 imageVector = Icons.Rounded.Search,
-                contentDescription = "Abrir búsqueda",
+                contentDescription = stringResource(R.string.nav_search),
                 tint = onSurfVarColor,
                 modifier = Modifier.size(24.dp),
             )
@@ -468,42 +556,45 @@ private fun SearchCircle(onClick: () -> Unit, bg: Color, contentColor: Color) {
 }
 
 @Composable
-private fun rememberPillOvershoot(scrollPos: Float, sensitivity: Float = 9f): Float {
+private fun rememberPillOvershoot(scrollPosProvider: () -> Float, sensitivity: Float = 9f): () -> Float {
+    val scrollPos = scrollPosProvider()
     val lastPos = remember { FloatArray(1) { scrollPos } }
     var velocity by remember { mutableFloatStateOf(0f) }
-    SideEffect {
-        val prev = lastPos[0]
-        lastPos[0] = scrollPos
-        velocity = velocity * 0.80f + (scrollPos - prev) * 0.20f
+    
+    LaunchedEffect(scrollPosProvider) {
+        snapshotFlow { scrollPosProvider() }.collect { currentPos ->
+            val prev = lastPos[0]
+            lastPos[0] = currentPos
+            velocity = velocity * 0.80f + (currentPos - prev) * 0.20f
+        }
     }
+    
     val overshoot by animateFloatAsState(
         targetValue = velocity * sensitivity,
         animationSpec = spring(dampingRatio = 0.34f, stiffness = 200f),
         label = "pillOvershoot",
     )
-    return overshoot.coerceIn(-22f, 22f)
+    return remember { { overshoot.coerceIn(-22f, 22f) } }
 }
 
 @Suppress("NOTHING_TO_INLINE")
 private inline fun lerpF(a: Float, b: Float, t: Float): Float = a + (b - a) * t
 
-private class TabMeasurements(val count: Int = navItems.size) {
+private class TabMeasurements(val count: Int) {
     val lefts = FloatArray(count)
     val widths = FloatArray(count)
 }
 
 @Composable
 private fun NavBarLayout(
-    scrollPos: Float,
-    overshoot: Float,
+    scrollPosProvider: () -> Float,
+    overshootProvider: () -> Float,
     pillColor: Color,
+    navItemsCount: Int,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val measurements = remember { TabMeasurements() }
-    val leftIdx = scrollPos.toInt().coerceIn(0, measurements.count - 1)
-    val rightIdx = (leftIdx + 1).coerceIn(0, measurements.count - 1)
-    val fraction = (scrollPos - leftIdx).coerceIn(0f, 1f)
+    val measurements = remember(navItemsCount) { TabMeasurements(navItemsCount) }
 
     Layout(
         modifier = modifier,
@@ -518,6 +609,12 @@ private fun NavBarLayout(
         },
     ) { measurables, _ ->
         if (measurables.size < 2) return@Layout layout(0, 0) {}
+
+        val scrollPos = scrollPosProvider()
+        val overshoot = overshootProvider()
+        val leftIdx = scrollPos.toInt().coerceIn(0, measurements.count - 1)
+        val rightIdx = (leftIdx + 1).coerceIn(0, measurements.count - 1)
+        val fraction = (scrollPos - leftIdx).coerceIn(0f, 1f)
 
         val pillMeasurable = measurables[0]
         val tabMeasurables = measurables.drop(1)
@@ -611,7 +708,7 @@ private fun NavTabItem(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = item.icon,
-                        contentDescription = item.label,
+                        contentDescription = stringResource(item.labelRes),
                         tint = pillTextColor,
                         modifier = Modifier.size(18.dp),
                     )
@@ -622,7 +719,7 @@ private fun NavTabItem(
             }
         }
         Text(
-            text = item.label,
+            text = stringResource(item.labelRes),
             style = if (selected) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium,
             color = if (selected) pillTextColor else inactiveColor,
             maxLines = 1,

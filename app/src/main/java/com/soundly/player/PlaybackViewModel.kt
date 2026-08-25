@@ -25,10 +25,14 @@ class PlaybackViewModel @Inject constructor(
     fun playCollection(queue: List<Song>, startShuffled: Boolean) =
         playbackManager.playCollection(queue, startShuffled)
     fun playNext(song: Song) = playbackManager.playNext(song)
+    fun playNext(songs: List<Song>) = playbackManager.playNext(songs)
     fun addToQueue(song: Song) = playbackManager.addToQueue(song)
+    fun addToQueue(songs: List<Song>) = playbackManager.addToQueue(songs)
+    fun moveQueueItem(from: Int, to: Int) = playbackManager.moveQueueItem(from, to)
     fun onToggleShuffle() = playbackManager.toggleShuffle()
     fun onToggleFavorite() = playbackManager.toggleCurrentSongFavorite()
     fun onCycleRepeat() = playbackManager.cycleRepeatMode()
     fun scheduleSleepTimer(minutes: Int) = playbackManager.scheduleSleepTimer(minutes * 60_000L)
     fun cancelSleepTimer() = playbackManager.cancelSleepTimer()
+    fun stop() = playbackManager.stopPlayback()
 }

@@ -10,14 +10,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -26,43 +20,40 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.GridView
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.Shuffle
-import androidx.compose.material.icons.rounded.ViewAgenda
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.soundly.R
 import com.soundly.debug.DebugRecompose
 import com.soundly.feature.library.pages.AlbumDetailScreen
 import com.soundly.feature.library.pages.AlbumsScreen
 import com.soundly.feature.library.pages.ArtistDetailScreen
 import com.soundly.feature.library.pages.ArtistsScreen
 import com.soundly.feature.library.pages.SongsScreen
-import com.soundly.ui.componentes.ListOptionsLeadingAction
-import com.soundly.ui.componentes.ListOptionsMenuItem
-import com.soundly.ui.componentes.ListOptionsTrailingAction
-import com.soundly.ui.componentes.List_options
-import com.soundly.ui.componentes.PillTabSelector
+import com.soundly.ui.componentes.*
+import com.soundly.ui.navigation.LocalBackStackCoordinator
 import kotlinx.coroutines.launch
-
-private val OPTIONS = listOf("Canciones", "Álbumes", "Artistas")
+import kotlinx.coroutines.delay
 
 private sealed interface LibraryDetailDestination {
     data class Album(val id: Long) : LibraryDetailDestination
@@ -99,55 +90,63 @@ fun LibraryPage(
     viewModel: LibraryViewModel,
     onAlbumDetailVisibilityChanged: (Boolean) -> Unit,
     onArtistEdgeToEdgeChanged: (Boolean) -> Unit,
-    isHostPageVisible: Boolean,
     onPlaySong: (com.soundly.data.model.Song, List<com.soundly.data.model.Song>) -> Unit,
-    onPlayCollection: (List<com.soundly.data.model.Song>, Boolean) -> Unit
+    onPlayCollection: (List<com.soundly.data.model.Song>, Boolean) -> Unit,
+    onViewQueue: () -> Unit = {},
+    externalArtistRequest: Long? = null,
+    onExternalRequestConsumed: () -> Unit = {},
+    onCurrentArtistChanged: (Long?) -> Unit = {},
+    isHostPageVisible: Boolean = true
 ) {
     DebugRecompose("LibraryPage", logEvery = 15)
-    val detailStack = rememberSaveable(
-        saver = detailStackSaver
-    ) {
-        mutableStateListOf<LibraryDetailDestination>()
+    val detailStack = rememberSaveable(saver = detailStackSaver) { mutableStateListOf<LibraryDetailDestination>() }
+    val currentDetail = detailStack.lastOrNull()
+
+    val onAlbumDetailVisibilityChangedStable = remember(onAlbumDetailVisibilityChanged) { { v: Boolean -> onAlbumDetailVisibilityChanged(v) } }
+    val onArtistEdgeToEdgeChangedStable = remember(onArtistEdgeToEdgeChanged) { { v: Boolean -> onArtistEdgeToEdgeChanged(v) } }
+    val onPlaySongStable = remember(onPlaySong) { { s: com.soundly.data.model.Song, q: List<com.soundly.data.model.Song> -> onPlaySong(s, q) } }
+    val onPlayCollectionStable = remember(onPlayCollection) { { q: List<com.soundly.data.model.Song>, b: Boolean -> onPlayCollection(q, b) } }
+    val onViewQueueStable = remember(onViewQueue) { { onViewQueue() } }
+
+    LaunchedEffect(currentDetail) {
+        onCurrentArtistChanged((currentDetail as? LibraryDetailDestination.Artist)?.id)
     }
-    val pagerState = rememberPagerState { OPTIONS.size }
+
+    val openDetail: (LibraryDetailDestination) -> Unit = remember(detailStack) {
+        { destination -> if (detailStack.lastOrNull() != destination) detailStack.add(destination) }
+    }
+
+    val options = listOf(
+        stringResource(R.string.library_option_songs),
+        stringResource(R.string.library_option_albums),
+        stringResource(R.string.library_option_artists)
+    )
+    val pagerState = rememberPagerState { options.size }
     val songsListState = rememberLazyListState()
     val albumsGridState = rememberLazyGridState()
     val artistsGridState = rememberLazyGridState()
     val artistsListState = rememberLazyListState()
-    val currentDetail = detailStack.lastOrNull()
-    val isDetailVisible = currentDetail != null
-    val isArtistDetailVisible = currentDetail is LibraryDetailDestination.Artist
-
-    val popDetail: () -> Unit = remember(detailStack) {
-        {
-            if (detailStack.isNotEmpty()) {
-                detailStack.removeAt(detailStack.lastIndex)
-            }
-        }
-    }
-    val openDetail: (LibraryDetailDestination) -> Unit = remember(detailStack) {
-        { destination ->
-            if (detailStack.lastOrNull() != destination) {
-                detailStack.add(destination)
-            }
+    
+    val popDetail: () -> Unit = {
+        if (detailStack.isNotEmpty()) {
+            detailStack.removeAt(detailStack.lastIndex)
         }
     }
 
-    LaunchedEffect(isDetailVisible) {
-        onAlbumDetailVisibilityChanged(isDetailVisible)
-    }
-    LaunchedEffect(isArtistDetailVisible) {
-        onArtistEdgeToEdgeChanged(isArtistDetailVisible)
-    }
+    LaunchedEffect(currentDetail != null) { onAlbumDetailVisibilityChangedStable(currentDetail != null) }
+    LaunchedEffect(currentDetail is LibraryDetailDestination.Artist) { onArtistEdgeToEdgeChangedStable(currentDetail is LibraryDetailDestination.Artist) }
+
+    val backStackCoordinator = LocalBackStackCoordinator.current
+    val backHandlerEnabled = detailStack.isNotEmpty() && isHostPageVisible && !backStackCoordinator.isOverlayActive
 
     DisposableEffect(Unit) {
         onDispose {
-            onAlbumDetailVisibilityChanged(false)
-            onArtistEdgeToEdgeChanged(false)
+            onAlbumDetailVisibilityChangedStable(false)
+            onArtistEdgeToEdgeChangedStable(false)
         }
     }
 
-    BackHandler(enabled = isDetailVisible, onBack = popDetail)
+    BackHandler(enabled = backHandlerEnabled, onBack = popDetail)
 
     AnimatedContent(
         targetState = currentDetail,
@@ -155,45 +154,18 @@ fun LibraryPage(
         label = "LibraryContent"
     ) { destination ->
         when (destination) {
-            is LibraryDetailDestination.Album -> {
-                AlbumDetailScreen(
-                    albumId = destination.id,
-                    viewModel = viewModel,
-                    onAlbumClick = { openDetail(LibraryDetailDestination.Album(it)) },
-                    onArtistClick = { openDetail(LibraryDetailDestination.Artist(it)) },
-                    onBack = popDetail,
-                    onPlaySong = onPlaySong,
-                    onPlayCollection = onPlayCollection
-                )
-            }
-
-            is LibraryDetailDestination.Artist -> {
-                ArtistDetailScreen(
-                    artistId = destination.id,
-                    viewModel = viewModel,
-                    onAlbumClick = { openDetail(LibraryDetailDestination.Album(it)) },
-                    onArtistClick = { openDetail(LibraryDetailDestination.Artist(it)) },
-                    onBack = popDetail,
-                    applySystemBarStyle = isHostPageVisible,
-                    onPlaySong = onPlaySong,
-                    onPlayCollection = onPlayCollection
-                )
-            }
-
-            null -> {
-                LibraryMainContent(
-                    viewModel = viewModel,
-                    pagerState = pagerState,
-                    songsListState = songsListState,
-                    albumsGridState = albumsGridState,
-                    artistsGridState = artistsGridState,
-                    artistsListState = artistsListState,
-                    onAlbumClick = { openDetail(LibraryDetailDestination.Album(it)) },
-                    onArtistClick = { openDetail(LibraryDetailDestination.Artist(it)) },
-                    onPlaySong = onPlaySong,
-                    onPlayCollection = onPlayCollection
-                )
-            }
+            is LibraryDetailDestination.Album -> AlbumDetailScreen(destination.id, viewModel, { openDetail(LibraryDetailDestination.Album(it)) }, { openDetail(LibraryDetailDestination.Artist(it)) }, popDetail, onViewQueueStable, onPlaySongStable, onPlayCollectionStable)
+            is LibraryDetailDestination.Artist -> ArtistDetailScreen(
+                artistId = destination.id,
+                viewModel = viewModel,
+                onAlbumClick = { openDetail(LibraryDetailDestination.Album(it)) },
+                onArtistClick = { openDetail(LibraryDetailDestination.Artist(it)) },
+                onBack = popDetail,
+                onViewQueue = onViewQueueStable,
+                onPlaySong = onPlaySongStable,
+                onPlayCollection = onPlayCollectionStable
+            )
+            null -> LibraryMainContent(viewModel, options, pagerState, songsListState, albumsGridState, artistsGridState, artistsListState, { openDetail(LibraryDetailDestination.Album(it)) }, { openDetail(LibraryDetailDestination.Artist(it)) }, onViewQueueStable, onPlaySongStable, onPlayCollectionStable)
         }
     }
 }
@@ -202,6 +174,7 @@ fun LibraryPage(
 @Composable
 private fun LibraryMainContent(
     viewModel: LibraryViewModel,
+    options: List<String>,
     pagerState: PagerState,
     songsListState: LazyListState,
     albumsGridState: LazyGridState,
@@ -209,249 +182,149 @@ private fun LibraryMainContent(
     artistsListState: LazyListState,
     onAlbumClick: (Long) -> Unit,
     onArtistClick: (Long) -> Unit,
+    onViewQueue: () -> Unit = {},
     onPlaySong: (com.soundly.data.model.Song, List<com.soundly.data.model.Song>) -> Unit,
     onPlayCollection: (List<com.soundly.data.model.Song>, Boolean) -> Unit
 ) {
-    DebugRecompose("LibraryMainContent", logEvery = 20)
-    LaunchedEffect(Unit) {
-        viewModel.refreshLibraryData()
-    }
+    LaunchedEffect(Unit) { viewModel.refreshLibraryData() }
+    
     val coroutineScope = rememberCoroutineScope()
-    val songs by viewModel.librarySongs.collectAsState()
-    val albums by viewModel.libraryAlbums.collectAsState()
-    val artists by viewModel.libraryArtists.collectAsState()
-    val albumsPlaybackQueue by viewModel.albumsPlaybackQueue.collectAsState()
-    val songsSortOption by viewModel.songsSortOption.collectAsState()
-    val albumsSortOption by viewModel.albumsSortOption.collectAsState()
-    val artistsLayoutMode by viewModel.artistsLayoutMode.collectAsState()
+    val songs = viewModel.librarySongs.collectAsLazyPagingItems()
+    val albums = viewModel.libraryAlbums.collectAsLazyPagingItems()
+    val artists = viewModel.libraryArtists.collectAsLazyPagingItems()
+    val albumsPlaybackQueue by viewModel.albumsPlaybackQueue.collectAsStateWithLifecycle()
+    val songsSortOption by viewModel.songsSortOption.collectAsStateWithLifecycle()
+    val albumsSortOption by viewModel.albumsSortOption.collectAsStateWithLifecycle()
+    val artistsLayoutMode by viewModel.artistsLayoutMode.collectAsStateWithLifecycle()
 
-    val displayedPage by remember {
-        derivedStateOf {
-            if (pagerState.isScrollInProgress) pagerState.targetPage else pagerState.currentPage
-        }
-    }
-    val optionsCollapseProgress by remember(
-        displayedPage,
-        songsListState,
-        albumsGridState,
-        artistsGridState,
-        artistsListState,
-        artistsLayoutMode
-    ) {
-        derivedStateOf {
-            when (displayedPage) {
-                0 -> songsListState.headerCollapseProgress()
-                1 -> albumsGridState.headerCollapseProgress()
-                2 -> when (artistsLayoutMode) {
-                    ArtistsLayoutMode.Grid -> artistsGridState.headerCollapseProgress()
-                    ArtistsLayoutMode.List -> artistsListState.headerCollapseProgress()
+    val displayedPage by remember { derivedStateOf { if (pagerState.isScrollInProgress) pagerState.targetPage else pagerState.currentPage } }
+    val density = LocalDensity.current
+    val collapseDistancePx = remember(density) { with(density) { 88.dp.toPx() } }
+
+    // OPTIMIZACIÓN: Lambda de progreso ultra-estable
+    val optionsCollapseProgressProvider = remember {
+        {
+            val page = if (pagerState.isScrollInProgress) pagerState.targetPage else pagerState.currentPage
+            val mode = viewModel.artistsLayoutMode.value
+            
+            val scrollOffset = when (page) {
+                0 -> if (songsListState.firstVisibleItemIndex > 0) collapseDistancePx else songsListState.firstVisibleItemScrollOffset.toFloat()
+                1 -> if (albumsGridState.firstVisibleItemIndex > 0) collapseDistancePx else albumsGridState.firstVisibleItemScrollOffset.toFloat()
+                2 -> when (mode) {
+                    ArtistsLayoutMode.Grid -> if (artistsGridState.firstVisibleItemIndex > 0) collapseDistancePx else artistsGridState.firstVisibleItemScrollOffset.toFloat()
+                    ArtistsLayoutMode.List -> if (artistsListState.firstVisibleItemIndex > 0) collapseDistancePx else artistsListState.firstVisibleItemScrollOffset.toFloat()
                 }
-
                 else -> 0f
             }
+            (scrollOffset / collapseDistancePx).coerceIn(0f, 1f)
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp)
-    ) {
-        PillTabSelector(
-            options = OPTIONS,
-            selectedIndex = displayedPage,
-            onTabSelected = { index ->
-                coroutineScope.launch { pagerState.animateScrollToPage(index) }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
+    val context = LocalContext.current
+    // Eliminamos duplicidad de status bars (HomeScreen ya los aplica al Pager)
+    val topPadding = 160.dp 
 
-        CollapsibleLibraryOptions(collapseProgress = optionsCollapseProgress) {
-            when (displayedPage) {
-                0 -> List_options(
-                    leadingActions = listOf(
-                        ListOptionsLeadingAction(
-                            icon = Icons.Rounded.PlayArrow,
-                            contentDescription = "Reproducir canciones"
-                        ) {
-                            onPlayCollection(songs, false)
-                        },
-                        ListOptionsLeadingAction(
-                            icon = Icons.Rounded.Shuffle,
-                            contentDescription = "Reproducir canciones en aleatorio"
-                        ) {
-                            onPlayCollection(songs, true)
-                        }
-                    ),
-                    trailingAction = ListOptionsTrailingAction.Menu(
-                        label = songsSortOption.label,
-                        options = LibrarySortOption.entries.map { option ->
-                            ListOptionsMenuItem(
-                                id = option.storageValue,
-                                label = option.label
-                            )
-                        },
-                        selectedOptionId = songsSortOption.storageValue,
-                        onOptionSelected = { optionId ->
-                            val option = LibrarySortOption.fromStorage(optionId)
-                            if (option != songsSortOption) {
-                                viewModel.setSongsSort(option)
-                            }
-                        },
-                        contentDescription = "Ordenar canciones"
-                    )
-                )
-
-                1 -> List_options(
-                    leadingActions = listOf(
-                        ListOptionsLeadingAction(
-                            icon = Icons.Rounded.Shuffle,
-                            contentDescription = "Reproducir álbumes en aleatorio"
-                        ) {
-                            onPlayCollection(albumsPlaybackQueue, true)
-                        }
-                    ),
-                    trailingAction = ListOptionsTrailingAction.Menu(
-                        label = albumsSortOption.label,
-                        options = LibrarySortOption.entries.map { option ->
-                            ListOptionsMenuItem(
-                                id = option.storageValue,
-                                label = option.label
-                            )
-                        },
-                        selectedOptionId = albumsSortOption.storageValue,
-                        onOptionSelected = { optionId ->
-                            val option = LibrarySortOption.fromStorage(optionId)
-                            if (option != albumsSortOption) {
-                                viewModel.setAlbumsSort(option)
-                            }
-                        },
-                        contentDescription = "Ordenar álbumes"
-                    )
-                )
-
-                2 -> List_options(
-                    leadingActions = emptyList(),
-                    trailingAction = ListOptionsTrailingAction.Toggle(
-                        label = artistsLayoutMode.label,
-                        icon = when (artistsLayoutMode) {
-                            ArtistsLayoutMode.Grid -> Icons.Rounded.GridView
-                            ArtistsLayoutMode.List -> Icons.Rounded.ViewAgenda
-                        },
-                        onClick = { viewModel.toggleArtistsLayout() },
-                        contentDescription = "Cambiar formato de artistas"
-                    )
-                )
-
-                else -> Unit
+    Box(modifier = Modifier.fillMaxSize()) {
+        // CAPA 1: Contenido (Pager que llena todo)
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize(),
+            beyondViewportPageCount = 0
+        ) { page ->
+            when (page) {
+                0 -> SongsScreen(viewModel, songs, songsListState, onPlaySong, sortOption = songsSortOption, onOpenAlbum = onAlbumClick, onOpenArtist = onArtistClick, onViewQueue = onViewQueue, topPadding = topPadding)
+                1 -> AlbumsScreen(viewModel, albums, onAlbumClick, gridState = albumsGridState, sortOption = albumsSortOption, topPadding = topPadding)
+                2 -> ArtistsScreen(viewModel, artists, onArtistClick, gridState = artistsGridState, listState = artistsListState, layoutMode = artistsLayoutMode, topPadding = topPadding)
             }
         }
 
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize()
-        ) { page ->
-            when (page) {
-                0 -> SongsScreen(
-                    viewModel = viewModel,
-                    songs = songs,
-                    listState = songsListState,
-                    onPlaySong = onPlaySong,
-                    onOpenAlbum = onAlbumClick,
-                    onOpenArtist = onArtistClick
-                )
+        // CAPA 2: Elementos colapsables (Header dinámico)
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Eliminamos statusBarsPadding()
+            Spacer(modifier = Modifier.height(72.dp))
 
-                1 -> AlbumsScreen(
-                    viewModel = viewModel,
-                    albums = albums,
-                    onAlbumClick = onAlbumClick,
-                    gridState = albumsGridState
-                )
-
-                2 -> ArtistsScreen(
-                    viewModel = viewModel,
-                    artists = artists,
-                    onArtistClick = onArtistClick,
-                    gridState = artistsGridState,
-                    listState = artistsListState,
-                    layoutMode = artistsLayoutMode
-                )
-
-                else -> Text("")
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .graphicsLayer {
+                    // El desplazamiento se hace por GPU sincronizado con el scroll
+                    translationY = lerp(0.dp, (-88).dp, optionsCollapseProgressProvider()).toPx()
+                }
+            ) {
+                CollapsibleLibraryOptions(progressProvider = optionsCollapseProgressProvider) {
+                    when (displayedPage) {
+                        0 -> List_options(
+                            leadingActions = listOf(ListOptionsLeadingAction(Icons.Rounded.PlayArrow, stringResource(R.string.library_btn_play)) {
+                                val fullList = mutableListOf<com.soundly.data.model.Song>()
+                                for (i in 0 until songs.itemCount) {
+                                    songs[i]?.let { fullList.add(it) }
+                                }
+                                onPlayCollection(fullList, false)
+                            }, ListOptionsLeadingAction(Icons.Rounded.Shuffle, stringResource(R.string.library_btn_shuffle)) {
+                                val fullList = mutableListOf<com.soundly.data.model.Song>()
+                                for (i in 0 until songs.itemCount) {
+                                    songs[i]?.let { fullList.add(it) }
+                                }
+                                onPlayCollection(fullList, true)
+                            }),
+                            trailingAction = ListOptionsTrailingAction.Menu(context.getString(songsSortOption.labelResId), LibrarySortOption.entries.map { ListOptionsMenuItem(it.storageValue, context.getString(it.labelResId)) }, songsSortOption.storageValue, { viewModel.setSongsSort(LibrarySortOption.fromStorage(it)) }, Icons.Rounded.Sort, context.getString(R.string.library_btn_sort))
+                        )
+                        1 -> List_options(
+                            leadingActions = listOf(ListOptionsLeadingAction(Icons.Rounded.Shuffle, context.getString(R.string.library_btn_shuffle)) { onPlayCollection(albumsPlaybackQueue, true) }),
+                            trailingAction = ListOptionsTrailingAction.Menu(context.getString(albumsSortOption.labelResId), LibrarySortOption.entries.map { ListOptionsMenuItem(it.storageValue, context.getString(it.labelResId)) }, albumsSortOption.storageValue, { viewModel.setAlbumsSort(LibrarySortOption.fromStorage(it)) }, Icons.Rounded.Sort, context.getString(R.string.library_btn_sort))
+                        )
+                        2 -> List_options(emptyList(), ListOptionsTrailingAction.Toggle(context.getString(artistsLayoutMode.labelResId), if (artistsLayoutMode == ArtistsLayoutMode.Grid) Icons.Rounded.GridView else Icons.Rounded.ViewAgenda, { viewModel.toggleArtistsLayout() }, context.getString(R.string.library_btn_format)))
+                    }
+                }
             }
+        }
+
+        // CAPA 3: Pestañas fijas con gradiente
+        Box(modifier = Modifier.fillMaxWidth()) {
+            val bgColor = MaterialTheme.colorScheme.background
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(110.dp) // Cubre las pestañas y el inicio del gradiente
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                bgColor,
+                                bgColor.copy(alpha = 0.9f),
+                                Color.Transparent
+                            )
+                        )
+                    )
+            )
+
+            PillTabSelector(
+                options = options,
+                selectedIndex = displayedPage,
+                onTabSelected = { index -> coroutineScope.launch { pagerState.animateScrollToPage(index) } },
+                modifier = Modifier.padding(top = 8.dp).padding(horizontal = 20.dp).fillMaxWidth()
+            )
         }
     }
 }
 
 @Composable
-private fun CollapsibleLibraryOptions(
-    collapseProgress: Float,
-    content: @Composable () -> Unit
-) {
-    val easedProgress = collapseProgress
-        .let { progress -> 1f - (1f - progress) * (1f - progress) }
-        .coerceIn(0f, 1f)
-    val animatedProgress by animateFloatAsState(
-        targetValue = easedProgress,
-        animationSpec = spring(
-            stiffness = Spring.StiffnessMediumLow,
-            dampingRatio = Spring.DampingRatioNoBouncy
-        ),
-        label = "library_options_progress"
-    )
-    val currentHeight by animateDpAsState(
-        targetValue = lerp(88.dp, 0.dp, animatedProgress),
-        animationSpec = spring(
-            stiffness = Spring.StiffnessMediumLow,
-            dampingRatio = Spring.DampingRatioNoBouncy
-        ),
-        label = "library_options_height"
-    )
-    val currentSpacerHeight by animateDpAsState(
-        targetValue = lerp(18.dp, 6.dp, animatedProgress),
-        animationSpec = spring(
-            stiffness = Spring.StiffnessMediumLow,
-            dampingRatio = Spring.DampingRatioNoBouncy
-        ),
-        label = "library_options_spacer"
-    )
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(currentHeight)
-            .clipToBounds()
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .graphicsLayer {
-                    alpha = 1f - (animatedProgress * 0.92f)
-                    translationY = -18.dp.toPx() * animatedProgress
-                    scaleX = 1f - (animatedProgress * 0.03f)
-                    scaleY = 1f - (animatedProgress * 0.05f)
-                }
-        ) {
+private fun CollapsibleLibraryOptions(progressProvider: () -> Float, content: @Composable () -> Unit) {
+    // OPTIMIZACIÓN: Layout fijo. Las animaciones son solo visuales (GPU).
+    Box(modifier = Modifier.fillMaxWidth().height(88.dp).clipToBounds()) {
+        Box(modifier = Modifier.fillMaxWidth().fillMaxHeight().graphicsLayer { 
+            val p = progressProvider()
+            // animatedP con easing cuadrático para suavizar el inicio
+            val animatedP = (1f - (1f - p) * (1f - p)).coerceIn(0f, 1f)
+            alpha = 1f - (animatedP * 0.95f)
+            
+            // EFECTO "APACHURRADO": Se comprime en Y y se expande ligeramente en X
+            scaleX = 1f + (animatedP * 0.05f)
+            scaleY = 1f - (animatedP * 0.50f) 
+            
+            // Origen arriba para que parezca que se aplasta contra el selector
+            transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 0f)
+        }) {
             content()
         }
     }
-
-    Spacer(modifier = Modifier.height(currentSpacerHeight))
-}
-
-private fun LazyListState.headerCollapseProgress(
-    collapseDistance: Dp = 72.dp
-): Float {
-    if (firstVisibleItemIndex > 0) return 1f
-    return (firstVisibleItemScrollOffset.toFloat() / collapseDistance.value)
-        .coerceIn(0f, 1f)
-}
-
-private fun LazyGridState.headerCollapseProgress(
-    collapseDistance: Dp = 72.dp
-): Float {
-    if (firstVisibleItemIndex > 0) return 1f
-    return (firstVisibleItemScrollOffset.toFloat() / collapseDistance.value)
-        .coerceIn(0f, 1f)
 }

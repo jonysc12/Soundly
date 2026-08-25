@@ -9,7 +9,12 @@
     <string name="permission_screen_storage_description">Ermöglicht Soundly, Ihre lokale Musik zu lesen und automatisch zu organisieren.</string>
     <string name="permission_screen_notifications_title">Benachrichtigungen zulassen</string>
     <string name="permission_screen_notifications_description">Ermöglicht Soundly, Steuerelemente und Benachrichtigungen anzuzeigen, während Sie Musik abspielen.</string>
+    <string name="permission_screen_bluetooth_title">Bluetooth-Konnektivität</string>
+    <string name="permission_screen_bluetooth_description">Ermöglicht Soundly die Verbindung mit Bluetooth-Audiogeräten und die korrekte Steuerung der Wiedergabe.</string>
     <string name="permission_screen_explanation">Erteilen Sie die angeforderten Berechtigungen, um auf Ihre Musik zuzugreifen und Ihnen Benachrichtigungen zu senden.</string>
+    <string name="permission_screen_note">Wichtiger Hinweis: Damit dies auf modernen Android-Versionen (12 und höher) funktioniert, stellen Sie sicher, dass Sie die Berechtigung „Geräte in der Nähe“ (Bluetooth) in der Anwendung akzeptiert haben, da dies für die Erkennung dieser Verbindungen erforderlich ist.</string>
+    <string name="permission_screen_section_scanning">Scannen</string>
+    <string name="permission_screen_section_functions">Funktionen</string>
     <string name="permission_screen_grant_permission_button">Berechtigung erteilen</string>
     <string name="cd_profile_image_placeholder">Platzhalter für Profilbild</string>
     <string name="cd_profile_image">Profilbild</string>
@@ -32,4 +37,505 @@
     <string name="change_image">Bild ändern</string>
     <string name="confirm">Bestätigen</string>
     <string name="edit">Bearbeiten</string>
+
+    <!-- Language Selection -->
+    <string name="language_selection_title">Sprache</string>
+    <string name="language_selection_header">sprache</string>
+    <string name="language_selection_description">Wählen Sie die bevorzugte Sprache für die App-Oberfläche aus. Sie können sie später in den Einstellungen ändern.</string>
+    <string name="language_selection_system">System</string>
+    <string name="language_selection_system_desc">Standard</string>
+    <string name="language_selection_select">Wählen Sie Ihre Sprache</string>
+    <string name="language_selection_see_more">Mehr anzeigen</string>
+    <string name="language_selection_see_more_desc">Alle verfügbaren Sprachen anzeigen</string>
+    <string name="language_selection_see_less">Weniger anzeigen</string>
+    <string name="language_selection_see_less_desc">Zusätzliche Sprachen ausblenden</string>
+
+    <!-- Media Scanner -->
+    <string name="media_scanner_title">Media Scan</string>
+    <string name="media_scanner_description">Importieren Sie auf Ihrem Gerät gespeicherte Musik mit einer einfachen Einrichtung.</string>
+    <string name="media_scanner_local_source">Lokale Quelle</string>
+    <string name="media_scanner_android_mediastore">Android MediaStore</string>
+    <string name="media_scanner_settings">Einstellungen</string>
+    <string name="media_scanner_ignore_temp">Temporäre Ordner ignorieren</string>
+    <string name="media_scanner_ignore_temp_desc">Schließt Audio von WhatsApp, Telegram und Cache aus.</string>
+    <string name="media_scanner_ignore_short">Audio unter 60 Sekunden ignorieren</string>
+    <string name="media_scanner_start_scan_cd">Scan starten</string>
+    <string name="media_scanner_dialog_title">Musik scannen</string>
+    <string name="media_scanner_dialog_scan_summary">Scan und Zusammenfassung</string>
+    <string name="media_scanner_dialog_manage_folders">Ordner verwalten</string>
+    <string name="media_scanner_dialog_manage_songs">Lieder verwalten</string>
+    <string name="media_scanner_dialog_scanning">Dateien werden gescannt...</string>
+    <string name="media_scanner_dialog_complete">Scan abgeschlossen</string>
+    <string name="media_scanner_dialog_ready">Bereit zum Scannen</string>
+    <string name="media_scanner_dialog_detail">Scan-Details</string>
+    <string name="media_scanner_dialog_confirm">Bestätigen</string>
+    <string name="media_scanner_dialog_manage">Verwalten</string>
+    <string name="media_scanner_dialog_apply">Anwenden</string>
+    <string name="media_scanner_dialog_back">Zurück</string>
+    <string name="media_scanner_dialog_folders_desc">Wählen Sie Ordner aus, die ausgeschlossen werden sollen, und öffnen Sie deren Inhalt, um einzelne Lieder zu steuern.</string>
+    <string name="media_scanner_dialog_no_folder_selected">Kein Ordner ausgewählt</string>
+    <string name="media_scanner_dialog_see_content_cd">Inhalt ansehen</string>
+    <string name="media_scanner_dialog_songs_count">Lieder: %1$d | Manuell blockiert: %2$d</string>
+    <string name="media_scanner_report_filter_temp">Filter für temporäre Ordner: %1$s</string>
+    <string name="media_scanner_report_filter_short"><![CDATA[Filter für Audios < 60s: %1$s]]></string>
+    <string name="media_scanner_report_result_header">----- Scan-Ergebnis -----</string>
+    <string name="media_scanner_report_scanned">Gescannt: %1$d</string>
+    <string name="media_scanner_report_imported">Importiert: %1$d</string>
+    <string name="media_scanner_report_blocked_temp">Durch Ordner blockiert: %1$d</string>
+    <string name="media_scanner_report_blocked_short">Durch Audio blockiert <![CDATA[< 60s: %1$d]]></string>
+    <string name="media_scanner_report_total_blocked">Insgesamt blockiert: %1$d</string>
+    <string name="active">Aktiv</string>
+    <string name="inactive">Inaktiv</string>
+
+    <!-- Buttons -->
+    <string name="button_cancel">Abbrechen</string>
+    <string name="button_close">Schließen</string>
+    <string name="button_delete">Löschen</string>
+    <string name="button_save">Speichern</string>
+    <string name="button_ready">Fertig</string>
+    <string name="button_see_all">Alle ansehen</string>
+    <string name="button_see_less">Weniger anzeigen</string>
+    <string name="button_see_more_bio">Vollständige Biografie lesen</string>
+    <string name="button_search_again">Erneut suchen</string>
+
+    <!-- Library Options & Labels -->
+    <string name="library_option_songs">Lieder</string>
+    <string name="library_option_albums">Alben</string>
+    <string name="library_option_artists">Künstler</string>
+    <string name="library_btn_play">Abspielen</string>
+    <string name="library_btn_shuffle">Zufällig</string>
+    <string name="library_btn_sort">Sortieren</string>
+    <string name="library_btn_format">Format</string>
+    <string name="library_auto_collection">Automatisch erstellte Sammlung</string>
+    <string name="library_label_artist">Künstler</string>
+    <string name="library_label_folder">Ordner</string>
+
+    <!-- Filter Chips -->
+    <string name="filter_playlists">Playlists</string>
+    <string name="filter_albums">Alben</string>
+    <string name="filter_artists">Künstler</string>
+    <string name="filter_folders">Ordner</string>
+    <string name="filter_clear_desc">Filter löschen</string>
+
+    <!-- Sort & Layout -->
+    <string name="sort_az">Titel (A-Z)</string>
+    <string name="sort_za">Titel (Z-A)</string>
+    <string name="sort_recent">Kürzlich hinzugefügt</string>
+    <string name="sort_oldest">Am längsten hinzugefügt</string>
+    <string name="layout_grid">Raster</string>
+    <string name="layout_list">Liste</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_close">Schließen</string>
+    <string name="cd_more_options">Weitere Optionen</string>
+    <string name="cd_refresh">Aktualisieren</string>
+    <string name="cd_artwork">Cover</string>
+    <string name="cd_change_artwork">Cover ändern</string>
+    <string name="cd_device">Gerät</string>
+    <string name="cd_favorite">Favorit</string>
+    <string name="cd_pause">Pause</string>
+    <string name="cd_play">Abspielen</string>
+
+    <!-- Search -->
+    <string name="search_explore_title">Entdecken</string>
+    <string name="search_title">Suche</string>
+    <string name="search_section_songs">Lieder</string>
+    <string name="search_section_albums">Alben</string>
+    <string name="search_section_artists">Künstler</string>
+    <string name="search_section_playlists">Playlists</string>
+    <string name="search_empty_title">Finden Sie, was Sie lieben</string>
+    <string name="search_empty_desc">Suchen Sie nach Liedern, Künstlern oder Alben</string>
+    <string name="search_no_results_title">Keine Ergebnisse für „%1$s“</string>
+    <string name="search_no_results_desc">Versuchen Sie es mit allgemeineren Begriffen</string>
+    <string name="search_cloud_title">Zu SoundlyCloud gehen</string>
+    <string name="search_cloud_desc">Cloud-Inhalte erkunden</string>
+
+    <!-- Library & Menu -->
+    <string name="menu_delete_from_library">Aus Bibliothek löschen</string>
+    <string name="dialog_delete_from_library_title">Aus Bibliothek löschen?</string>
+    <string name="dialog_delete_from_library_message">Das Lied wird aus Ihrer Bibliothek ausgeblendet und erscheint nicht mehr in Listen und Details.</string>
+    <string name="menu_remove_from_favorites">Aus Favoriten entfernen</string>
+    <string name="dialog_remove_from_favorites_title">Aus Favoriten entfernen?</string>
+    <string name="dialog_remove_from_favorites_message">Das Lied wird aus Ihren Favoriten entfernt und verlässt die automatisch erstellte Playlist.</string>
+    <string name="menu_remove_from_playlist">Aus dieser Playlist entfernen</string>
+    <string name="dialog_remove_from_playlist_title">Aus Playlist entfernen?</string>
+    <string name="dialog_remove_from_playlist_message">Das Lied wird aus dieser Playlist entfernt.</string>
+    <string name="menu_add_to_playlist">Zu einer Playlist hinzufügen</string>
+    <string name="menu_go_to_album">Zum Album gehen</string>
+    <string name="menu_go_to_artist_multiple">Zum Künstler gehen...</string>
+    <string name="menu_go_to_artist">Zum Künstler gehen</string>
+    <string name="menu_information">Information</string>
+    <string name="menu_edit">Bearbeiten</string>
+    <string name="edit_screen_title">Informationen bearbeiten</string>
+    <string name="edit_section_details">Lieddetails</string>
+    <string name="edit_section_additional">Zusätzliche Informationen</string>
+    <string name="menu_playback_queue">Wiedergabewarteschlange</string>
+    <string name="menu_sleep_timer">Sleep-Timer</string>
+    <string name="timer_description">Legen Sie fest, in wie vielen Minuten die Musik stoppen soll.</string>
+    <string name="timer_active_format">Aktiv: %1$02d:%2$02d:%3$02d</string>
+    <string name="timer_cancel">Timer abbrechen</string>
+    <string name="timer_choose_time">Stunde/Min wählen (24h)</string>
+    <string name="timer_schedule">Planen</string>
+    <string name="timer_dialog_title">Timer (24h)</string>
+    <string name="timer_min_label">%1$d Min.</string>
+    <string name="menu_add_to_library">Zu Ihrer Bibliothek hinzufügen</string>
+    <string name="library_add_album">Zu Ihrer Bibliothek hinzufügen</string>
+    <string name="library_remove_album">Aus Ihrer Bibliothek entfernen</string>
+    <string name="menu_add_to_playlist_title">Zu Playlist hinzufügen</string>
+    <string name="menu_add_album_to_playlist_title">Album zur Playlist hinzufügen</string>
+    <string name="menu_add_to_playlist_desc">Wählen Sie eine Playlist aus, um dieses Lied hinzuzufügen.</string>
+    <string name="menu_no_playlists">Sie haben noch keine Playlists erstellt.</string>
+    <string name="dialog_info_title">Information</string>
+    <string name="info_label_title">Titel</string>
+    <string name="info_label_artist">Künstler</string>
+    <string name="info_label_album">Album</string>
+    <string name="info_label_genre">Genre</string>
+    <string name="info_label_year">Jahr</string>
+    <string name="info_label_composer">Komponist</string>
+    <string name="info_label_duration">Dauer</string>
+    <string name="info_label_path">Pfad</string>
+    <string name="info_value_empty">Keine Daten</string>
+    <string name="info_value_no_title">Kein Titel</string>
+    <string name="info_value_unknown_artist">Unbekannter Künstler</string>
+    <string name="info_bio_prefix">Lernen Sie kennen:</string>
+    <string name="share_song_chooser_title">Lied teilen</string>
+    <string name="share_song_text">Ich höre das gerade auf Soundly</string>
+    <string name="dialog_select_artist_title">Künstler auswählen</string>
+    <string name="quick_action_play_next">Nächstes abspielen</string>
+    <string name="quick_action_in_queue">In der Warteschlange</string>
+    <string name="quick_action_remove_favorite">Favorit entfernen</string>
+    <string name="quick_action_favorites">Favoriten</string>
+    <string name="playlist_item_already_added">Bereits hinzugefügt</string>
+    <string name="playlist_item_add_here">Hier hinzufügen</string>
+    <string name="playlist_song_count">%1$d Lieder</string>
+    <string name="library_empty_title">Ihre Bibliothek ist leer</string>
+    <string name="library_empty_message">Beginnen Sie, indem Sie eine Playlist erstellen oder Inhalte als Favorit markieren, um sie hier zu sehen.</string>
+    <string name="playlists_empty_title">Sie haben noch keine Playlists</string>
+    <string name="playlists_empty_message">Erstellen Sie eine neue oder markieren Sie Lieder mit „Gefällt mir“, damit Ihre automatisch erstellte Playlist erscheint.</string>
+    <string name="folders_empty_title">Keine Ordner mit Musik</string>
+    <string name="folders_empty_message">Wenn Soundly lokale Dateien erkennt, sehen Sie hier deren Gruppierung nach Ordnern.</string>
+    <string name="artists_empty_title">Keine Lieblingskünstler</string>
+    <string name="artists_empty_message">Künstler, die Sie aus der Bibliothek hinzufügen, werden hier angezeigt.</string>
+    <string name="albums_empty_title">Keine Lieblingsalben</string>
+    <string name="albums_empty_message">Alben, die Sie in der Bibliothek markieren, werden hier gespeichert.</string>
+
+    <!-- Device Control -->
+    <string name="device_sheet_title">Audioausgabe</string>
+    <string name="device_sheet_searching">Suche nach Geräten...</string>
+    <string name="device_sheet_no_devices_title">Keine Geräte gefunden</string>
+    <string name="device_sheet_no_devices_desc">Stellen Sie sicher, dass Ihre Cast- oder Bluetooth-Geräte eingeschaltet und im selben WLAN-Netzwerk sind.</string>
+    <string name="device_name_default">Gerät</string>
+    <string name="device_sheet_volume">Lautstärke</string>
+    <string name="device_status_casting">Streaming</string>
+    <string name="device_status_connected">Verbunden</string>
+
+    <!-- Settings Style -->
+    <string name="settings_mini_player_title">Mini-Player</string>
+    <string name="settings_section_customization">Anpassung</string>
+    <string name="settings_animations_title">Animationen</string>
+    <string name="settings_coming_soon">Demnächst...</string>
+    <string name="settings_functionality_title">Funktionalität</string>
+    <string name="settings_swipe_to_dismiss_title">Zum Schließen wischen</string>
+    <string name="settings_swipe_to_dismiss_desc">Wischen Sie den Mini-Player zur Seite, um die Musik zu stoppen und den Dienst zu schließen</string>
+    <string name="settings_marquee_title">Lauftext</string>
+    <string name="settings_marquee_desc">Automatisches Scrollen für Titel und Künstler aktivieren</string>
+    <string name="settings_marquee_desc_player">Automatisches Scrollen für lange Texte aktivieren</string>
+    <string name="settings_style_design_title">Stil und Design</string>
+    <string name="settings_progress_thickness_title">Fortschrittsdicke</string>
+    <string name="settings_show_previous_title">Zurück-Button</string>
+    <string name="settings_show_previous_desc">Den Zurück-Button im Mini-Player aktivieren</string>
+    <string name="settings_artwork_shape_title">Cover-Form</string>
+    <string name="settings_progressbar_design_title">ProgressBar-Design</string>
+    <string name="settings_preview_title">Vorschau</string>
+    <string name="settings_mini_player_closed_preview">Mini-Player geschlossen (Wischen)</string>
+    <string name="settings_center_text_title">Text zentrieren</string>
+    <string name="settings_center_text_desc">Zentriert Titel und Künstler im Player</string>
+    <string name="settings_carousel_title">Cover-Karussell</string>
+    <string name="settings_carousel_desc">Über das Cover wischen, um das Lied zu wechseln</string>
+    <string name="settings_player_preview_title">Player-Vorschau</string>
+    <string name="player_header_playing">AKTUELLE WIEDERGABE</string>
+    <string name="settings_progressbar_title">ProgressBar</string>
+    <string name="settings_show_thumb_title">Schieberegler anzeigen</string>
+    <string name="settings_show_thumb_desc">Zeigen oder verbergen Sie die kreisförmige Anzeige auf dem Balken</string>
+    <string name="settings_bar_thickness_title">Balkendicke</string>
+    <string name="settings_thickness_normal">Normal</string>
+    <string name="settings_thickness_bold">Fett</string>
+
+    <!-- Home Sections -->
+    <string name="home_section_discover_albums">Alben entdecken</string>
+    <string name="home_section_discover_albums_desc">Entdecken Sie großartige Musik</string>
+    <string name="home_section_recently_played">Kürzlich gespielt</string>
+    <string name="home_section_recently_played_desc">Machen Sie dort weiter, wo Sie aufgehört haben</string>
+    <string name="home_section_top_artists">Top-Künstler</string>
+    <string name="home_section_top_artists_desc">Ihre meistgehörten Künstler</string>
+    <string name="home_section_recently_added">Kürzlich hinzugefügt</string>
+    <string name="home_section_recently_added_desc">Ihre neuesten Ergänzungen</string>
+    <string name="home_section_recommended">Für Sie empfohlen</string>
+    <string name="home_section_recommended_desc">Basierend auf dem, was Sie hören</string>
+    <string name="home_section_user_playlists">Ihre Playlists</string>
+    <string name="home_section_user_playlists_desc">Ihre persönliche Bibliothek</string>
+    <string name="playlist_auto_generated">Automatisch erstellt</string>
+    <string name="songs_count">%1$d Lieder</string>
+    <string name="button_create_playlist">Erstellen o. importieren</string>
+    <string name="button_import">Importieren</string>
+    <string name="toast_importing">Playlist wird importiert…</string>
+    <string name="toast_import_success">Playlist erfolgreich importiert</string>
+    <string name="toast_import_partial">%1$d von %2$d gefundenen Titeln importiert</string>
+    <string name="toast_import_error">Fehler: Datei ist beschädigt oder leer</string>
+    <string name="import_file_types_desc">Erlaubte Formate: M3U, M3U8, XSPF</string>
+    <string name="menu_transfer_playlist">In andere Playlist übertragen</string>
+    <string name="menu_save_as_playlist">In Bibliothek speichern</string>
+    <string name="home_section_monthly_recap">Monatlicher Rückblick</string>
+    <string name="recap_playlist_title">Monatlicher Rückblick</string>
+    <string name="recap_banner_title">Dein %1$s Rückblick</string>
+    <string name="recap_banner_desc">Erlebe deine %1$d Lieblingssongs dieses Monats noch einmal</string>
+    <string name="recap_explore_now">Jetzt entdecken</string>
+    <string name="menu_export_playlist">Playlist exportieren</string>
+    <string name="menu_transfer_playlist_title">Titel übertragen nach…</string>
+    <string name="toast_export_success">Playlist erfolgreich exportiert</string>
+    <string name="toast_export_error">Fehler beim Exportieren der Playlist</string>
+    <string name="export_info_title">Playlist exportieren</string>
+    <string name="export_info_desc">Die Playlist wird als M3U-Datei gespeichert, die mit anderen Playern kompatibel ist.</string>
+    <string name="button_export">Exportieren</string>
+    <string name="create_playlist_desc">Neue Sammlung</string>
+
+    <!-- New Strings -->
+    <string name="album_detail_more_by">Mehr von %1$s</string>
+    <string name="library_label_playlist">Playlist</string>
+    <string name="label_your_profile">Ihr Profil</string>
+    <string name="albums_count">%1$d Alben</string>
+    <string name="unknown_artist">Unbekannter Künstler</string>
+    <string name="cd_add_to_favorites">Zu Favoriten hinzufügen</string>
+    <string name="cd_remove_from_favorites">Aus Favoriten entfernen</string>
+    <string name="user_header_greeting">Hallo, %1$s!</string>
+    <string name="user_header_motto">Deine Musik, deine Welt.</string>
+    <string name="nav_home">Start</string>
+    <string name="nav_music">Musik</string>
+    <string name="nav_library">Bibliothek</string>
+    <string name="nav_search">Suche</string>
+    <string name="lyrics_not_found">Songtext nicht gefunden</string>
+    <string name="lyrics_closing">Schließen...</string>
+    <string name="artist_detail_more_songs">+ %1$d weitere Lieder</string>
+    <string name="library_label_albums">Alben</string>
+    <string name="library_label_artists">Künstler</string>
+    <string name="button_back">Zurück</string>
+    <string name="cd_shuffle">Zufällig</string>
+    <string name="cd_previous">Vorheriges</string>
+    <string name="cd_next">Nächstes</string>
+    <string name="cd_share">Teilen</string>
+    <string name="cd_queue">Warteschlange</string>
+    <string name="cd_pinned">Angeheftet</string>
+    <string name="cd_song_artwork">Song-Cover</string>
+    <string name="cd_album_artwork">Alben-Cover</string>
+    <string name="cd_artist_image">Künstlerbild</string>
+    <string name="cd_create_playlist">Playlist erstellen</string>
+    <string name="cd_playlist">Playlist</string>
+    <string name="cd_reorder">Umordnen</string>
+    <string name="cd_open_options">Optionen öffnen</string>
+    <string name="label_artist">Künstler</string>
+    <string name="label_autogenerated">Automatisch erstellt</string>
+    <string name="song_count_singular">%1$d Lied</string>
+    <string name="album_count_singular">%1$d Album</string>
+
+    <!-- Playlist Operations -->
+    <string name="playlist_edit_title">Playlist bearbeiten</string>
+    <string name="playlist_create_title">Neue Playlist erstellen</string>
+    <string name="playlist_edit_desc">Ändern Sie den Namen oder das Cover Ihrer Sammlung, um sie auf dem neuesten Stand zu halten.</string>
+    <string name="playlist_create_desc">Verleihen Sie Ihrer Playlist Persönlichkeit mit einem tollen Foto und einem einzigartigen Namen, um sie in Ihrer Bibliothek zu speichern.</string>
+    <string name="playlist_artwork_cd">Playlist-Cover</string>
+    <string name="playlist_add_photo">Foto hinzufügen</string>
+    <string name="playlist_name_placeholder">Meine Lieblings-Playlist</string>
+    <string name="playlist_error_name_empty">Geben Sie einen Namen für die Playlist ein.</string>
+    <string name="playlist_error_artwork_empty">Wählen Sie ein Cover aus, um fortzufahren.</string>
+    <string name="playlist_error_update_failed">Playlist konnte nicht aktualisiert werden.</string>
+    <string name="playlist_error_create_failed">Playlist konnte nicht erstellt werden.</string>
+    <string name="playlist_btn_create">Erstellen</string>
+
+    <!-- Additional Menu Actions -->
+    <string name="menu_unpin">Von Start lösen</string>
+    <string name="menu_pin">An Start anheften</string>
+    <string name="menu_remove_from_home">Von Start entfernen</string>
+    <string name="menu_show_on_home">Auf Start anzeigen</string>
+    <string name="menu_delete_playlist">Playlist löschen</string>
+
+    <!-- Widget -->
+    <string name="widget_play_pause_cd">Wiedergabe/Pause</string>
+    <string name="widget_pause">Pause</string>
+    <string name="widget_play">Wiedergabe</string>
+    <!-- Generic -->
+    <string name="loading">Laden...</string>
+
+    <!-- Lyrics -->
+    <string name="lyrics_title">Songtext</string>
+    <string name="button_show_more">Mehr</string>
+
+    <!-- Soundly Cloud -->
+    <string name="soundly_cloud_card_desc">Musik entdecken und herunterladen</string>
+
+    <!-- Playlist -->
+    <string name="liked_songs_title">Lieblingssongs</string>
+
+    <!-- Settings Main -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_cloud_title">Soundly Music Cloud</string>
+    <string name="settings_enable_cloud_title">Soundly Cloud aktivieren</string>
+    <string name="settings_cloud_desc">Erhalten Sie exklusive Inhalte aus der Cloud</string>
+    <string name="settings_scan_title">Bibliothek scannen</string>
+    <string name="settings_scan_desc">Scannen Sie Ihre Musikbibliothek</string>
+    <string name="settings_audio_title">Audio</string>
+    <string name="settings_audio_desc">Passen Sie Ihr Audioerlebnis an</string>
+    <string name="settings_interface_title">Oberfläche</string>
+    <string name="settings_interface_desc">Personalisieren Sie das Erscheinungsbild von Soundly</string>
+    <string name="settings_check_updates_title">Nach Updates suchen</string>
+    <string name="settings_check_updates_desc">Bleiben Sie mit den neuesten Funktionen auf dem Laufenden</string>
+    <string name="settings_about_title">Über</string>
+    <string name="settings_about_desc">Anwendungsinformationen und Version</string>
+
+    <!-- Audio Page -->
+    <string name="audio_section_playback">Wiedergabe</string>
+    <string name="audio_gapless_title">Unterbrechungsfreie Wiedergabe</string>
+    <string name="audio_gapless_desc">Stille zwischen den Liedern eliminieren</string>
+    <string name="audio_crossfade_title">Crossfade</string>
+    <string name="audio_crossfade_desc">Sanfter Übergang zwischen den Titeln</string>
+    <string name="audio_crossfade_duration">Dauer</string>
+    <string name="audio_normalization_title">Audiolautstärke anpassen</string>
+    <string name="audio_normalization_desc">Konstante Lautstärke beibehalten</string>
+    <string name="audio_level_low">Niedrig</string>
+    <string name="audio_level_normal">Normal</string>
+    <string name="audio_level_high">Hoch</string>
+    <string name="audio_focus_title">Audio-Fokus</string>
+    <string name="audio_focus_desc">Musik pausieren, wenn andere Apps Ton abspielen</string>
+    <string name="audio_connection_features">Verbindungsfunktionen</string>
+    <string name="audio_connection_desc">Geräteinteraktion konfigurieren</string>
+    <string name="audio_section_sound">Ton</string>
+    <string name="audio_equalizer_title">Equalizer</string>
+    <string name="audio_equalizer_desc">Audiofrequenzen anpassen</string>
+    <string name="audio_mono_title">Mono-Audio</string>
+    <string name="audio_mono_desc">Linken und rechten Kanal kombinieren</string>
+
+    <!-- Interface Page -->
+    <string name="interface_section_universal">Universell</string>
+    <string name="interface_theme_title">App-Design</string>
+    <string name="interface_theme_light">Hell</string>
+    <string name="interface_theme_dark">Dunkel</string>
+    <string name="interface_theme_system">System folgen</string>
+    <string name="interface_language_title">Sprache</string>
+    <string name="interface_language_desc">Die Sprache der Anwendung ändern</string>
+    <string name="interface_vivid_colors_title">Lebendige Farben</string>
+    <string name="interface_vivid_colors_desc">Kräftigere Farben in der Oberfläche verwenden</string>
+    <string name="interface_dynamic_colors_title">M3-Farben</string>
+    <string name="interface_dynamic_colors_desc">Systemfarben verwenden (Material You)</string>
+    <string name="interface_section_home">Startseite</string>
+    <string name="interface_enable_home_title">Startseite aktivieren</string>
+    <string name="interface_enable_home_desc">Start-Tab in der Navigationsleiste anzeigen</string>
+    <string name="interface_customize_home_title">Startseite anpassen</string>
+    <string name="interface_customize_home_desc">Erscheinungsbild der Startseite personalisieren</string>
+    <string name="interface_section_player">Player-Einstellungen</string>
+    <string name="interface_player_title">Player</string>
+    <string name="interface_player_desc">Den Player personalisieren</string>
+    <string name="interface_mini_player_title">Mini-Player</string>
+    <string name="interface_mini_player_desc">Den Mini-Player personalisieren</string>
+    <string name="interface_lyrics_title">Songtext</string>
+    <string name="interface_lyrics_desc">Songtexte personalisieren</string>
+
+    <!-- Home Settings Page -->
+    <string name="home_settings_header">Startseite personalisieren</string>
+    <string name="home_settings_subtitles_title">Untertitel anzeigen</string>
+    <string name="home_settings_subtitles_desc">Beschreibungen unter den Sektionstiteln aktivieren oder deaktivieren</string>
+    <string name="home_settings_help_text">Gedrückt halten und ziehen, um die Abschnitte anzuordnen. Unten sehen Sie eine Vorschau, wie jeder Teil aussieht.</string>
+    <string name="home_settings_restore_button">Standardreihenfolge wiederherstellen</string>
+    <string name="home_settings_restore_toast">Reihenfolge der Startseite wiederhergestellt</string>
+
+    <!-- Lyrics Page -->
+    <string name="lyrics_section_animations">Animationen</string>
+    <string name="lyrics_expansion_speed_title">Expansionsgeschwindigkeit</string>
+    <string name="lyrics_expansion_speed_desc">Anpassen, wie schnell Songtexte eingeblendet werden</string>
+    <string name="lyrics_agsl_title">Animierter Hintergrund (AGSL)</string>
+    <string name="lyrics_agsl_desc">Farbwelle im Hintergrund der Songtexte verwenden</string>
+
+    <!-- Connection Page -->
+    <string name="connection_title">Verbindung</string>
+    <string name="connection_section_devices">Geräte</string>
+    <string name="connection_bluetooth_autoplay_title">Bluetooth-Wiedergabe</string>
+    <string name="connection_bluetooth_autoplay_desc">Wiedergabe starten, wenn eine Verbindung zu einem Gerät hergestellt wird</string>
+    <string name="connection_allowed_devices_title">Zugelassene Geräte</string>
+    <string name="connection_devices_none">Keine ausgewählt</string>
+    <string name="connection_devices_all">Alle ausgewählt</string>
+    <string name="connection_devices_count">%1$d Geräte ausgewählt</string>
+    <string name="connection_no_devices">Keine gekoppelten Geräte gefunden</string>
+
+    <!-- Equalizer Page -->
+    <string name="equalizer_title">Equalizer</string>
+    <string name="equalizer_enable_title">Equalizer aktivieren</string>
+    <string name="equalizer_section_bands">Frequenzbänder</string>
+    <string name="equalizer_section_effects">Audioeffekte</string>
+    <string name="equalizer_bass_boost">Bass-Boost</string>
+    <string name="equalizer_virtualizer">Surround-Sound</string>
+    <string name="equalizer_system">System-Equalizer</string>
+    <string name="equalizer_reset">Zurücksetzen</string>
+
+    <!-- Player Animations Page -->
+    <string name="animations_title">Animation</string>
+    <string name="animations_expansion_mode_title">Expansionsmodus</string>
+    <string name="animations_mode_expansion">Expansion</string>
+    <string name="animations_mode_elevation">Erhöhung</string>
+    <string name="animations_speed_title">Animationsgeschwindigkeit</string>
+
+    <!-- Mini Player Animations Page -->
+    <string name="player_settings_title">Player</string>
+    <string name="player_section_customization">Anpassung</string>
+    <string name="player_animation_title">Animation</string>
+    <string name="player_animation_desc">Player-Animationen personalisieren</string>
+    <string name="player_style_title">Stil und Design</string>
+    <string name="player_style_desc">Visuellen Aspekt personalisieren</string>
+
+    <!-- Animation Speeds -->
+    <string name="speed_normal">Normal</string>
+    <string name="speed_slow">Langsam</string>
+
+    <!-- Progress Bar Types -->
+    <string name="pb_type_default">Material 3 (Keine Optionen)</string>
+    <string name="pb_type_wave">Welle</string>
+    <string name="pb_type_plane">Ebene</string>
+
+    <!-- Mini Progress Bar Types -->
+    <string name="mini_pb_type_wave">Welle (Standard)</string>
+    <string name="mini_pb_type_plane">Ebene</string>
+    <string name="mini_pb_type_none">Kein Fortschritt</string>
+
+    <!-- Mini Progress Bar Thickness -->
+    <string name="mini_thickness_normal">Normal</string>
+    <string name="mini_thickness_medium">Mittel</string>
+    <string name="mini_thickness_bold">Fett</string>
+
+    <!-- Artwork Shapes -->
+    <string name="shape_default">Standard</string>
+    <string name="shape_circle">Kreis</string>
+    <string name="shape_square">Quadrat</string>
+    <string name="shape_arch">Bogen</string>
+    <string name="shape_pill">Pille</string>
+    <string name="shape_arrow">Pfeil</string>
+    <string name="shape_pentagon">Fünfeck</string>
+    <string name="shape_cookie_4">4-seitiger Keks</string>
+    <string name="shape_cookie_6">6-seitiger Keks</string>
+    <string name="shape_cookie_7">7-seitiger Keks</string>
+    <string name="shape_clover_4">4-blättriges Kleeblatt</string>
+
+    <!-- Mini Player Style -->
+    <string name="mini_style_solid">Einfarbig</string>
+    <string name="mini_style_tinted">Getönt</string>
+    <string name="mini_style_blur">Weichgezeichnet</string>
+
+    <!-- Search Cloud -->
+    <string name="search_mode_offline">Offline</string>
+    <string name="search_mode_online">Online</string>
+    <string name="search_section_cloud_artists">Künstler in der Cloud</string>
+    <string name="search_section_cloud_songs">Songs in der Cloud</string>
+    <string name="search_section_cloud_albums">Alben in der Cloud</string>
+    <string name="search_section_cloud_playlists">Playlists in der Cloud</string>
+    <string name="search_no_results_cloud">Keine Ergebnisse in der Cloud gefunden.</string>
+    <string name="cloud_artist_label">SoundlyCloud Künstler</string>
+    <string name="cloud_download_all">Alle herunterladen</string>
+    <string name="cloud_popular_songs">Beliebte Songs</string>
+    <string name="cloud_subscribers_label">Abonnenten</string>
 </resources>

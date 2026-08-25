@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Fondo dinámico (claro / oscuro / Material You) -->
-    <item android:drawable="?attr/colorSurface"/>
+    <!-- Fondo dinámico (Referenciamos colores directos para evitar dependencias de atributos de Material XML) -->
+    <item>
+        <color android:color="@color/splash_light" />
+    </item>
 
     <!-- Logo centrado -->
     <item>

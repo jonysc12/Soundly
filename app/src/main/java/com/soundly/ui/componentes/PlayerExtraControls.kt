@@ -30,50 +30,62 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 
+import androidx.compose.material.icons.automirrored.rounded.Notes
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-private val CONTROL_HEIGHT = 40.dp
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import com.soundly.R
+
+private val CONTROL_HEIGHT = 36.dp
 
 @Composable
 fun PlayerExtraControls(
     onOpenDevice: () -> Unit,
     onShare: () -> Unit,
     onOpenQueue: () -> Unit,
-    onColor: Color
+    onColor: Color,
+    modifier: Modifier = Modifier,
+    deviceName: String = stringResource(R.string.device_name_default),
+    deviceIcon: ImageVector = Icons.Rounded.Speaker,
+    onOpenLyrics: (() -> Unit)? = null
 ) {
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
         // DISPOSITIVO
         Row(
             modifier = Modifier
                 .height(CONTROL_HEIGHT)
-                .clip(RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(18.dp))
                 .background(onColor.copy(alpha = 0.08f))
                 .clickable(onClick = onOpenDevice)
-                .padding(horizontal = 14.dp),
+                .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
             Icon(
-                imageVector = Icons.Rounded.Speaker,
-                contentDescription = "Dispositivo",
+                imageVector = deviceIcon,
+                contentDescription = stringResource(R.string.cd_device),
                 tint = onColor,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(16.dp)
             )
 
             Spacer(Modifier.width(6.dp))
 
             Text(
-                text = "Dispositivo",
+                text = deviceName,
                 color = onColor,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
-
-        Spacer(modifier = Modifier.weight(1f))
 
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -82,26 +94,47 @@ fun PlayerExtraControls(
             // SHARE
             Box(
                 modifier = Modifier
-                    .width(48.dp)
+                    .width(42.dp)
                     .height(CONTROL_HEIGHT)
                     .clip(
                         RoundedCornerShape(
-                            topStart = 20.dp,
-                            bottomStart = 20.dp,
-                            topEnd = 8.dp,
-                            bottomEnd = 8.dp
+                            topStart = 18.dp,
+                            bottomStart = 18.dp,
+                            topEnd = 4.dp,
+                            bottomEnd = 4.dp
                         )
                     )
-                    .background(onColor.copy(alpha = 0.10f))
+                    .background(onColor.copy(alpha = 0.08f))
                     .clickable(onClick = onShare),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Share,
-                    contentDescription = "Compartir",
+                    contentDescription = stringResource(R.string.cd_share),
                     tint = onColor,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(16.dp)
                 )
+            }
+
+            if (onOpenLyrics != null) {
+                Spacer(Modifier.width(4.dp))
+                // LYRICS
+                Box(
+                    modifier = Modifier
+                        .width(42.dp)
+                        .height(CONTROL_HEIGHT)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(onColor.copy(alpha = 0.08f))
+                        .clickable(onClick = onOpenLyrics),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.Notes,
+                        contentDescription = stringResource(R.string.lyrics_title),
+                        tint = onColor,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
 
             Spacer(Modifier.width(4.dp))
@@ -109,27 +142,47 @@ fun PlayerExtraControls(
             // QUEUE
             Box(
                 modifier = Modifier
-                    .width(48.dp)
+                    .width(42.dp)
                     .height(CONTROL_HEIGHT)
                     .clip(
                         RoundedCornerShape(
-                            topStart = 8.dp,
-                            bottomStart = 8.dp,
-                            topEnd = 20.dp,
-                            bottomEnd = 20.dp
+                            topStart = 4.dp,
+                            bottomStart = 4.dp,
+                            topEnd = 18.dp,
+                            bottomEnd = 18.dp
                         )
                     )
-                    .background(onColor.copy(alpha = 0.10f))
+                    .background(onColor.copy(alpha = 0.08f))
                     .clickable(onClick = onOpenQueue),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Rounded.QueueMusic,
-                    contentDescription = "Cola",
+                    contentDescription = stringResource(R.string.cd_queue),
                     tint = onColor,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(16.dp)
                 )
             }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PlayerExtraControlsPreview() {
+    MaterialTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF121212))
+                .padding(16.dp)
+        ) {
+            PlayerExtraControls(
+                onOpenDevice = {},
+                onShare = {},
+                onOpenQueue = {},
+                onColor = Color.White
+            )
         }
     }
 }

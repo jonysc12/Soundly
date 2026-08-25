@@ -27,6 +27,7 @@ data class PlaylistEntity(
     val name: String,
     val type: String,
     val artworkUri: String?,
+    val showOnHome: Boolean = false,
     val createdAt: Long,
     val updatedAt: Long
 )
@@ -43,4 +44,11 @@ data class PlayHistoryEntity(
     @PrimaryKey val songId: Long,
     val lastPlayedAt: Long,
     val playCount: Int = 1
+)
+
+@Entity(tableName = "play_events")
+data class PlayEventEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val songId: Long,
+    val timestamp: Long
 )

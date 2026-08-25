@@ -11,10 +11,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.soundly.R
 import com.soundly.data.model.Album
 import com.soundly.data.model.Artist
 import com.soundly.data.model.Playlist
@@ -48,42 +51,49 @@ fun TodoPage(
     onArtistLongClick: (Artist) -> Unit = {},
     onFolderLongClick: (FolderSummary) -> Unit = {}
 ) {
+    val navStackHeight = com.soundly.ui.componentes.LocalNavStackHeight.current
     val isEmpty = playlists.isEmpty() && albums.isEmpty() && artists.isEmpty() && favoriteFolders.isEmpty()
 
-    // Separate pinned and unpinned
-    val pPlaylists = playlists.filter { it.id in pinnedPlaylists }
-    val uPlaylists = playlists.filter { it.id !in pinnedPlaylists }
-
-    val pFolders = favoriteFolders.filter { it.path in pinnedFolders }
-    val uFolders = favoriteFolders.filter { it.path !in pinnedFolders }
-
-    val pAlbums = albums.filter { it.id.toString() in pinnedAlbums }
-    val uAlbums = albums.filter { it.id.toString() !in pinnedAlbums }
-
-    val pArtists = artists.filter { it.id.toString() in pinnedArtists }
-    val uArtists = artists.filter { it.id.toString() !in pinnedArtists }
+    // Separate pinned and unpinned - OPTIMIZED: Use remember to avoid recalculation during scroll
+    val lists = remember(playlists, albums, artists, favoriteFolders, pinnedPlaylists, pinnedAlbums, pinnedArtists, pinnedFolders) {
+        object {
+            val pPlaylists = playlists.filter { it.id in pinnedPlaylists }
+            val uPlaylists = playlists.filter { it.id !in pinnedPlaylists }
+            val pFolders = favoriteFolders.filter { it.path in pinnedFolders }
+            val uFolders = favoriteFolders.filter { it.path !in pinnedFolders }
+            val pAlbums = albums.filter { it.id.toString() in pinnedAlbums }
+            val uAlbums = albums.filter { it.id.toString() !in pinnedAlbums }
+            val pArtists = artists.filter { it.id.toString() in pinnedArtists }
+            val uArtists = artists.filter { it.id.toString() !in pinnedArtists }
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 12.dp),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = navStackHeight + 16.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        item(key = "create_playlist") {
+        item(key = "create_playlist", contentType = "action") {
             ItemBibliotecaCreatePlaylist(onClick = onCreatePlaylistClick)
         }
 
         if (isEmpty) {
-            item(key = "empty_state") {
+            item(key = "empty_state", contentType = "empty") {
                 BibliotecaInlineEmptyState(
-                    title = "Tu biblioteca está vacía",
-                    message = "Empieza creando una playlist o marcando contenido como favorito para verlo aquí."
+                    title = stringResource(R.string.library_empty_title),
+                    message = stringResource(R.string.library_empty_message)
                 )
             }
         }
 
         // --- SECTION: ALL PINNED ITEMS ---
-        items(pPlaylists, key = { "pinned_playlist_${it.id}" }) { playlist ->
+        items(
+            items = lists.pPlaylists, 
+            key = { "pinned_playlist_${it.id}" },
+            contentType = { "playlist" }
+        ) { playlist ->
             ItemBibliotecaPlaylistList(
                 playlist = playlist,
                 onClick = { onPlaylistClick(playlist.id) },
@@ -92,7 +102,11 @@ fun TodoPage(
             )
         }
 
-        items(pFolders, key = { "pinned_folder_${it.path}" }) { folder ->
+        items(
+            items = lists.pFolders, 
+            key = { "pinned_folder_${it.path}" },
+            contentType = { "folder" }
+        ) { folder ->
             ItemFolderListTodo(
                 folderName = folder.name,
                 songCount = folder.songCount,
@@ -102,7 +116,11 @@ fun TodoPage(
             )
         }
 
-        items(pAlbums, key = { "pinned_album_${it.id}" }) { album ->
+        items(
+            items = lists.pAlbums, 
+            key = { "pinned_album_${it.id}" },
+            contentType = { "album" }
+        ) { album ->
             ItemBibliotecaAlbumList(
                 album = album,
                 caratulaUri = albumArtProvider(album.id),
@@ -112,7 +130,11 @@ fun TodoPage(
             )
         }
 
-        items(pArtists, key = { "pinned_artist_${it.id}" }) { artist ->
+        items(
+            items = lists.pArtists, 
+            key = { "pinned_artist_${it.id}" },
+            contentType = { "artist" }
+        ) { artist ->
             ItemBibliotecaArtistList(
                 artist = artist,
                 caratulaUri = artistArtProvider(artist.id),
@@ -123,7 +145,11 @@ fun TodoPage(
         }
 
         // --- SECTION: UNPINNED ITEMS ---
-        items(uPlaylists, key = { "playlist_${it.id}" }) { playlist ->
+        items(
+            items = lists.uPlaylists, 
+            key = { "playlist_${it.id}" },
+            contentType = { "playlist" }
+        ) { playlist ->
             ItemBibliotecaPlaylistList(
                 playlist = playlist,
                 onClick = { onPlaylistClick(playlist.id) },
@@ -132,7 +158,11 @@ fun TodoPage(
             )
         }
 
-        items(uFolders, key = { "folder_${it.path}" }) { folder ->
+        items(
+            items = lists.uFolders, 
+            key = { "folder_${it.path}" },
+            contentType = { "folder" }
+        ) { folder ->
             ItemFolderListTodo(
                 folderName = folder.name,
                 songCount = folder.songCount,
@@ -142,7 +172,11 @@ fun TodoPage(
             )
         }
 
-        items(uAlbums, key = { "album_${it.id}" }) { album ->
+        items(
+            items = lists.uAlbums, 
+            key = { "album_${it.id}" },
+            contentType = { "album" }
+        ) { album ->
             ItemBibliotecaAlbumList(
                 album = album,
                 caratulaUri = albumArtProvider(album.id),
@@ -152,7 +186,11 @@ fun TodoPage(
             )
         }
 
-        items(uArtists, key = { "artist_${it.id}" }) { artist ->
+        items(
+            items = lists.uArtists, 
+            key = { "artist_${it.id}" },
+            contentType = { "artist" }
+        ) { artist ->
             ItemBibliotecaArtistList(
                 artist = artist,
                 caratulaUri = artistArtProvider(artist.id),

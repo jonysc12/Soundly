@@ -6,6 +6,8 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,12 +44,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.soundly.R
+import com.soundly.data.service.PlaylistImportResult
+import com.soundly.ui.componentes.SoundlyToast
+import com.soundly.ui.componentes.SoundlyToastState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,30 +64,65 @@ import kotlinx.coroutines.launch
 fun CreatePlaylistBottomSheet(
     visible: Boolean,
     onDismiss: () -> Unit,
-    onCreatePlaylist: suspend (String, Uri) -> Result<String>,
+    onCreatePlaylist: suspend (String, Uri?) -> Result<String>,
     initialPlaylistId: String? = null,
     initialName: String? = null,
     initialArtworkUri: Uri? = null,
-    onUpdatePlaylist: suspend (String, String, Uri?) -> Result<Unit> = { _, _, _ -> Result.success(Unit) }
+    onUpdatePlaylist: suspend (String, String, Uri?) -> Result<Unit> = { _, _, _ -> Result.success(Unit) },
+    onImportPlaylist: (Uri) -> Unit = {},
+    importState: PlaylistImportResult = PlaylistImportResult.Idle,
+    onClearImportState: () -> Unit = {},
+    onCreatePlaylistWithSongs: suspend (String, Uri?, List<Long>) -> Result<String> = { _, _, _ -> Result.success("") }
 ) {
     if (!visible) return
 
     val isEditMode = initialPlaylistId != null
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     var playlistName by remember(initialName) { mutableStateOf(initialName ?: "") }
     var selectedArtworkUri by remember(initialArtworkUri) { mutableStateOf(initialArtworkUri) }
     var isSaving by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    
+    // Lista de IDs de canciones si viene de una importación
+    var importedSongIds by remember { mutableStateOf<List<Long>>(emptyList()) }
 
     LaunchedEffect(visible) {
         if (!visible) {
             if (!isEditMode) {
                 playlistName = ""
                 selectedArtworkUri = null
+                importedSongIds = emptyList()
             }
             isSaving = false
             errorMessage = null
+            onClearImportState()
+        }
+    }
+
+    // Selector de archivos para importación
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+        onResult = { uri ->
+            if (uri != null) {
+                onImportPlaylist(uri)
+            }
+        }
+    )
+
+    // Manejo de estados de importación
+    LaunchedEffect(importState) {
+        when (importState) {
+            is PlaylistImportResult.Success -> {
+                playlistName = importState.data.name
+                importedSongIds = importState.data.songIds
+                // Si hubo canciones que no se encontraron, el mensaje del toast informará al respecto
+            }
+            is PlaylistImportResult.Error -> {
+                errorMessage = importState.message
+            }
+            else -> {}
         }
     }
 
@@ -106,181 +151,234 @@ fun CreatePlaylistBottomSheet(
             )
         }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize() // Logra que use la pantalla completa
-                .padding(horizontal = 24.dp, vertical = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = if (isEditMode) "Editar playlist" else "Crear nueva playlist",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = if (isEditMode) "Cambia el nombre o la portada de tu colección para mantenerla actualizada." else "Dale personalidad a tu playlist con una foto increíble y un nombre único para guardarla en tu biblioteca.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-
-            Spacer(modifier = Modifier.height(36.dp))
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.65f)
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(32.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .clickable(enabled = !isSaving) {
-                        pickerLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                if (selectedArtworkUri != null) {
-                    AsyncImage(
-                        model = selectedArtworkUri,
-                        contentDescription = "Portada de la playlist",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.AddPhotoAlternate,
-                            contentDescription = null,
-                            modifier = Modifier.size(48.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = "Añadir foto",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.SemiBold
-                        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Toasts de estado de importación
+            SoundlyToast(
+                isVisible = importState != PlaylistImportResult.Idle,
+                message = when (importState) {
+                    is PlaylistImportResult.Loading -> stringResource(R.string.toast_importing)
+                    is PlaylistImportResult.Success -> {
+                        if (importState.data.foundCount < importState.data.totalInFile) {
+                            stringResource(R.string.toast_import_partial, importState.data.foundCount, importState.data.totalInFile)
+                        } else {
+                            stringResource(R.string.toast_import_success)
+                        }
                     }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(36.dp))
-
-            OutlinedTextField(
-                value = playlistName,
-                onValueChange = {
-                    playlistName = it
-                    errorMessage = null
+                    is PlaylistImportResult.Error -> importState.message
+                    else -> ""
                 },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Mi Playlist Favorita", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
-                textStyle = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center),
-                singleLine = true,
-                enabled = !isSaving,
-                shape = RoundedCornerShape(20.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                )
+                state = when (importState) {
+                    is PlaylistImportResult.Loading -> SoundlyToastState.LOADING
+                    is PlaylistImportResult.Success -> SoundlyToastState.SUCCESS
+                    is PlaylistImportResult.Error -> SoundlyToastState.ERROR
+                    else -> SoundlyToastState.INFO
+                },
+                onDismiss = onClearImportState
             )
 
-            if (errorMessage != null) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = errorMessage.orEmpty(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.error,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 32.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
+                    .imePadding()
+                    .padding(horizontal = 24.dp, vertical = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TextButton(
-                    onClick = onDismiss,
-                    enabled = !isSaving,
+                Column(
                     modifier = Modifier
                         .weight(1f)
-                        .height(56.dp),
-                    shape = RoundedCornerShape(20.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Cancelar",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        text = if (isEditMode) stringResource(R.string.playlist_edit_title) else stringResource(R.string.playlist_create_title),
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
                     )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = if (isEditMode) stringResource(R.string.playlist_edit_desc) else stringResource(R.string.playlist_create_desc),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(36.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.65f)
+                            .aspectRatio(1f)
+                            .clip(RoundedCornerShape(32.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .clickable(enabled = !isSaving) {
+                                pickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (selectedArtworkUri != null) {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(selectedArtworkUri)
+                                    .allowHardware(true)
+                                    .build(),
+                                contentDescription = stringResource(R.string.playlist_artwork_cd),
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.AddPhotoAlternate,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(48.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = stringResource(R.string.playlist_add_photo),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(36.dp))
+
+                    OutlinedTextField(
+                        value = playlistName,
+                        onValueChange = {
+                            playlistName = it
+                            errorMessage = null
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = {
+                            Text(
+                                stringResource(R.string.playlist_name_placeholder),
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        },
+                        textStyle = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center),
+                        singleLine = true,
+                        enabled = !isSaving,
+                        shape = RoundedCornerShape(20.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                        )
+                    )
+
+                    if (errorMessage != null) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = errorMessage.orEmpty(),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    
+                    // Espacio extra al final del scroll para que el TextField no quede pegado al borde
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
 
-                FilledTonalButton(
-                    onClick = {
-                        val artworkUri = selectedArtworkUri
-                        if (playlistName.isBlank()) {
-                            errorMessage = "Escribe un nombre para la playlist."
-                            return@FilledTonalButton
-                        }
-                        if (artworkUri == null) {
-                            errorMessage = "Selecciona una portada para continuar."
-                            return@FilledTonalButton
-                        }
-
-                        isSaving = true
-                        errorMessage = null
-                        scope.launch {
-                            if (isEditMode) {
-                                val changedArtwork = if (artworkUri == initialArtworkUri) null else artworkUri
-                                onUpdatePlaylist(initialPlaylistId!!, playlistName.trim(), changedArtwork)
-                                    .onSuccess { onDismiss() }
-                                    .onFailure { error ->
-                                        errorMessage = error.message ?: "No se pudo actualizar la playlist."
-                                    }
-                            } else {
-                                onCreatePlaylist(playlistName.trim(), artworkUri)
-                                    .onSuccess { onDismiss() }
-                                    .onFailure { error ->
-                                        errorMessage = error.message ?: "No se pudo crear la playlist."
-                                    }
-                            }
-                            isSaving = false
-                        }
-                    },
-                    enabled = !isSaving,
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .height(56.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (isSaving) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            strokeWidth = 2.5.dp
-                        )
-                    } else {
+                    TextButton(
+                        onClick = {
+                            if (isEditMode) {
+                                onDismiss()
+                            } else {
+                                importLauncher.launch(
+                                    arrayOf("audio/x-mpegurl", "application/xspf+xml", "text/plain")
+                                )
+                            }
+                        },
+                        enabled = !isSaving,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(20.dp)
+                    ) {
                         Text(
-                            text = if (isEditMode) "Guardar" else "Crear",
+                            text = if (isEditMode) stringResource(R.string.button_cancel) else stringResource(R.string.button_import),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
+                    }
+
+                    FilledTonalButton(
+                        onClick = {
+                            val artworkUri = selectedArtworkUri
+                            if (playlistName.isBlank()) {
+                                errorMessage = context.getString(R.string.playlist_error_name_empty)
+                                return@FilledTonalButton
+                            }
+
+                            isSaving = true
+                            errorMessage = null
+                            scope.launch {
+                                if (isEditMode) {
+                                    val changedArtwork = if (artworkUri == initialArtworkUri) null else artworkUri
+                                    onUpdatePlaylist(initialPlaylistId!!, playlistName.trim(), changedArtwork)
+                                        .onSuccess { onDismiss() }
+                                        .onFailure { error ->
+                                            errorMessage = error.message ?: context.getString(R.string.playlist_error_update_failed)
+                                        }
+                                } else {
+                                    val result = if (importedSongIds.isNotEmpty()) {
+                                        onCreatePlaylistWithSongs(playlistName.trim(), artworkUri, importedSongIds)
+                                    } else {
+                                        onCreatePlaylist(playlistName.trim(), artworkUri)
+                                    }
+                                    
+                                    result.onSuccess { onDismiss() }
+                                        .onFailure { error ->
+                                            errorMessage = error.message ?: context.getString(R.string.playlist_error_create_failed)
+                                        }
+                                }
+                                isSaving = false
+                            }
+                        },
+                        enabled = !isSaving,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        if (isSaving) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.5.dp
+                            )
+                        } else {
+                            Text(
+                                text = if (isEditMode) stringResource(R.string.button_save) else stringResource(R.string.playlist_btn_create),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             }

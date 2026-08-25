@@ -81,6 +81,9 @@ interface LibraryMetadataDao {
     @Query("UPDATE playlists SET name = :name, artworkUri = :artworkUri, updatedAt = :updatedAt WHERE id = :playlistId")
     suspend fun updatePlaylist(playlistId: String, name: String, artworkUri: String?, updatedAt: Long)
 
+    @Query("UPDATE playlists SET showOnHome = :showOnHome WHERE id = :playlistId")
+    suspend fun updatePlaylistShowOnHome(playlistId: String, showOnHome: Boolean)
+
     // --- PLAY HISTORY ---
     @Query("SELECT * FROM play_history ORDER BY lastPlayedAt DESC")
     fun observePlayHistory(): Flow<List<PlayHistoryEntity>>
@@ -91,9 +94,36 @@ interface LibraryMetadataDao {
     @Query("SELECT * FROM play_history WHERE songId = :songId LIMIT 1")
     suspend fun getPlayHistory(songId: Long): PlayHistoryEntity?
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPlayEvent(entity: PlayEventEntity)
+
+    @Query("""
+        SELECT s.* FROM songs s
+        INNER JOIN play_events e ON s.id = e.songId
+        WHERE e.timestamp >= :startTime
+        GROUP BY s.id
+        ORDER BY COUNT(e.id) DESC
+        LIMIT :limit
+    """)
+    fun observeTopSongsInRangeJoined(startTime: Long, limit: Int): Flow<List<SongEntity>>
+
     @Query("SELECT songId FROM play_history ORDER BY playCount DESC LIMIT :limit")
     fun observeTopSongs(limit: Int): Flow<List<Long>>
 
     @Query("SELECT songId FROM play_history ORDER BY lastPlayedAt DESC LIMIT :limit")
     fun observeRecentSongs(limit: Int): Flow<List<Long>>
+
+    @Query("""
+        SELECT s.* FROM songs s
+        INNER JOIN play_history h ON s.id = h.songId
+        ORDER BY h.lastPlayedAt DESC LIMIT :limit
+    """)
+    fun observeRecentSongsJoined(limit: Int): Flow<List<SongEntity>>
+
+    @Query("""
+        SELECT s.* FROM songs s
+        INNER JOIN play_history h ON s.id = h.songId
+        ORDER BY h.playCount DESC LIMIT :limit
+    """)
+    fun observeTopSongsJoined(limit: Int): Flow<List<SongEntity>>
 }

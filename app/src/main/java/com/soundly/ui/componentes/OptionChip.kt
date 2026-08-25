@@ -32,9 +32,11 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.soundly.R
 
 private val physicalSpringInt = spring<Int>(dampingRatio = 0.72f, stiffness = 380f)
 private val physicalSpringDp = spring<Dp>(dampingRatio = 0.72f, stiffness = 380f)
@@ -45,15 +47,6 @@ private val SLOT_GAP = 8.dp
 
 enum class LibraryFilter { PLAYLISTS, ALBUMS, ARTISTS, FOLDERS }
 
-private data class PillItem(val label: String, val filter: LibraryFilter)
-
-private val allPills = listOf(
-    PillItem("Playlists", LibraryFilter.PLAYLISTS),
-    PillItem("Álbumes",   LibraryFilter.ALBUMS),
-    PillItem("Artistas",  LibraryFilter.ARTISTS),
-    PillItem("Carpetas",  LibraryFilter.FOLDERS)
-)
-
 @Composable
 fun OptionPillsRow(
     selected: LibraryFilter?,
@@ -62,6 +55,13 @@ fun OptionPillsRow(
 ) {
     val scrollState = rememberScrollState()
     val density     = LocalDensity.current
+
+    val allPills = listOf(
+        stringResource(R.string.filter_playlists) to LibraryFilter.PLAYLISTS,
+        stringResource(R.string.filter_albums) to LibraryFilter.ALBUMS,
+        stringResource(R.string.filter_artists) to LibraryFilter.ARTISTS,
+        stringResource(R.string.filter_folders) to LibraryFilter.FOLDERS
+    )
 
     Row(
         modifier = modifier
@@ -79,16 +79,16 @@ fun OptionPillsRow(
             ClearPill(onClick = { onSelect(null) })
         }
 
-        allPills.forEach { item ->
-            key(item.filter) {
+        allPills.forEach { (label, filter) ->
+            key(filter) {
                 PhysicalSlot(
-                    visible = selected == null || selected == item.filter,
+                    visible = selected == null || selected == filter,
                     gapSide = GapSide.Start
                 ) {
                     OptionPill(
-                        text     = item.label,
-                        selected = selected == item.filter,
-                        onClick  = { onSelect(if (selected == item.filter) null else item.filter) }
+                        text     = label,
+                        selected = selected == filter,
+                        onClick  = { onSelect(if (selected == filter) null else filter) }
                     )
                 }
             }
@@ -185,7 +185,7 @@ private fun ClearPill(onClick: () -> Unit, modifier: Modifier = Modifier) {
     ) {
         Icon(
             imageVector        = Icons.Rounded.Close,
-            contentDescription = "Quitar filtro",
+            contentDescription = stringResource(R.string.filter_clear_desc),
             tint               = onSurface,
             modifier           = Modifier.size(16.dp)
         )

@@ -11,9 +11,10 @@ import androidx.room.RoomDatabase
         FavoriteArtistEntity::class,
         PlaylistEntity::class,
         PlaylistSongEntity::class,
-        PlayHistoryEntity::class
+        PlayHistoryEntity::class,
+        PlayEventEntity::class
     ],
-    version = 5,
+    version = 7,
     exportSchema = false
 )
 abstract class SoundlyDatabase : RoomDatabase() {

@@ -32,4 +32,491 @@
     <string name="change_image">画像を変更</string>
     <string name="confirm">確認</string>
     <string name="edit">編集</string>
+
+    <!-- Language Selection -->
+    <string name="language_selection_title">言語</string>
+    <string name="language_selection_header">言語</string>
+    <string name="language_selection_description">アプリのインターフェースに使用する優先言語を選択してください。後で設定から変更できます。</string>
+    <string name="language_selection_system">システム</string>
+    <string name="language_selection_system_desc">デフォルト</string>
+    <string name="language_selection_select">言語を選択してください</string>
+    <string name="language_selection_see_more">もっと見る</string>
+    <string name="language_selection_see_more_desc">利用可能なすべての言語を表示</string>
+    <string name="language_selection_see_less">表示を減らす</string>
+    <string name="language_selection_see_less_desc">追加の言語を非表示にする</string>
+
+    <!-- Media Scanner -->
+    <string name="media_scanner_title">メディアスキャン</string>
+    <string name="media_scanner_description">簡単な設定でデバイスに保存されている音楽をインポートします。</string>
+    <string name="media_scanner_local_source">ローカルソース</string>
+    <string name="media_scanner_android_mediastore">Android MediaStore</string>
+    <string name="media_scanner_settings">設定</string>
+    <string name="media_scanner_ignore_temp">一時フォルダを無視する</string>
+    <string name="media_scanner_ignore_temp_desc">WhatsApp、Telegram、キャッシュからのオーディオを除外します。</string>
+    <string name="media_scanner_ignore_short">60秒未満のオーディオを無視する</string>
+    <string name="media_scanner_start_scan_cd">スキャン開始</string>
+    <string name="media_scanner_dialog_title">音楽をスキャン</string>
+    <string name="media_scanner_dialog_scan_summary">スキャンと概要</string>
+    <string name="media_scanner_dialog_manage_folders">フォルダを管理</string>
+    <string name="media_scanner_dialog_manage_songs">曲を管理</string>
+    <string name="media_scanner_dialog_scanning">ファイルをスキャン中...</string>
+    <string name="media_scanner_dialog_complete">スキャン完了</string>
+    <string name="media_scanner_dialog_ready">スキャン準備完了</string>
+    <string name="media_scanner_dialog_detail">スキャン詳細</string>
+    <string name="media_scanner_dialog_confirm">確認</string>
+    <string name="media_scanner_dialog_manage">管理</string>
+    <string name="media_scanner_dialog_apply">適用</string>
+    <string name="media_scanner_dialog_back">戻る</string>
+    <string name="media_scanner_dialog_folders_desc">除外するフォルダを選択し、その内容を開いて個別の曲を制御します。</string>
+    <string name="media_scanner_dialog_see_content_cd">内容を見る</string>
+    <string name="media_scanner_dialog_songs_count">曲数: %1$d | 手動ブロック済み: %2$d</string>
+    <string name="media_scanner_report_filter_temp">一時フォルダフィルタ: %1$s</string>
+    <string name="media_scanner_report_filter_short"><![CDATA[オーディオフィルタ < 60s: %1$s]]></string>
+    <string name="media_scanner_report_result_header">----- スキャン結果 -----</string>
+    <string name="media_scanner_report_scanned">スキャン済み: %1$d</string>
+    <string name="media_scanner_report_imported">インポート済み: %1$d</string>
+    <string name="media_scanner_report_blocked_temp">フォルダによりブロック: %1$d</string>
+    <string name="media_scanner_report_blocked_short">オーディオによりブロック <![CDATA[< 60s: %1$d]]></string>
+    <string name="media_scanner_report_total_blocked">合計ブロック数: %1$d</string>
+    <string name="active">アクティブ</string>
+    <string name="inactive">非アクティブ</string>
+
+    <!-- Buttons -->
+    <string name="button_cancel">キャンセル</string>
+    <string name="button_close">閉じる</string>
+    <string name="button_delete">削除</string>
+    <string name="button_save">保存</string>
+    <string name="button_ready">準備完了</string>
+    <string name="button_see_all">すべて表示</string>
+    <string name="button_see_less">表示を減らす</string>
+    <string name="button_see_more_bio">略歴をすべて読む</string>
+    <string name="button_search_again">再検索</string>
+
+    <!-- Library Options & Labels -->
+    <string name="library_option_songs">曲</string>
+    <string name="library_option_albums">アルバム</string>
+    <string name="library_option_artists">アーティスト</string>
+    <string name="library_btn_play">再生</string>
+    <string name="library_btn_shuffle">シャッフル</string>
+    <string name="library_btn_sort">並べ替え</string>
+    <string name="library_btn_format">形式</string>
+    <string name="library_auto_collection">自動生成されたコレクション</string>
+    <string name="library_label_artist">アーティスト</string>
+    <string name="library_label_folder">フォルダ</string>
+
+    <!-- Filter Chips -->
+    <string name="filter_playlists">プレイリスト</string>
+    <string name="filter_albums">アルバム</string>
+    <string name="filter_artists">アーティスト</string>
+    <string name="filter_folders">フォルダ</string>
+    <string name="filter_clear_desc">フィルタをクリア</string>
+
+    <!-- Sort & Layout -->
+    <string name="sort_az">A-Z</string>
+    <string name="sort_za">Z-A</string>
+    <string name="sort_recent">最近追加されたもの</string>
+    <string name="sort_oldest">最も古いもの</string>
+    <string name="layout_grid">グリッド</string>
+    <string name="layout_list">リスト</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_close">閉じる</string>
+    <string name="cd_more_options">その他のオプション</string>
+    <string name="cd_refresh">更新</string>
+    <string name="cd_artwork">アートワーク</string>
+    <string name="cd_change_artwork">アートワークを変更</string>
+    <string name="cd_device">デバイス</string>
+    <string name="cd_favorite">お気に入り</string>
+    <string name="cd_pause">一時停止</string>
+    <string name="cd_play">再生</string>
+
+    <!-- Search -->
+    <string name="search_explore_title">見つける</string>
+    <string name="search_title">検索</string>
+    <string name="search_section_songs">曲</string>
+    <string name="search_section_albums">アルバム</string>
+    <string name="search_section_artists">アーティスト</string>
+    <string name="search_section_playlists">プレイリスト</string>
+    <string name="search_empty_title">お気に入りを見つける</string>
+    <string name="search_empty_desc">曲、アーティスト、またはアルバムを検索</string>
+    <string name="search_no_results_title">「%1$s」の結果はありません</string>
+    <string name="search_no_results_desc">より一般的な用語で試してください</string>
+    <string name="search_cloud_title">SoundlyCloudへ移動</string>
+    <string name="search_cloud_desc">クラウドコンテンツを探索する</string>
+
+    <!-- Library & Menu -->
+    <string name="menu_delete_from_library">ライブラリから削除</string>
+    <string name="dialog_delete_from_library_title">ライブラリから削除しますか？</string>
+    <string name="dialog_delete_from_library_message">曲はライブラリから非表示になり、リストや詳細には表示されなくなります。</string>
+    <string name="menu_remove_from_favorites">お気に入りから削除</string>
+    <string name="dialog_remove_from_favorites_title">お気に入りから削除しますか？</string>
+    <string name="dialog_remove_from_favorites_message">曲はお気に入りから削除され、自動生成されたプレイリストから外れます。</string>
+    <string name="menu_remove_from_playlist">このプレイリストから削除</string>
+    <string name="dialog_remove_from_playlist_title">プレイリストから削除しますか？</string>
+    <string name="dialog_remove_from_playlist_message">曲はこのプレイリストから削除されます。</string>
+    <string name="menu_add_to_playlist">プレイリストに追加</string>
+    <string name="menu_save_as_playlist">ライブラリに保存</string>
+    <string name="home_section_monthly_recap">月間振り返り</string>
+    <string name="recap_playlist_title">月間振り返り</string>
+    <string name="recap_banner_title">%1$sの振り返り</string>
+    <string name="recap_banner_desc">今月のトップ%1$d曲を振り返る</string>
+    <string name="recap_explore_now">今すぐチェック</string>
+    <string name="menu_go_to_album">アルバムへ移動</string>
+    <string name="menu_go_to_artist_multiple">アーティストへ移動...</string>
+    <string name="menu_go_to_artist">アーティストへ移動</string>
+    <string name="menu_information">情報</string>
+    <string name="menu_edit">編集</string>
+    <string name="edit_screen_title">情報を編集</string>
+    <string name="edit_section_details">曲の詳細</string>
+    <string name="edit_section_additional">追加情報</string>
+    <string name="menu_playback_queue">再生キュー</string>
+    <string name="menu_sleep_timer">スリープタイマー</string>
+    <string name="timer_description">音楽が停止するまでの時間を設定します。</string>
+    <string name="timer_active_format">有効: %1$02d:%2$02d:%3$02d</string>
+    <string name="timer_cancel">タイマーをキャンセル</string>
+    <string name="timer_choose_time">時/分を選択 (24時間)</string>
+    <string name="timer_schedule">スケジュール</string>
+    <string name="timer_dialog_title">タイマー (24時間)</string>
+    <string name="timer_min_label">%1$d 分</string>
+    <string name="menu_add_to_library">ライブラリに追加</string>
+    <string name="library_add_album">ライブラリに追加</string>
+    <string name="library_remove_album">ライブラリから削除</string>
+    <string name="menu_add_to_playlist_title">プレイリストに追加</string>
+    <string name="menu_add_album_to_playlist_title">アルバムをプレイリストに追加</string>
+    <string name="menu_add_to_playlist_desc">この曲を追加するプレイリストを選択してください。</string>
+    <string name="menu_no_playlists">まだプレイリストが作成されていません。</string>
+    <string name="dialog_info_title">情報</string>
+    <string name="info_label_title">タイトル</string>
+    <string name="info_label_artist">アーティスト</string>
+    <string name="info_label_album">アルバム</string>
+    <string name="info_label_genre">ジャンル</string>
+    <string name="info_label_year">年</string>
+    <string name="info_label_composer">作曲家</string>
+    <string name="info_label_duration">再生時間</string>
+    <string name="info_label_path">パス</string>
+    <string name="info_value_empty">データなし</string>
+    <string name="info_value_no_title">タイトルなし</string>
+    <string name="info_value_unknown_artist">不明なアーティスト</string>
+    <string name="info_bio_prefix">プロフィール</string>
+    <string name="share_song_chooser_title">曲を共有</string>
+    <string name="share_song_text">Soundlyでこれを聴いています</string>
+    <string name="dialog_select_artist_title">アーティストを選択</string>
+    <string name="quick_action_play_next">次に再生</string>
+    <string name="quick_action_in_queue">キュー内</string>
+    <string name="quick_action_remove_favorite">お気に入り解除</string>
+    <string name="quick_action_favorites">お気に入り</string>
+    <string name="playlist_item_already_added">追加済み</string>
+    <string name="playlist_item_add_here">ここに追加</string>
+    <string name="playlist_song_count">%1$d 曲</string>
+    <string name="library_empty_title">ライブラリが空です</string>
+    <string name="library_empty_message">プレイリストを作成するか、コンテンツをお気に入りに登録して、ここに表示させましょう。</string>
+    <string name="playlists_empty_title">まだプレイリストがありません</string>
+    <string name="playlists_empty_message">新しく作成するか、曲に「いいね」をして、自動生成されたプレイリストを表示させましょう。</string>
+    <string name="folders_empty_title">音楽ファイルのあるフォルダがありません</string>
+    <string name="folders_empty_message">Soundlyがローカルファイルを検出すると、ここにフォルダごとのグループが表示されます。</string>
+    <string name="artists_empty_title">お気に入りのアーティストがいません</string>
+    <string name="artists_empty_message">ライブラリから追加したアーティストがここに表示されます。</string>
+    <string name="albums_empty_title">お気に入りのアルバムがいません</string>
+    <string name="albums_empty_message">ライブラリからマークしたアルバムがここに保存されます。</string>
+
+    <!-- Device Control -->
+    <string name="device_sheet_title">オーディオ出力</string>
+    <string name="device_sheet_searching">デバイスを検索中...</string>
+    <string name="device_sheet_no_devices_title">デバイスが見つかりません</string>
+    <string name="device_sheet_no_devices_desc">CastまたはBluetoothデバイスがオンになっており、同じWi-Fiネットワーク上にあることを確認してください。</string>
+    <string name="device_name_default">デバイス</string>
+    <string name="device_sheet_volume">音量</string>
+    <string name="device_status_casting">キャスト中</string>
+    <string name="device_status_connected">接続済み</string>
+
+    <!-- Settings Style -->
+    <string name="settings_mini_player_title">ミニプレーヤー</string>
+    <string name="settings_section_customization">カスタマイズ</string>
+    <string name="settings_animations_title">アニメーション</string>
+    <string name="settings_coming_soon">まもなく公開...</string>
+    <string name="settings_functionality_title">機能</string>
+    <string name="settings_swipe_to_dismiss_title">スワイプして閉じる</string>
+    <string name="settings_swipe_to_dismiss_desc">ミニプレーヤーを横にスワイプして音楽を停止し、サービスを終了します</string>
+    <string name="settings_marquee_title">マーキーテキスト</string>
+    <string name="settings_marquee_desc">タイトルとアーティストの自動スクロールを有効にする</string>
+    <string name="settings_marquee_desc_player">長いテキストの自動スクロールを有効にする</string>
+    <string name="settings_style_design_title">スタイルとデザイン</string>
+    <string name="settings_progress_thickness_title">プログレスバーの太さ</string>
+    <string name="settings_show_previous_title">前へボタン</string>
+    <string name="settings_show_previous_desc">ミニプレーヤーで戻るボタンを有効にする</string>
+    <string name="settings_artwork_shape_title">アートワークの形状</string>
+    <string name="settings_progressbar_design_title">ProgressBarのデザイン</string>
+    <string name="settings_preview_title">プレビュー</string>
+    <string name="settings_mini_player_closed_preview">ミニプレーヤーが閉じられました (スワイプ)</string>
+    <string name="settings_center_text_title">テキストを中央に配置</string>
+    <string name="settings_center_text_desc">タイトルとアーティストをプレーヤーの中央に配置します</string>
+    <string name="settings_carousel_title">アートワークのカルーセル</string>
+    <string name="settings_carousel_desc">アートワーク上をスワイプして曲を変更します</string>
+    <string name="settings_player_preview_title">プレーヤーのプレビュー</string>
+    <string name="player_header_playing">再生中</string>
+    <string name="settings_progressbar_title">ProgressBar</string>
+    <string name="settings_show_thumb_title">サムを表示</string>
+    <string name="settings_show_thumb_desc">バー上の円形インジケーターの表示/非表示を切り替えます</string>
+    <string name="settings_bar_thickness_title">バーの太さ</string>
+    <string name="settings_thickness_normal">標準</string>
+    <string name="settings_thickness_bold">太字</string>
+
+    <!-- Home Sections -->
+    <string name="home_section_discover_albums">アルバムを見つける</string>
+    <string name="home_section_discover_albums_desc">素晴らしい音楽を探索する</string>
+    <string name="home_section_recently_played">最近再生した曲</string>
+    <string name="home_section_recently_played_desc">中断したところから再開</string>
+    <string name="home_section_top_artists">人気アーティスト</string>
+    <string name="home_section_top_artists_desc">最も多く再生したアーティスト</string>
+    <string name="home_section_recently_added">最近追加されたもの</string>
+    <string name="home_section_recently_added_desc">最新の追加項目</string>
+    <string name="home_section_recommended">おすすめ</string>
+    <string name="home_section_recommended_desc">あなたの好みに基づくおすすめ</string>
+    <string name="home_section_user_playlists">あなたのプレイリスト</string>
+    <string name="home_section_user_playlists_desc">個人のライブラリ</string>
+    <string name="playlist_auto_generated">自動生成</string>
+    <string name="songs_count">%1$d 曲</string>
+    <string name="button_create_playlist">作成またはインポート</string>
+    <string name="create_playlist_desc">新しいコレクション</string>
+
+    <!-- New Strings -->
+    <string name="album_detail_more_by">%1$sのその他の作品</string>
+    <string name="library_label_playlist">プレイリスト</string>
+    <string name="label_your_profile">あなたのプロフィール</string>
+    <string name="albums_count">%1$d アルバム</string>
+    <string name="unknown_artist">不明なアーティスト</string>
+    <string name="cd_add_to_favorites">お気に入りに追加</string>
+    <string name="cd_remove_from_favorites">お気に入りから削除</string>
+    <string name="user_header_greeting">%1$sさん、こんにちは！</string>
+    <string name="user_header_motto">あなたの音楽、あなたの世界。</string>
+    <string name="nav_home">ホーム</string>
+    <string name="nav_music">音楽</string>
+    <string name="nav_library">ライブラリ</string>
+    <string name="nav_search">検索</string>
+    <string name="lyrics_not_found">歌詞が見つかりません</string>
+    <string name="lyrics_closing">終了中...</string>
+    <string name="artist_detail_more_songs">他 %1$d 曲</string>
+    <string name="library_label_albums">アルバム</string>
+    <string name="library_label_artists">アーティスト</string>
+    <string name="button_back">戻る</string>
+    <string name="cd_shuffle">シャッフル</string>
+    <string name="cd_previous">前へ</string>
+    <string name="cd_next">次へ</string>
+    <string name="cd_share">共有</string>
+    <string name="cd_queue">キュー</string>
+    <string name="cd_pinned">固定済み</string>
+    <string name="cd_song_artwork">曲のアートワーク</string>
+    <string name="cd_album_artwork">アルバムのアートワーク</string>
+    <string name="cd_artist_image">アーティスト画像</string>
+    <string name="cd_create_playlist">プレイリストを作成</string>
+    <string name="cd_playlist">プレイリスト</string>
+    <string name="cd_reorder">並べ替え</string>
+    <string name="cd_open_options">オプションを開く</string>
+    <string name="label_artist">アーティスト</string>
+    <string name="label_autogenerated">自動生成</string>
+    <string name="song_count_singular">%1$d 曲</string>
+    <string name="album_count_singular">%1$d アルバム</string>
+
+    <!-- Playlist Operations -->
+    <string name="playlist_edit_title">プレイリストを編集</string>
+    <string name="playlist_create_title">新しいプレイリストを作成</string>
+    <string name="playlist_edit_desc">最新の状態に保つために、コレクションの名前やカバーを変更してください。</string>
+    <string name="playlist_create_desc">素晴らしい写真とユニークな名前でプレイリストに個性を出し、ライブラリに保存しましょう。</string>
+    <string name="playlist_artwork_cd">プレイリストのカバー</string>
+    <string name="playlist_add_photo">写真を追加</string>
+    <string name="playlist_name_placeholder">お気に入りのプレイリスト</string>
+    <string name="playlist_error_name_empty">プレイリストの名前を入力してください。</string>
+    <string name="playlist_error_artwork_empty">続行するにはカバーを選択してください。</string>
+    <string name="playlist_error_update_failed">プレイリストを更新できませんでした。</string>
+    <string name="playlist_error_create_failed">プレイリストを作成できませんでした。</string>
+    <string name="playlist_btn_create">作成</string>
+
+    <!-- Additional Menu Actions -->
+    <string name="menu_unpin">固定解除</string>
+    <string name="menu_pin">固定</string>
+    <string name="menu_remove_from_home">ホームから削除</string>
+    <string name="menu_show_on_home">ホームに表示</string>
+    <string name="menu_delete_playlist">プレイリストを削除</string>
+
+    <!-- Widget -->
+    <string name="widget_play_pause_cd">再生/一時停止</string>
+    <string name="widget_pause">一時停止</string>
+    <string name="widget_play">再生</string>
+
+    <!-- Generic -->
+    <string name="loading">読み込み中...</string>
+
+    <!-- Lyrics -->
+    <string name="lyrics_title">歌詞</string>
+    <string name="button_show_more">詳細</string>
+
+    <!-- Soundly Cloud -->
+    <string name="soundly_cloud_card_desc">音楽を探索・ダウンロード</string>
+
+    <!-- Playlist -->
+    <string name="liked_songs_title">お気に入りの曲</string>
+
+    <!-- Settings Main -->
+    <string name="settings_title">設定</string>
+    <string name="settings_cloud_title">Soundly Music Cloud</string>
+    <string name="settings_enable_cloud_title">Soundly Cloudを有効にする</string>
+    <string name="settings_cloud_desc">クラウドから限定コンテンツを入手</string>
+    <string name="settings_scan_title">ライブラリをスキャン</string>
+    <string name="settings_scan_desc">音楽ライブラリをスキャンします</string>
+    <string name="settings_audio_title">オーディオ</string>
+    <string name="settings_audio_desc">オーディオ体験を調整</string>
+    <string name="settings_interface_title">インターフェース</string>
+    <string name="settings_interface_desc">Soundlyの見た目をパーソナライズ</string>
+    <string name="settings_check_updates_title">アップデートを確認</string>
+    <string name="settings_check_updates_desc">最新の機能で最新の状態に保つ</string>
+    <string name="settings_about_title">アプリについて</string>
+    <string name="settings_about_desc">アプリケーションの情報とバージョン</string>
+
+    <!-- Audio Page -->
+    <string name="audio_section_playback">再生</string>
+    <string name="audio_gapless_title">ギャップレス再生</string>
+    <string name="audio_gapless_desc">曲間の無音をなくす</string>
+    <string name="audio_crossfade_title">クロスフェード</string>
+    <string name="audio_crossfade_desc">トラック間のスムーズな移行</string>
+    <string name="audio_crossfade_duration">持続時間</string>
+    <string name="audio_normalization_title">オーディオの正規化</string>
+    <string name="audio_normalization_desc">一定の音量を維持</string>
+    <string name="audio_level_low">低い</string>
+    <string name="audio_level_normal">標準</string>
+    <string name="audio_level_high">高い</string>
+    <string name="audio_focus_title">オーディオフォーカス</string>
+    <string name="audio_focus_desc">他のアプリが音を再生する場合に音楽を一時停止</string>
+    <string name="audio_connection_features">接続機能</string>
+    <string name="audio_connection_desc">デバイスの相互作用を設定</string>
+    <string name="audio_section_sound">サウンド</string>
+    <string name="audio_equalizer_title">イコライザー</string>
+    <string name="audio_equalizer_desc">オーディオ周波数を調整</string>
+    <string name="audio_mono_title">モノラルオーディオ</string>
+    <string name="audio_mono_desc">左右のチャンネルを結合</string>
+
+    <!-- Interface Page -->
+    <string name="interface_section_universal">ユニバーサル</string>
+    <string name="interface_theme_title">アプリのテーマ</string>
+    <string name="interface_theme_light">ライト</string>
+    <string name="interface_theme_dark">ダーク</string>
+    <string name="interface_theme_system">システムに従う</string>
+    <string name="interface_language_title">言語</string>
+    <string name="interface_language_desc">アプリの言語を変更</string>
+    <string name="interface_vivid_colors_title">ビビッドカラー</string>
+    <string name="interface_vivid_colors_desc">インターフェースでより鮮やかな色を使用</string>
+    <string name="interface_dynamic_colors_title">M3 カラー</string>
+    <string name="interface_dynamic_colors_desc">システムカラーを使用する (Material You)</string>
+    <string name="interface_section_home">ホーム</string>
+    <string name="interface_enable_home_title">ホームを有効にする</string>
+    <string name="interface_enable_home_desc">ナビゲーションバーにホームタブを表示</string>
+    <string name="interface_customize_home_title">ホームをカスタマイズ</string>
+    <string name="interface_customize_home_desc">ホームの見た目をパーソナライズ</string>
+    <string name="interface_section_player">プレーヤー設定</string>
+    <string name="interface_player_title">プレーヤー</string>
+    <string name="interface_player_desc">プレーヤーをパーソナライズ</string>
+    <string name="interface_mini_player_title">ミニプレーヤー</string>
+    <string name="interface_mini_player_desc">ミニプレーヤーをパーソナライズ</string>
+    <string name="interface_lyrics_title">歌詞</string>
+    <string name="interface_lyrics_desc">曲の歌詞をパーソナライズ</string>
+
+    <!-- Home Settings Page -->
+    <string name="home_settings_header">ホームをパーソナライズ</string>
+    <string name="home_settings_subtitles_title">サブタイトルを表示</string>
+    <string name="home_settings_subtitles_desc">セクションタイトルの下の説明を有効/無効にします</string>
+    <string name="home_settings_help_text">長押ししてドラッグするとセクションを並べ替えられます。下に各パーツのプレビューが表示されます。</string>
+    <string name="home_settings_restore_button">デフォルトの順序に戻す</string>
+    <string name="home_settings_restore_toast">ホームの順序が復元されました</string>
+
+    <!-- Lyrics Page -->
+    <string name="lyrics_section_animations">アニメーション</string>
+    <string name="lyrics_expansion_speed_title">拡張速度</string>
+    <string name="lyrics_expansion_speed_desc">歌詞が広がる速さを調整</string>
+    <string name="lyrics_agsl_title">アニメーション背景 (AGSL)</string>
+    <string name="lyrics_agsl_desc">歌詞の背景にカラーウェーブを使用</string>
+
+    <!-- Connection Page -->
+    <string name="connection_title">接続</string>
+    <string name="connection_section_devices">デバイス</string>
+    <string name="connection_bluetooth_autoplay_title">Bluetooth再生</string>
+    <string name="connection_bluetooth_autoplay_desc">デバイス接続時に再生を開始</string>
+    <string name="connection_allowed_devices_title">許可されたデバイス</string>
+    <string name="connection_devices_none">選択なし</string>
+    <string name="connection_devices_all">すべて選択</string>
+    <string name="connection_devices_count">%1$d 個のデバイスを選択</string>
+    <string name="connection_no_devices">ペアリングされたデバイスが見つかりません</string>
+
+    <!-- Equalizer Page -->
+    <string name="equalizer_title">イコライザー</string>
+    <string name="equalizer_enable_title">イコライザーを有効にする</string>
+    <string name="equalizer_section_bands">周波数帯域</string>
+    <string name="equalizer_section_effects">オーディオエフェクト</string>
+    <string name="equalizer_bass_boost">バスブースト</string>
+    <string name="equalizer_virtualizer">サラウンドサウンド</string>
+    <string name="equalizer_system">システムイコライザー</string>
+    <string name="equalizer_reset">リセット</string>
+
+    <!-- Player Animations Page -->
+    <string name="animations_title">アニメーション</string>
+    <string name="animations_expansion_mode_title">拡張モード</string>
+    <string name="animations_mode_expansion">拡張</string>
+    <string name="animations_mode_elevation">エレベーション</string>
+    <string name="animations_speed_title">アニメーション速度</string>
+
+    <!-- Mini Player Animations Page -->
+    <string name="player_settings_title">プレーヤー</string>
+    <string name="player_section_customization">カスタマイズ</string>
+    <string name="player_animation_title">アニメーション</string>
+    <string name="player_animation_desc">プレーヤーのアニメーションをパーソナライズ</string>
+    <string name="player_style_title">スタイルとデザイン</string>
+    <string name="player_style_desc">視覚的な側面をパーソナライズ</string>
+
+    <!-- Animation Speeds -->
+    <string name="speed_normal">標準</string>
+    <string name="speed_slow">遅い</string>
+
+    <!-- Progress Bar Types -->
+    <string name="pb_type_default">Material 3 (オプションなし)</string>
+    <string name="pb_type_wave">ウェーブ</string>
+    <string name="pb_type_plane">プレーン</string>
+
+    <!-- Mini Progress Bar Types -->
+    <string name="mini_pb_type_wave">ウェーブ (デフォルト)</string>
+    <string name="mini_pb_type_plane">プレーン</string>
+    <string name="mini_pb_type_none">プログレスなし</string>
+
+    <!-- Mini Progress Bar Thickness -->
+    <string name="mini_thickness_normal">標準</string>
+    <string name="mini_thickness_medium">中間</string>
+    <string name="mini_thickness_bold">太字</string>
+
+    <!-- Artwork Shapes -->
+    <string name="shape_default">デフォルト</string>
+    <string name="shape_circle">円形</string>
+    <string name="shape_square">正方形</string>
+    <string name="shape_arch">アーチ</string>
+    <string name="shape_pill">ピル</string>
+    <string name="shape_arrow">矢印</string>
+    <string name="shape_pentagon">五角形</string>
+    <string name="shape_cookie_4">4角クッキー</string>
+    <string name="shape_cookie_6">6角クッキー</string>
+    <string name="shape_cookie_7">7角クッキー</string>
+    <string name="shape_clover_4">四つ葉のクローバー</string>
+
+    <!-- Mini Player Style -->
+    <string name="mini_style_solid">ソリッド</string>
+    <string name="mini_style_tinted">ティンテッド</string>
+    <string name="mini_style_blur">ブラー</string>
+
+    <!-- Search Cloud -->
+    <string name="search_mode_offline">オフライン</string>
+    <string name="search_mode_online">オンライン</string>
+    <string name="search_section_cloud_artists">クラウド内のアーティスト</string>
+    <string name="search_section_cloud_songs">クラウド内の曲</string>
+    <string name="search_section_cloud_albums">クラウド内のアルバム</string>
+    <string name="search_section_cloud_playlists">クラウド内のプレイリスト</string>
+    <string name="search_no_results_cloud">クラウド内に結果が見つかりませんでした。</string>
+    <string name="cloud_artist_label">SoundlyCloudアーティスト</string>
+    <string name="cloud_download_all">すべてダウンロード</string>
+    <string name="cloud_popular_songs">人気の曲</string>
+    <string name="cloud_subscribers_label">登録者</string>
 </resources>

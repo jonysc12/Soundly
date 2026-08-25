@@ -32,4 +32,491 @@
     <string name="change_image">छवि बदलें</string>
     <string name="confirm">पुष्टि करें</string>
     <string name="edit">संपादित करें</string>
+
+    <!-- Language Selection -->
+    <string name="language_selection_title">भाषा</string>
+    <string name="language_selection_header">भाषा</string>
+    <string name="language_selection_description">एप्लिकेशन इंटरफ़ेस के लिए पसंदीदा भाषा चुनें। आप इसे बाद में सेटिंग्स में बदल सकते हैं।</string>
+    <string name="language_selection_system">सिस्टम</string>
+    <string name="language_selection_system_desc">डिफ़ॉल्ट</string>
+    <string name="language_selection_select">अपनी भाषा चुनें</string>
+    <string name="language_selection_see_more">अधिक देखें</string>
+    <string name="language_selection_see_more_desc">सभी उपलब्ध भाषाएं दिखाएं</string>
+    <string name="language_selection_see_less">कम देखें</string>
+    <string name="language_selection_see_less_desc">अतिरिक्त भाषाएं छिपाएं</string>
+
+    <!-- Media Scanner -->
+    <string name="media_scanner_title">मीडिया स्कैन</string>
+    <string name="media_scanner_description">एक साधारण सेटअप के साथ अपने डिवाइस पर सहेजे गए संगीत को आयात करें।</string>
+    <string name="media_scanner_local_source">स्थानीय स्रोत</string>
+    <string name="media_scanner_android_mediastore">Android MediaStore</string>
+    <string name="media_scanner_settings">सेटिंग्स</string>
+    <string name="media_scanner_ignore_temp">अस्थायी फोल्डर अनदेखा करें</string>
+    <string name="media_scanner_ignore_temp_desc">WhatsApp, Telegram और कैश से ऑडियो को बाहर करता है।</string>
+    <string name="media_scanner_ignore_short">60 सेकंड से कम के ऑडियो को अनदेखा करें</string>
+    <string name="media_scanner_start_scan_cd">स्कैन शुरू करें</string>
+    <string name="media_scanner_dialog_title">संगीत स्कैन करें</string>
+    <string name="media_scanner_dialog_scan_summary">स्कैन और सारांश</string>
+    <string name="media_scanner_dialog_manage_folders">फोल्डर प्रबंधित करें</string>
+    <string name="media_scanner_dialog_manage_songs">गाने प्रबंधित करें</string>
+    <string name="media_scanner_dialog_scanning">फाइलें स्कैन की जा रही हैं...</string>
+    <string name="media_scanner_dialog_complete">स्कैन पूर्ण</string>
+    <string name="media_scanner_dialog_ready">स्कैन के लिए तैयार</string>
+    <string name="media_scanner_dialog_detail">स्कैन विवरण</string>
+    <string name="media_scanner_dialog_confirm">पुष्टि करें</string>
+    <string name="media_scanner_dialog_manage">प्रबंधित करें</string>
+    <string name="media_scanner_dialog_apply">लागू करें</string>
+    <string name="media_scanner_dialog_back">वापस</string>
+    <string name="media_scanner_dialog_folders_desc">बाहर करने के लिए फोल्डर चुनें और अलग-अलग गानों को नियंत्रित करने के लिए उनकी सामग्री खोलें।</string>
+    <string name="media_scanner_dialog_see_content_cd">सामग्री देखें</string>
+    <string name="media_scanner_dialog_songs_count">गाने: %1$d | मैन्युअल रूप से अवरुद्ध: %2$d</string>
+    <string name="media_scanner_report_filter_temp">अस्थायी फोल्डर फ़िल्टर: %1$s</string>
+    <string name="media_scanner_report_filter_short"><![CDATA[ऑडियो फ़िल्टर < 60s: %1$s]]></string>
+    <string name="media_scanner_report_result_header">----- स्कैन परिणाम -----</string>
+    <string name="media_scanner_report_scanned">स्कैन किए गए: %1$d</string>
+    <string name="media_scanner_report_imported">आयातित: %1$d</string>
+    <string name="media_scanner_report_blocked_temp">फोल्डरों द्वारा अवरुद्ध: %1$d</string>
+    <string name="media_scanner_report_blocked_short">ऑडियो द्वारा अवरुद्ध <![CDATA[< 60s: %1$d]]></string>
+    <string name="media_scanner_report_total_blocked">कुल अवरुद्ध: %1$d</string>
+    <string name="active">सक्रिय</string>
+    <string name="inactive">अक्रिय</string>
+
+    <!-- Buttons -->
+    <string name="button_cancel">रद्द करें</string>
+    <string name="button_close">बंद करें</string>
+    <string name="button_delete">हटाएं</string>
+    <string name="button_save">सहेजें</string>
+    <string name="button_ready">तैयार</string>
+    <string name="button_see_all">सभी देखें</string>
+    <string name="button_see_less">कम देखें</string>
+    <string name="button_see_more_bio">पूरी जीवनी पढ़ें</string>
+    <string name="button_search_again">फिर से खोजें</string>
+
+    <!-- Library Options & Labels -->
+    <string name="library_option_songs">गाने</string>
+    <string name="library_option_albums">एल्बम</string>
+    <string name="library_option_artists">कलाकार</string>
+    <string name="library_btn_play">चलाएं</string>
+    <string name="library_btn_shuffle">शफ़ल करें</string>
+    <string name="library_btn_sort">क्रमबद्ध करें</string>
+    <string name="library_btn_format">प्रारूप</string>
+    <string name="library_auto_collection">स्वचालित रूप से उत्पन्न संग्रह</string>
+    <string name="library_label_artist">कलाकार</string>
+    <string name="library_label_folder">फोल्डर</string>
+
+    <!-- Filter Chips -->
+    <string name="filter_playlists">प्लेलिस्ट</string>
+    <string name="filter_albums">एल्बम</string>
+    <string name="filter_artists">कलाकार</string>
+    <string name="filter_folders">फोल्डर</string>
+    <string name="filter_clear_desc">फ़िल्टर साफ़ करें</string>
+
+    <!-- Sort & Layout -->
+    <string name="sort_az">A-Z</string>
+    <string name="sort_za">Z-A</string>
+    <string name="sort_recent">हाल ही में जोड़े गए</string>
+    <string name="sort_oldest">सबसे पुराने जोड़े गए</string>
+    <string name="layout_grid">ग्रिड</string>
+    <string name="layout_list">सूची</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_close">बंद करें</string>
+    <string name="cd_more_options">अधिक विकल्प</string>
+    <string name="cd_refresh">ताज़ा करें</string>
+    <string name="cd_artwork">कलाकृति</string>
+    <string name="cd_change_artwork">कलाकृति बदलें</string>
+    <string name="cd_device">डिवाइस</string>
+    <string name="cd_favorite">पसंदीदा</string>
+    <string name="cd_pause">रोकें</string>
+    <string name="cd_play">चलाएं</string>
+
+    <!-- Search -->
+    <string name="search_explore_title">अन्वेषण करें</string>
+    <string name="search_title">खोजें</string>
+    <string name="search_section_songs">गाने</string>
+    <string name="search_section_albums">एल्बम</string>
+    <string name="search_section_artists">कलाकार</string>
+    <string name="search_section_playlists">प्लेलिस्ट</string>
+    <string name="search_empty_title">वह खोजें जो आपको पसंद है</string>
+    <string name="search_empty_desc">गाने, कलाकार या एल्बम खोजें</string>
+    <string name="search_no_results_title">\"%1$s\" के लिए कोई परिणाम नहीं</string>
+    <string name="search_no_results_desc">अधिक सामान्य शब्दों के साथ प्रयास करें</string>
+    <string name="search_cloud_title">SoundlyCloud पर जाएं</string>
+    <string name="search_cloud_desc">क्लाउड सामग्री का अन्वेषण करें</string>
+
+    <!-- Library & Menu -->
+    <string name="menu_delete_from_library">लाइब्रेरी से हटाएं</string>
+    <string name="dialog_delete_from_library_title">लाइब्रेरी से हटाएं?</string>
+    <string name="dialog_delete_from_library_message">गाना आपकी लाइब्रेरी से छिपा दिया जाएगा और अब सूचियों और विवरणों में दिखाई नहीं देगा।</string>
+    <string name="menu_remove_from_favorites">पसंदीदा से हटाएं</string>
+    <string name="dialog_remove_from_favorites_title">पसंदीदा से हटाएं?</string>
+    <string name="dialog_remove_from_favorites_message">गाना आपके पसंदीदा से हटा दिया जाएगा और स्वचालित रूप से उत्पन्न प्लेलिस्ट से बाहर हो जाएगा।</string>
+    <string name="menu_remove_from_playlist">इस प्लेलिस्ट से हटाएं</string>
+    <string name="dialog_remove_from_playlist_title">प्लेलिस्ट से हटाएं?</string>
+    <string name="dialog_remove_from_playlist_message">गाना इस प्लेलिस्ट से हटा दिया जाएगा।</string>
+    <string name="menu_add_to_playlist">प्लेलिस्ट में जोड़ें</string>
+    <string name="menu_save_as_playlist">लाइब्रेरी में सहेजें</string>
+    <string name="home_section_monthly_recap">मासिक रिकैप</string>
+    <string name="recap_playlist_title">मासिक रिकैप</string>
+    <string name="recap_banner_title">आपका %1$s रिकैप</string>
+    <string name="recap_banner_desc">इस महीने के अपने %1$d पसंदीदा गानों को फिर से जिएं</string>
+    <string name="recap_explore_now">अभी एक्सप्लोर करें</string>
+    <string name="menu_go_to_album">एल्बम पर जाएं</string>
+    <string name="menu_go_to_artist_multiple">कलाकार पर जाएं...</string>
+    <string name="menu_go_to_artist">कलाकार पर जाएं</string>
+    <string name="menu_information">जानकारी</string>
+    <string name="menu_edit">संपादित करें</string>
+    <string name="edit_screen_title">जानकारी संपादित करें</string>
+    <string name="edit_section_details">गाने का विवरण</string>
+    <string name="edit_section_additional">अतिरिक्त जानकारी</string>
+    <string name="menu_playback_queue">प्लेबैक कतार</string>
+    <string name="menu_sleep_timer">स्लीप टाइमर</string>
+    <string name="timer_description">परिभाषित करें कि संगीत कितनी देर में बंद हो जाएगा।</string>
+    <string name="timer_active_format">सक्रिय: %1$02d:%2$02d:%3$02d</string>
+    <string name="timer_cancel">टाइमर रद्द करें</string>
+    <string name="timer_choose_time">घंटा/मिनट चुनें (24h)</string>
+    <string name="timer_schedule">शेड्यूल करें</string>
+    <string name="timer_dialog_title">टाइमर (24h)</string>
+    <string name="timer_min_label">%1$d मिनट</string>
+    <string name="menu_add_to_library">अपनी लाइब्रेरी में जोड़ें</string>
+    <string name="library_add_album">अपनी लाइब्रेरी में जोड़ें</string>
+    <string name="library_remove_album">अपनी लाइब्रेरी से हटाएं</string>
+    <string name="menu_add_to_playlist_title">प्लेलिस्ट में जोड़ें</string>
+    <string name="menu_add_album_to_playlist_title">एल्बम को प्लेलिस्ट में जोड़ें</string>
+    <string name="menu_add_to_playlist_desc">इस गाने को जोड़ने के लिए एक प्लेलिस्ट चुनें।</string>
+    <string name="menu_no_playlists">आपने अभी तक कोई प्लेलिस्ट नहीं बनाई है।</string>
+    <string name="dialog_info_title">जानकारी</string>
+    <string name="info_label_title">शीर्षक</string>
+    <string name="info_label_artist">कलाकार</string>
+    <string name="info_label_album">एल्बम</string>
+    <string name="info_label_genre">शैली</string>
+    <string name="info_label_year">वर्ष</string>
+    <string name="info_label_composer">संगीतकार</string>
+    <string name="info_label_duration">अवधि</string>
+    <string name="info_label_path">पथ</string>
+    <string name="info_value_empty">कोई डेटा नहीं</string>
+    <string name="info_value_no_title">कोई शीर्षक नहीं</string>
+    <string name="info_value_unknown_artist">अज्ञात कलाकार</string>
+    <string name="info_bio_prefix">मिलें</string>
+    <string name="share_song_chooser_title">गाना साझा करें</string>
+    <string name="share_song_text">मैं इसे Soundly पर सुन रहा हूँ</string>
+    <string name="dialog_select_artist_title">कलाकार चुनें</string>
+    <string name="quick_action_play_next">अगला चलाएं</string>
+    <string name="quick_action_in_queue">कतार में</string>
+    <string name="quick_action_remove_favorite">पसंदीदा हटाएं</string>
+    <string name="quick_action_favorites">पसंदीदा</string>
+    <string name="playlist_item_already_added">पहले ही जोड़ा गया</string>
+    <string name="playlist_item_add_here">यहाँ जोड़ें</string>
+    <string name="playlist_song_count">%1$d गाने</string>
+    <string name="library_empty_title">आपकी लाइब्रेरी खाली है</string>
+    <string name="library_empty_message">प्लेलिस्ट बनाकर या सामग्री को पसंदीदा के रूप में चिह्नित करके शुरू करें।</string>
+    <string name="playlists_empty_title">आपके पास अभी तक प्लेलिस्ट नहीं है</string>
+    <string name="playlists_empty_message">एक नई प्लेलिस्ट बनाएं या गानों को लाइक करें ताकि आपकी ऑटो-जेनरेटेड प्लेलिस्ट दिखाई दे।</string>
+    <string name="folders_empty_title">संगीत के साथ कोई फोल्डर नहीं</string>
+    <string name="folders_empty_message">जब Soundly स्थानीय फाइलों का पता लगाएगा, तो आप यहाँ फोल्डर द्वारा उनके समूहन देखेंगे।</string>
+    <string name="artists_empty_title">कोई पसंदीदा कलाकार नहीं</string>
+    <string name="artists_empty_message">लाइब्रेरी से आपके द्वारा जोड़े गए कलाकार यहाँ दिखाई देंगे।</string>
+    <string name="albums_empty_title">कोई पसंदीदा एल्बम नहीं</string>
+    <string name="albums_empty_message">लाइब्रेरी से आपके द्वारा चिह्नित एल्बम यहाँ सहेजे जाएंगे।</string>
+
+    <!-- Device Control -->
+    <string name="device_sheet_title">ऑडियो आउटपुट</string>
+    <string name="device_sheet_searching">उपकरणों की खोज की जा रही है...</string>
+    <string name="device_sheet_no_devices_title">कोई उपकरण नहीं मिला</string>
+    <string name="device_sheet_no_devices_desc">सुनिश्चित करें कि आपके कास्ट या ब्लूटूथ डिवाइस चालू हैं और एक ही वाई-फाई नेटवर्क पर हैं।</string>
+    <string name="device_name_default">डिवाइस</string>
+    <string name="device_sheet_volume">वॉल्यूम</string>
+    <string name="device_status_casting">कास्टिंग</string>
+    <string name="device_status_connected">जुड़ा हुआ</string>
+
+    <!-- Settings Style -->
+    <string name="settings_mini_player_title">मिनी प्लेयर</string>
+    <string name="settings_section_customization">अनुकूलन</string>
+    <string name="settings_animations_title">एनिमेशन</string>
+    <string name="settings_coming_soon">जल्द आ रहा है...</string>
+    <string name="settings_functionality_title">कार्यक्षमता</string>
+    <string name="settings_swipe_to_dismiss_title">खारिज करने के लिए स्वाइप करें</string>
+    <string name="settings_swipe_to_dismiss_desc">संगीत को रोकने और सेवा को बंद करने के लिए मिनी प्लेयर को बगल में स्वाइप करें</string>
+    <string name="settings_marquee_title">मार्की टेक्स्ट</string>
+    <string name="settings_marquee_desc">शीर्षक और कलाकार के लिए स्वचालित स्क्रॉलिंग सक्षम करें</string>
+    <string name="settings_marquee_desc_player">लंबे टेक्स्ट के लिए स्वचालित स्क्रॉलिंग सक्षम करें</string>
+    <string name="settings_style_design_title">शैली और डिजाइन</string>
+    <string name="settings_progress_thickness_title">प्रगति मोटाई</string>
+    <string name="settings_show_previous_title">पिछला बटन</string>
+    <string name="settings_show_previous_desc">मिनी प्लेयर में बैक बटन सक्षम करें</string>
+    <string name="settings_artwork_shape_title">कलाकृति का आकार</string>
+    <string name="settings_progressbar_design_title">ProgressBar डिजाइन</string>
+    <string name="settings_preview_title">पूर्वावलोकन</string>
+    <string name="settings_mini_player_closed_preview">मिनी प्लेयर बंद (स्वाइप)</string>
+    <string name="settings_center_text_title">टेक्स्ट को बीच में करें</string>
+    <string name="settings_center_text_desc">प्लेयर में शीर्षक और कलाकार को बीच में रखता है</string>
+    <string name="settings_carousel_title">कलाकृति हिंडोला</string>
+    <string name="settings_carousel_desc">गाने बदलने के लिए कलाकृति पर स्वाइप करें</string>
+    <string name="settings_player_preview_title">प्लेयर पूर्वावलोकन</string>
+    <string name="player_header_playing">अभी चल रहा है</string>
+    <string name="settings_progressbar_title">ProgressBar</string>
+    <string name="settings_show_thumb_title">थंब दिखाएं</string>
+    <string name="settings_show_thumb_desc">बार पर गोलाकार संकेतक दिखाएं या छिपाएं</string>
+    <string name="settings_bar_thickness_title">बार की मोटाई</string>
+    <string name="settings_thickness_normal">सामान्य</string>
+    <string name="settings_thickness_bold">बोल्ड</string>
+
+    <!-- Home Sections -->
+    <string name="home_section_discover_albums">एल्बम खोजें</string>
+    <string name="home_section_discover_albums_desc">अद्भुत संगीत का अन्वेषण करें</string>
+    <string name="home_section_recently_played">हाल ही में चलाए गए</string>
+    <string name="home_section_recently_played_desc">वहीं से जारी रखें जहां आपने छोड़ा था</string>
+    <string name="home_section_top_artists">शीर्ष कलाकार</string>
+    <string name="home_section_top_artists_desc">आपके सबसे अधिक चलाए गए कलाकार</string>
+    <string name="home_section_recently_added">हाल ही में जोड़े गए</string>
+    <string name="home_section_recently_added_desc">आपके नवीनतम जुड़ाव</string>
+    <string name="home_section_recommended">आपके लिए अनुशंसित</string>
+    <string name="home_section_recommended_desc">आप जो सुनते हैं उसके आधार पर</string>
+    <string name="home_section_user_playlists">आपकी प्लेलिस्ट</string>
+    <string name="home_section_user_playlists_desc">आपकी व्यक्तिगत लाइब्रेरी</string>
+    <string name="playlist_auto_generated">ऑटो-जेनरेटेड</string>
+    <string name="songs_count">%1$d गाने</string>
+    <string name="button_create_playlist">बनाएं या आयात करें</string>
+    <string name="create_playlist_desc">नया संग्रह</string>
+
+    <!-- New Strings -->
+    <string name="album_detail_more_by">%1$s द्वारा और अधिक</string>
+    <string name="library_label_playlist">प्लेलिस्ट</string>
+    <string name="label_your_profile">आपकी प्रोफ़ाइल</string>
+    <string name="albums_count">%1$d एल्बम</string>
+    <string name="unknown_artist">अज्ञात कलाकार</string>
+    <string name="cd_add_to_favorites">पसंदीदा में जोड़ें</string>
+    <string name="cd_remove_from_favorites">पसंदीदा से हटाएं</string>
+    <string name="user_header_greeting">नमस्ते, %1$s!</string>
+    <string name="user_header_motto">आपका संगीत, आपकी दुनिया।</string>
+    <string name="nav_home">होम</string>
+    <string name="nav_music">संगीत</string>
+    <string name="nav_library">लाइब्रेरी</string>
+    <string name="nav_search">खोजें</string>
+    <string name="lyrics_not_found">बोल नहीं मिले</string>
+    <string name="lyrics_closing">बंद हो रहा है...</string>
+    <string name="artist_detail_more_songs">+ %1$d और गाने</string>
+    <string name="library_label_albums">एल्बम</string>
+    <string name="library_label_artists">कलाकार</string>
+    <string name="button_back">वापस</string>
+    <string name="cd_shuffle">शफ़ल करें</string>
+    <string name="cd_previous">पिछला</string>
+    <string name="cd_next">अगला</string>
+    <string name="cd_share">साझा करें</string>
+    <string name="cd_queue">कतार</string>
+    <string name="cd_pinned">पिन किया गया</string>
+    <string name="cd_song_artwork">गाने की कलाकृति</string>
+    <string name="cd_album_artwork">एल्बम की कलाकृति</string>
+    <string name="cd_artist_image">कलाकार की छवि</string>
+    <string name="cd_create_playlist">प्लेलिस्ट बनाएं</string>
+    <string name="cd_playlist">प्लेलिस्ट</string>
+    <string name="cd_reorder">पुनर्गठित करें</string>
+    <string name="cd_open_options">विकल्प खोलें</string>
+    <string name="label_artist">कलाकार</string>
+    <string name="label_autogenerated">ऑटो-जेनरेटेड</string>
+    <string name="song_count_singular">%1$d गाना</string>
+    <string name="album_count_singular">%1$d एल्बम</string>
+
+    <!-- Playlist Operations -->
+    <string name="playlist_edit_title">प्लेलिस्ट संपादित करें</string>
+    <string name="playlist_create_title">नई प्लेलिस्ट बनाएं</string>
+    <string name="playlist_edit_desc">अपडेट रहने के लिए अपने संग्रह का नाम या कवर बदलें।</string>
+    <string name="playlist_create_desc">अपनी प्लेलिस्ट को अपनी लाइब्रेरी में सहेजने के लिए एक अद्भुत फोटो और एक अद्वितीय नाम के साथ व्यक्तित्व दें।</string>
+    <string name="playlist_artwork_cd">प्लेलिस्ट कवर</string>
+    <string name="playlist_add_photo">फोटो जोड़ें</string>
+    <string name="playlist_name_placeholder">मेरी पसंदीदा प्लेलिस्ट</string>
+    <string name="playlist_error_name_empty">प्लेलिस्ट के लिए एक नाम लिखें।</string>
+    <string name="playlist_error_artwork_empty">जारी रखने के लिए एक कवर चुनें।</string>
+    <string name="playlist_error_update_failed">प्लेलिस्ट अपडेट नहीं हो सकी।</string>
+    <string name="playlist_error_create_failed">प्लेलिस्ट नहीं बनाई जा सकी।</string>
+    <string name="playlist_btn_create">बनाएं</string>
+
+    <!-- Additional Menu Actions -->
+    <string name="menu_unpin">अनपिन करें</string>
+    <string name="menu_pin">पिन करें</string>
+    <string name="menu_remove_from_home">होम से हटाएं</string>
+    <string name="menu_show_on_home">होम पर दिखाएं</string>
+    <string name="menu_delete_playlist">प्लेलिस्ट हटाएं</string>
+
+    <!-- Widget -->
+    <string name="widget_play_pause_cd">चलाएं/रोकें</string>
+    <string name="widget_pause">रोकें</string>
+    <string name="widget_play">चलाएं</string>
+
+    <!-- Generic -->
+    <string name="loading">लोड हो रहा है...</string>
+
+    <!-- Lyrics -->
+    <string name="lyrics_title">बोल</string>
+    <string name="button_show_more">अधिक</string>
+
+    <!-- Soundly Cloud -->
+    <string name="soundly_cloud_card_desc">संगीत खोजें और डाउनलोड करें</string>
+
+    <!-- Playlist -->
+    <string name="liked_songs_title">पसंद किए गए गाने</string>
+
+    <!-- Settings Main -->
+    <string name="settings_title">सेटिंग्स</string>
+    <string name="settings_cloud_title">Soundly Music Cloud</string>
+    <string name="settings_enable_cloud_title">Soundly Cloud सक्षम करें</string>
+    <string name="settings_cloud_desc">क्लाउड से विशेष सामग्री प्राप्त करें</string>
+    <string name="settings_scan_title">लाइब्रेरी स्कैन करें</string>
+    <string name="settings_scan_desc">अपनी संगीत लाइब्रेरी स्कैन करें</string>
+    <string name="settings_audio_title">ऑडियो</string>
+    <string name="settings_audio_desc">अपने ऑडियो अनुभव को समायोजित करें</string>
+    <string name="settings_interface_title">इंटरफ़ेस</string>
+    <string name="settings_interface_desc">Soundly की उपस्थिति को व्यक्तिगत बनाएं</string>
+    <string name="settings_check_updates_title">अपडेट के लिए जाँच करें</string>
+    <string name="settings_check_updates_desc">नवीनतम सुविधाओं के साथ अद्यतित रहें</string>
+    <string name="settings_about_title">के बारे में</string>
+    <string name="settings_about_desc">एप्लिकेशन जानकारी और संस्करण</string>
+
+    <!-- Audio Page -->
+    <string name="audio_section_playback">प्लेबैक</string>
+    <string name="audio_gapless_title">गैपलेस प्लेबैक</string>
+    <string name="audio_gapless_desc">गानों के बीच शांति को समाप्त करें</string>
+    <string name="audio_crossfade_title">क्रॉसफ़ेड</string>
+    <string name="audio_crossfade_desc">ट्रैक्स के बीच सहज संक्रमण</string>
+    <string name="audio_crossfade_duration">अवधि</string>
+    <string name="audio_normalization_title">ऑडियो सामान्यीकरण</string>
+    <string name="audio_normalization_desc">स्थिर वॉल्यूम बनाए रखें</string>
+    <string name="audio_level_low">कम</string>
+    <string name="audio_level_normal">सामान्य</string>
+    <string name="audio_level_high">उच्च</string>
+    <string name="audio_focus_title">ऑडियो फोकस</string>
+    <string name="audio_focus_desc">यदि अन्य ऐप्स ध्वनि चलाते हैं तो संगीत रोकें</string>
+    <string name="audio_connection_features">कनेक्शन विशेषताएं</string>
+    <string name="audio_connection_desc">डिवाइस इंटरेक्शन कॉन्फ़िगर करें</string>
+    <string name="audio_section_sound">ध्वनि</string>
+    <string name="audio_equalizer_title">इक्वलाइज़र</string>
+    <string name="audio_equalizer_desc">ऑडियो फ्रीक्वेंसी समायोजित करें</string>
+    <string name="audio_mono_title">मोनो ऑडियो</string>
+    <string name="audio_mono_desc">बाएं और दाएं चैनलों को संयोजित करें</string>
+
+    <!-- Interface Page -->
+    <string name="interface_section_universal">यूनिवर्सल</string>
+    <string name="interface_theme_title">ऐप थीम</string>
+    <string name="interface_theme_light">लाइट</string>
+    <string name="interface_theme_dark">डार्क</string>
+    <string name="interface_theme_system">सिस्टम का पालन करें</string>
+    <string name="interface_language_title">भाषा</string>
+    <string name="interface_language_desc">एप्लिकेशन भाषा बदलें</string>
+    <string name="interface_vivid_colors_title">जीवंत रंग</string>
+    <string name="interface_vivid_colors_desc">इंटरफ़ेस में अधिक जीवंत रंगों का उपयोग करें</string>
+    <string name="interface_dynamic_colors_title">M3 रंग</string>
+    <string name="interface_dynamic_colors_desc">सिस्टम रंगों का उपयोग करें (Material You)</string>
+    <string name="interface_section_home">होम</string>
+    <string name="interface_enable_home_title">होम सक्षम करें</string>
+    <string name="interface_enable_home_desc">नेविगेशन बार में होम टैब दिखाएं</string>
+    <string name="interface_customize_home_title">होम को कस्टमाइज़ करें</string>
+    <string name="interface_customize_home_desc">होम उपस्थिति को व्यक्तिगत बनाएं</string>
+    <string name="interface_section_player">प्लेयर सेटिंग्स</string>
+    <string name="interface_player_title">प्लेयर</string>
+    <string name="interface_player_desc">प्लेयर को व्यक्तिगत बनाएं</string>
+    <string name="interface_mini_player_title">मिनी प्लेयर</string>
+    <string name="interface_mini_player_desc">मिनी प्लेयर को व्यक्तिगत बनाएं</string>
+    <string name="interface_lyrics_title">बोल</string>
+    <string name="interface_lyrics_desc">गाने के बोल को व्यक्तिगत बनाएं</string>
+
+    <!-- Home Settings Page -->
+    <string name="home_settings_header">होम को व्यक्तिगत बनाएं</string>
+    <string name="home_settings_subtitles_title">उपशीर्षक दिखाएं</string>
+    <string name="home_settings_subtitles_desc">अनुभाग शीर्षकों के नीचे विवरण सक्षम या अक्षम करें</string>
+    <string name="home_settings_help_text">अनुभागों को व्यवस्थित करने के लिए दबाकर रखें और खींचें। नीचे आप देखेंगे कि प्रत्येक भाग कैसा दिखता है।</string>
+    <string name="home_settings_restore_button">डिफ़ॉल्ट क्रम पुनर्स्थापित करें</string>
+    <string name="home_settings_restore_toast">होम ऑर्डर पुनर्स्थापित</string>
+
+    <!-- Lyrics Page -->
+    <string name="lyrics_section_animations">एनिमेशन</string>
+    <string name="lyrics_expansion_speed_title">विस्तार गति</string>
+    <string name="lyrics_expansion_speed_desc">समायोजित करें कि बोल कितनी तेज़ी से विस्तृत होते हैं</string>
+    <string name="lyrics_agsl_title">एनिमेटेड पृष्ठभूमि (AGSL)</string>
+    <string name="lyrics_agsl_desc">बोल की पृष्ठभूमि में रंग तरंगों का उपयोग करें</string>
+
+    <!-- Connection Page -->
+    <string name="connection_title">कनेक्शन</string>
+    <string name="connection_section_devices">उपकरण</string>
+    <string name="connection_bluetooth_autoplay_title">ब्लूटूथ प्लेबैक</string>
+    <string name="connection_bluetooth_autoplay_desc">डिवाइस से कनेक्ट होने पर प्लेबैक शुरू करें</string>
+    <string name="connection_allowed_devices_title">अनुमत उपकरण</string>
+    <string name="connection_devices_none">कोई नहीं चुना गया</string>
+    <string name="connection_devices_all">सभी चुने गए</string>
+    <string name="connection_devices_count">%1$d उपकरण चुने गए</string>
+    <string name="connection_no_devices">कोई युग्मित उपकरण नहीं मिला</string>
+
+    <!-- Equalizer Page -->
+    <string name="equalizer_title">इक्वलाइज़र</string>
+    <string name="equalizer_enable_title">इक्वलाइज़र सक्षम करें</string>
+    <string name="equalizer_section_bands">फ्रीक्वेंसी बैंड</string>
+    <string name="equalizer_section_effects">ऑडियो प्रभाव</string>
+    <string name="equalizer_bass_boost">बास बूस्ट</string>
+    <string name="equalizer_virtualizer">सराउंड साउंड</string>
+    <string name="equalizer_system">सिस्टम इक्वलाइज़र</string>
+    <string name="equalizer_reset">रीसेट करें</string>
+
+    <!-- Player Animations Page -->
+    <string name="animations_title">एनिमेशन</string>
+    <string name="animations_expansion_mode_title">विस्तार मोड</string>
+    <string name="animations_mode_expansion">विस्तार</string>
+    <string name="animations_mode_elevation">ऊंचाई</string>
+    <string name="animations_speed_title">एनिमेशन गति</string>
+
+    <!-- Mini Player Animations Page -->
+    <string name="player_settings_title">प्लेयर</string>
+    <string name="player_section_customization">अनुकूलन</string>
+    <string name="player_animation_title">एनिमेशन</string>
+    <string name="player_animation_desc">प्लेयर एनिमेशन को व्यक्तिगत बनाएं</string>
+    <string name="player_style_title">शैली और डिजाइन</string>
+    <string name="player_style_desc">दृश्य पहलू को व्यक्तिगत बनाएं</string>
+
+    <!-- Animation Speeds -->
+    <string name="speed_normal">सामान्य</string>
+    <string name="speed_slow">धीमा</string>
+
+    <!-- Progress Bar Types -->
+    <string name="pb_type_default">मटेरियल 3 (कोई विकल्प नहीं)</string>
+    <string name="pb_type_wave">वेव</string>
+    <string name="pb_type_plane">प्लेन</string>
+
+    <!-- Mini Progress Bar Types -->
+    <string name="mini_pb_type_wave">वेव (डिफ़ॉल्ट)</string>
+    <string name="mini_pb_type_plane">प्लेन</string>
+    <string name="mini_pb_type_none">कोई प्रगति नहीं</string>
+
+    <!-- Mini Progress Bar Thickness -->
+    <string name="mini_thickness_normal">सामान्य</string>
+    <string name="mini_thickness_medium">मध्यम</string>
+    <string name="mini_thickness_bold">बोल्ड</string>
+
+    <!-- Artwork Shapes -->
+    <string name="shape_default">डिफ़ॉल्ट</string>
+    <string name="shape_circle">सर्कल</string>
+    <string name="shape_square">स्क्वायर</string>
+    <string name="shape_arch">आर्क</string>
+    <string name="shape_pill">पिल</string>
+    <string name="shape_arrow">एरो</string>
+    <string name="shape_pentagon">पेंटागन</string>
+    <string name="shape_cookie_4">4-तरफा कुकी</string>
+    <string name="shape_cookie_6">6-तरफा कुकी</string>
+    <string name="shape_cookie_7">7-तरफा कुकी</string>
+    <string name="shape_clover_4">4-पत्ती वाला तिपतिया घास</string>
+
+    <!-- Mini Player Style -->
+    <string name="mini_style_solid">ठोस</string>
+    <string name="mini_style_tinted">टिन्टेड</string>
+    <string name="mini_style_blur">ब्लर</string>
+
+    <!-- Search Cloud -->
+    <string name="search_mode_offline">Offline</string>
+    <string name="search_mode_online">Online</string>
+    <string name="search_section_cloud_artists">Artists in the cloud</string>
+    <string name="search_section_cloud_songs">Songs in the cloud</string>
+    <string name="search_section_cloud_albums">Albums in the cloud</string>
+    <string name="search_section_cloud_playlists">Playlists in the cloud</string>
+    <string name="search_no_results_cloud">No results found in the cloud.</string>
+    <string name="cloud_artist_label">SoundlyCloud Artist</string>
+    <string name="cloud_download_all">Download all</string>
+    <string name="cloud_popular_songs">Popular songs</string>
+    <string name="cloud_subscribers_label">subscribers</string>
 </resources>

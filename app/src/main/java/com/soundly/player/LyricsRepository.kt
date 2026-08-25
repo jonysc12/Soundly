@@ -46,7 +46,11 @@ class LyricsRepository(private val context: Context) {
     private val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
+        .followRedirects(true)
         .build()
+
+    private var cachedAppleToken: String? = null
+    private var appleTokenExpiry: Long = 0L
 
     private val memoryCache = LinkedHashMap<String, LyricsUiState>(MAX_MEMORY_CACHE_SIZE, 0.75f, true)
     private val memoryCacheLock = Mutex()
@@ -64,9 +68,15 @@ class LyricsRepository(private val context: Context) {
             memoryCache[cacheKey]
         }?.let { return@withContext it }
 
-        val lyrics = loadFromSeparateFile(audioFile)
+        val lyrics = loadFromSeparateFile(audioFile, artist)
             ?: loadFromLocalCache(audioFile, title, artist)
-            ?: loadFromEmbeddedAudio(audioFile, audioUri)
+            ?: loadFromEmbeddedAudio(audioFile, audioUri, artist)
+            ?: fetchFromAppleMusic(title, artist, album, duration)?.also { fetched ->
+                persistApiResult(audioFile, title, artist, fetched)
+            }
+            ?: fetchFromMusixmatch(title, artist, duration)?.also { fetched ->
+                persistApiResult(audioFile, title, artist, fetched)
+            }
             ?: fetchFromLrclib(title, artist, album, duration)?.also { fetched ->
                 persistApiResult(audioFile, title, artist, fetched)
             }
@@ -76,6 +86,8 @@ class LyricsRepository(private val context: Context) {
             memoryCache[cacheKey] = lyrics
             trimMemoryCacheLocked()
         }
+
+        Log.d(TAG, "Lyrics loaded for '$title' - '$artist' via ${lyrics.retrievalMethod} (Provider: ${lyrics.provider ?: "None"})")
         lyrics
     }
 
@@ -93,6 +105,752 @@ class LyricsRepository(private val context: Context) {
         }
     }
 
+    private suspend fun getAppleDeveloperToken(): String? {
+        if (cachedAppleToken != null && System.currentTimeMillis() < appleTokenExpiry) {
+            return cachedAppleToken
+        }
+
+        return withContext(Dispatchers.IO) {
+            try {
+                Log.d(TAG, "Scraping fresh Apple Music Developer Token...")
+
+                val userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+
+                // Probar tanto music.apple.com como beta
+                val homeUrls = listOf(
+                    "https://music.apple.com/us/browse",
+                    "https://music.apple.com",
+                    "https://beta.music.apple.com"
+                )
+
+                var html: String? = null
+                var baseUrl = "https://music.apple.com"
+
+                for (url in homeUrls) {
+                    val response = okHttpClient.newCall(
+                        Request.Builder()
+                            .url(url)
+                            .header("User-Agent", userAgent)
+                            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                            .header("Accept-Language", "en-US,en;q=0.9")
+                            .build()
+                    ).execute()
+
+                    if (response.isSuccessful) {
+                        html = response.body?.string()
+                        baseUrl = url.removeSuffix("/us/browse").removeSuffix("/")
+                        if (html != null) break
+                    }
+                }
+
+                if (html.isNullOrBlank()) {
+                    Log.e(TAG, "Failed to load any Apple Music homepage")
+                    return@withContext null
+                }
+
+                // 1) Token directo en HTML (raro, pero posible)
+                extractJwt(html)?.let { token ->
+                    Log.d(TAG, "Found Apple Token in HTML (len=${token.length})")
+                    cacheToken(token)
+                    return@withContext cachedAppleToken
+                }
+
+                // 2) Buscar TODOS los scripts de assets (no solo index)
+                val scriptPaths = mutableSetOf<String>()
+
+                // Patrones actuales usados por gamdl / freyr / Manzana
+                val scriptPatterns = listOf(
+                    Regex("""src=["'](/assets/index[~-][^"']+\.js)["']"""),
+                    Regex("""src=["'](/assets/index-legacy[~-][^"']+\.js)["']"""),
+                    Regex("""src=["'](/assets/[^"']*index[^"']*\.js)["']"""),
+                    Regex("""["'](/assets/index[~-][a-z0-9]+\.js)["']"""),
+                    Regex("""(/assets/index~[a-f0-9]+\.js)"""),
+                    Regex("""(/assets/index-legacy~[a-f0-9]+\.js)""")
+                )
+
+                for (pattern in scriptPatterns) {
+                    pattern.findAll(html).forEach { match ->
+                        val path = match.groupValues.getOrNull(1) ?: match.value
+                        if (path.startsWith("/assets/")) scriptPaths.add(path)
+                    }
+                }
+
+                // También buscar scripts type=module (como hace Manzana)
+                Regex("""<script[^>]+type=["']module["'][^>]+src=["']([^"']+)["']""")
+                    .findAll(html)
+                    .forEach { scriptPaths.add(it.groupValues[1]) }
+
+                Log.d(TAG, "Found ${scriptPaths.size} candidate scripts: $scriptPaths")
+
+                for (scriptPath in scriptPaths) {
+                    val fullUrl = if (scriptPath.startsWith("http")) scriptPath else "$baseUrl$scriptPath"
+                    Log.d(TAG, "Checking script: $fullUrl")
+
+                    val jsContent = try {
+                        okHttpClient.newCall(
+                            Request.Builder()
+                                .url(fullUrl)
+                                .header("User-Agent", userAgent)
+                                .header("Accept", "*/*")
+                                .header("Referer", "$baseUrl/")
+                                .build()
+                        ).execute().use { resp ->
+                            if (!resp.isSuccessful) {
+                                Log.w(TAG, "Script failed ${resp.code}: $fullUrl")
+                                null
+                            } else {
+                                resp.body?.string()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.w(TAG, "Error downloading script $fullUrl: ${e.message}")
+                        null
+                    } ?: continue
+
+                    extractJwt(jsContent)?.let { token ->
+                        Log.d(TAG, "Successfully scraped Apple Token from $scriptPath (len=${token.length})")
+                        cacheToken(token)
+                        return@withContext cachedAppleToken
+                    }
+                }
+
+                Log.e(TAG, "JWT not found in HTML or any identified scripts")
+                null
+            } catch (e: Exception) {
+                Log.e(TAG, "Error scraping Apple Music token", e)
+                null
+            }
+        }
+    }
+
+    /** Extrae el JWT privilegiado de Apple Music (WebPlayKid) */
+    private fun extractJwt(content: String): String? {
+        // 1. El header exacto que usa Apple Music web (más fiable)
+        val privilegedHeader = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlYlBsYXlLaWQifQ"
+        val privilegedRegex = Regex("""($privilegedHeader\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+)""")
+        privilegedRegex.find(content)?.groupValues?.get(1)?.let { return it }
+
+        // 2. Cualquier JWT entre comillas (estilo gamdl actual)
+        val quotedJwt = Regex(""""(eyJ[A-Za-z0-9\-_]+\.eyJ[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+)"""")
+        quotedJwt.find(content)?.groupValues?.get(1)?.let { token ->
+            if (token.length > 200) return token
+        }
+
+        // 3. JWT sin comillas (estilo Manzana / AppleMusicDecrypt)
+        val bareJwt = Regex("""(?=eyJh)(eyJ[A-Za-z0-9\-_=]+\.[A-Za-z0-9\-_=]+\.[A-Za-z0-9\-_=]+)""")
+        bareJwt.findAll(content)
+            .map { it.groupValues[1] }
+            .filter { it.length > 300 }
+            .maxByOrNull { it.length }
+            ?.let { return it }
+
+        // 4. Fallback genérico
+        val generic = Regex("""eyJ[a-zA-Z0-9\-_]+\.eyJ[a-zA-Z0-9\-_]+\.[a-zA-Z0-9\-_]+""")
+        return generic.findAll(content)
+            .map { it.value }
+            .filter { it.length > 300 }
+            .maxByOrNull { it.length }
+    }
+
+    private fun cacheToken(token: String) {
+        cachedAppleToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
+        appleTokenExpiry = System.currentTimeMillis() + 3_600_000 // 1 hora
+    }
+
+    suspend fun fetchFromAppleMusic(
+        title: String,
+        artist: String,
+        album: String? = null,
+        duration: Long? = null
+    ): LyricsUiState? = withContext(Dispatchers.IO) {
+        try {
+            val token = getAppleDeveloperToken() ?: return@withContext null
+            Log.d(TAG, "Fetching from Apple Music: $artist - $title")
+
+            val query = "$artist $title"
+            val searchUrl = "https://itunes.apple.com/search?term=${Uri.encode(query)}&media=music&limit=5"
+
+            // Buscar varios resultados y elegir el mejor match
+            val trackId = okHttpClient.newCall(Request.Builder().url(searchUrl).build()).execute().use { response ->
+                if (!response.isSuccessful) {
+                    Log.w(TAG, "iTunes search failed: ${response.code}")
+                    return@use null
+                }
+                val body = response.body?.string() ?: return@use null
+                val json = JSONObject(body)
+                val results = json.optJSONArray("results") ?: return@use null
+                if (results.length() == 0) {
+                    Log.w(TAG, "iTunes search: No results for $query")
+                    return@use null
+                }
+
+                // Preferir el que mejor coincida con título/artista
+                var bestId: Long? = null
+                var bestScore = -1
+                for (i in 0 until results.length()) {
+                    val item = results.getJSONObject(i)
+                    val t = item.optString("trackName", "").lowercase()
+                    val a = item.optString("artistName", "").lowercase()
+                    var score = 0
+                    if (t.contains(title.lowercase()) || title.lowercase().contains(t)) score += 2
+                    if (a.contains(artist.lowercase()) || artist.lowercase().contains(a)) score += 2
+                    if (score > bestScore) {
+                        bestScore = score
+                        bestId = item.optLong("trackId")
+                    }
+                }
+                val id = bestId ?: results.getJSONObject(0).getLong("trackId")
+                Log.d(TAG, "iTunes search found trackId: $id (score=$bestScore)")
+                id
+            } ?: return@withContext null
+
+            val storefront = "us"
+            val commonHeaders = mapOf(
+                "Authorization" to token,
+                "Origin" to "https://music.apple.com",
+                "Referer" to "https://music.apple.com/",
+                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+                "Accept" to "application/json",
+                "Accept-Language" to "en-US,en;q=0.9"
+            )
+
+            fun buildRequest(url: String): Request {
+                val b = Request.Builder().url(url)
+                commonHeaders.forEach { (k, v) -> b.header(k, v) }
+                return b.build()
+            }
+
+            // ── 1. Intentar syllable-lyrics (word-by-word) ──
+            val syllableUrls = listOf(
+                "https://amp-api.music.apple.com/v1/catalog/$storefront/songs/$trackId/syllable-lyrics?l=en-US",
+                "https://amp-api.music.apple.com/v1/catalog/$storefront/songs/$trackId/syllable-lyrics"
+            )
+
+            for (syllableUrl in syllableUrls) {
+                val ttml = okHttpClient.newCall(buildRequest(syllableUrl)).execute().use { response ->
+                    Log.d(TAG, "Apple Syllable response code: ${response.code} ($syllableUrl)")
+                    if (!response.isSuccessful) return@use null
+                    val body = response.body?.string() ?: return@use null
+                    val json = JSONObject(body)
+                    val data = json.optJSONArray("data")
+                    if (data != null && data.length() > 0) {
+                        data.getJSONObject(0).optJSONObject("attributes")?.optString("ttml")
+                    } else null
+                }
+                if (!ttml.isNullOrBlank()) {
+                    Log.i(TAG, "Successfully fetched SYNCED (syllable) lyrics from Apple Music for $title")
+                    val artistList = getCleanArtistList(title, artist)
+                    return@withContext LyricsParser.parse(ttml, LyricsFormat.TTML, artistList).enrich(
+                        retrievalMethod = LyricsRetrievalMethod.API,
+                        provider = "Apple Music (Synced)",
+                        rawContent = ttml
+                    )
+                }
+            }
+
+            // ── 2. Intentar lyrics normales (TTML) ──
+            val lyricsUrls = listOf(
+                "https://amp-api.music.apple.com/v1/catalog/$storefront/songs/$trackId/lyrics?l=en-US",
+                "https://amp-api.music.apple.com/v1/catalog/$storefront/songs/$trackId/lyrics"
+            )
+
+            for (lyricsUrl in lyricsUrls) {
+                val ttml = okHttpClient.newCall(buildRequest(lyricsUrl)).execute().use { response ->
+                    Log.d(TAG, "Apple Normal Lyrics response code: ${response.code}")
+                    if (!response.isSuccessful) return@use null
+                    val body = response.body?.string() ?: return@use null
+                    val json = JSONObject(body)
+                    val data = json.optJSONArray("data")
+                    if (data != null && data.length() > 0) {
+                        data.getJSONObject(0).optJSONObject("attributes")?.optString("ttml")
+                    } else null
+                }
+                if (!ttml.isNullOrBlank()) {
+                    Log.i(TAG, "Successfully fetched lyrics from Apple Music for $title")
+                    val artistList = getCleanArtistList(title, artist)
+                    return@withContext LyricsParser.parse(ttml, LyricsFormat.TTML, artistList).enrich(
+                        retrievalMethod = LyricsRetrievalMethod.API,
+                        provider = "Apple Music",
+                        rawContent = ttml
+                    )
+                }
+            }
+
+            // ── 3. Fallback: pedir la canción con include=lyrics,syllable-lyrics ──
+            // (algunos tracks solo devuelven letras por esta vía)
+            val songUrl = "https://amp-api.music.apple.com/v1/catalog/$storefront/songs/$trackId" +
+                    "?include=lyrics,syllable-lyrics&extend=ttmlLocalizations&l=en-US"
+
+            val embedded = okHttpClient.newCall(buildRequest(songUrl)).execute().use { response ->
+                Log.d(TAG, "Apple song+include response code: ${response.code}")
+                if (!response.isSuccessful) return@use null
+                val body = response.body?.string() ?: return@use null
+                val json = JSONObject(body)
+
+                // relationships.lyrics / relationships.syllable-lyrics
+                val data = json.optJSONArray("data")?.optJSONObject(0) ?: return@use null
+                val relationships = data.optJSONObject("relationships") ?: return@use null
+
+                // Preferir syllable
+                val syllableData = relationships
+                    .optJSONObject("syllable-lyrics")
+                    ?.optJSONArray("data")
+                    ?.optJSONObject(0)
+                val syllableTtml = syllableData
+                    ?.optJSONObject("attributes")
+                    ?.optString("ttml")
+                    ?.takeIf { it.isNotBlank() }
+
+                if (!syllableTtml.isNullOrBlank()) {
+                    return@use Pair(syllableTtml, "Apple Music (Synced)")
+                }
+
+                val lyricsData = relationships
+                    .optJSONObject("lyrics")
+                    ?.optJSONArray("data")
+                    ?.optJSONObject(0)
+                val normalTtml = lyricsData
+                    ?.optJSONObject("attributes")
+                    ?.optString("ttml")
+                    ?.takeIf { it.isNotBlank() }
+
+                if (!normalTtml.isNullOrBlank()) {
+                    return@use Pair(normalTtml, "Apple Music")
+                }
+
+                // A veces viene en included
+                val included = json.optJSONArray("included")
+                if (included != null) {
+                    for (i in 0 until included.length()) {
+                        val item = included.getJSONObject(i)
+                        val type = item.optString("type")
+                        if (type == "lyrics" || type == "syllable-lyrics") {
+                            val ttml = item.optJSONObject("attributes")?.optString("ttml")
+                            if (!ttml.isNullOrBlank()) {
+                                val provider = if (type == "syllable-lyrics") "Apple Music (Synced)" else "Apple Music"
+                                return@use Pair(ttml, provider)
+                            }
+                        }
+                    }
+                }
+                null
+            }
+
+            if (embedded != null) {
+                val (ttml, provider) = embedded
+                Log.i(TAG, "Successfully fetched lyrics via include from Apple Music for $title")
+                val artistList = getCleanArtistList(title, artist)
+                return@withContext LyricsParser.parse(ttml, LyricsFormat.TTML, artistList).enrich(
+                    retrievalMethod = LyricsRetrievalMethod.API,
+                    provider = provider,
+                    rawContent = ttml
+                )
+            }
+
+            Log.w(TAG, "Apple Music: No lyrics found for $title (trackId: $trackId)")
+            null
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching from Apple Music: ${e.message}", e)
+            null
+        }
+    }
+
+    suspend fun fetchFromMusixmatch(
+        title: String,
+        artist: String,
+        durationMs: Long? = null
+    ): LyricsUiState? = withContext(Dispatchers.IO) {
+        try {
+            Log.d(TAG, "Fetching from Musixmatch (desktop API): $artist - $title")
+
+            val userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+            val guid = java.util.UUID.randomUUID().toString()
+
+            // ── 1. Token anónimo ──
+            val userToken = okHttpClient.newCall(
+                Request.Builder()
+                    .url("https://apic-desktop.musixmatch.com/ws/1.1/token.get?app_id=web-desktop-app-v1.0&t=${System.currentTimeMillis()}")
+                    .header("User-Agent", userAgent)
+                    .header("Accept", "application/json")
+                    .header("Cookie", "x-mxm-token-guid=$guid")
+                    .build()
+            ).execute().use { response ->
+                if (!response.isSuccessful) {
+                    Log.w(TAG, "Musixmatch token.get failed: ${response.code}")
+                    return@use null
+                }
+                val json = JSONObject(response.body?.string().orEmpty())
+                if (json.optJSONObject("message")?.optJSONObject("header")?.optInt("status_code") != 200) return@use null
+                json.optJSONObject("message")
+                    ?.optJSONObject("body")
+                    ?.optString("user_token")
+                    ?.takeIf { it.isNotBlank() && !it.startsWith("UpgradeOnly") }
+            } ?: return@withContext null
+
+            fun mxmRequest(url: String): Request = Request.Builder()
+                .url(url)
+                .header("User-Agent", userAgent)
+                .header("Accept", "application/json")
+                .header("Cookie", "x-mxm-token-guid=$guid")
+                .build()
+
+            // ── 2. macro.subtitles.get ──
+            val durationSec = durationMs?.let { it / 1000.0 }?.takeIf { it > 0 }
+            val durationParams = if (durationSec != null) {
+                "&q_duration=$durationSec&f_subtitle_length=${durationSec.toInt()}&f_subtitle_length_max_deviation=5"
+            } else ""
+
+            val macroUrl = "https://apic-desktop.musixmatch.com/ws/1.1/macro.subtitles.get?" +
+                    "format=json&" +
+                    "namespace=lyrics_richsynched&" +
+                    "subtitle_format=lrc&" +
+                    "optional_calls=track.richsync&" +
+                    "part=track_performer_tagging,track_structure&" +
+                    "q_artist=${Uri.encode(artist)}&" +
+                    "q_track=${Uri.encode(title)}&" +
+                    "usertoken=${Uri.encode(userToken)}&" +
+                    "app_id=web-desktop-app-v1.0&" +
+                    "t=${System.currentTimeMillis()}" +
+                    durationParams
+
+            val macroJson = okHttpClient.newCall(mxmRequest(macroUrl)).execute().use { response ->
+                if (!response.isSuccessful) {
+                    Log.w(TAG, "Musixmatch macro failed: ${response.code}")
+                    return@use null
+                }
+                JSONObject(response.body?.string().orEmpty())
+            } ?: return@withContext null
+
+            if (macroJson.optJSONObject("message")?.optJSONObject("header")?.optInt("status_code") != 200) {
+                Log.w(TAG, "Musixmatch macro status != 200")
+                return@withContext null
+            }
+
+            val macroCalls = macroJson
+                .optJSONObject("message")
+                ?.optJSONObject("body")
+                ?.optJSONObject("macro_calls")
+                ?: return@withContext null
+
+            // ── 3. Track IDs + performer tagging ──
+            val trackObj = macroCalls
+                .optJSONObject("matcher.track.get")
+                ?.optJSONObject("message")
+                ?.optJSONObject("body")
+                ?.optJSONObject("track")
+
+            val trackId = trackObj?.optLong("track_id")?.takeIf { it > 0 }
+            val commontrackId = trackObj?.optLong("commontrack_id")?.takeIf { it > 0 }
+            val hasRichsync = trackObj?.optInt("has_richsync", 0) == 1
+
+            Log.d(TAG, "Musixmatch match: track_id=$trackId commontrack_id=$commontrackId has_richsync=$hasRichsync")
+
+            // Mapa performer: snippet → lista de nombres
+            val performerMap = parsePerformerTagging(trackObj?.optJSONObject("performer_tagging"))
+            if (performerMap.isNotEmpty()) {
+                Log.d(TAG, "Performer tagging: ${performerMap.size} parts")
+            }
+
+            // ── 4. PRIORIDAD: word-by-word (richsync) ──
+            var richsyncBody: String? = macroCalls
+                .optJSONObject("track.richsync.get")
+                ?.optJSONObject("message")
+                ?.optJSONObject("body")
+                ?.optJSONObject("richsync")
+                ?.optString("richsync_body")
+                ?.takeIf { it.isNotBlank() }
+
+            if (richsyncBody.isNullOrBlank() && (trackId != null || commontrackId != null)) {
+                val idsToTry = mutableListOf<Long>()
+                trackId?.let { idsToTry.add(it) }
+                commontrackId?.let { idsToTry.add(it) }
+
+                for (id in idsToTry.distinct()) {
+                    val idParam = if (id == trackId) "track_id=$id" else "commontrack_id=$id"
+                    val lengthParam = if (durationSec != null) {
+                        "&f_richsync_length=$durationSec&f_richsync_length_max_deviation=5"
+                    } else ""
+
+                    val richUrl = "https://apic-desktop.musixmatch.com/ws/1.1/track.richsync.get?" +
+                            "format=json&$idParam$lengthParam&" +
+                            "usertoken=${Uri.encode(userToken)}&" +
+                            "app_id=web-desktop-app-v1.0&" +
+                            "t=${System.currentTimeMillis()}"
+
+                    val fetched = try {
+                        okHttpClient.newCall(mxmRequest(richUrl)).execute().use { response ->
+                            if (!response.isSuccessful) return@use null
+                            val j = JSONObject(response.body?.string().orEmpty())
+                            val status = j.optJSONObject("message")?.optJSONObject("header")?.optInt("status_code")
+                            if (status != 200) {
+                                Log.d(TAG, "Musixmatch richsync ($idParam) status=$status")
+                                return@use null
+                            }
+                            j.optJSONObject("message")
+                                ?.optJSONObject("body")
+                                ?.optJSONObject("richsync")
+                                ?.optString("richsync_body")
+                                ?.takeIf { it.isNotBlank() }
+                        }
+                    } catch (e: Exception) {
+                        null
+                    }
+
+                    if (fetched != null) {
+                        richsyncBody = fetched
+                        Log.d(TAG, "Successfully found richsync via $idParam")
+                        break
+                    }
+                }
+            }
+
+            if (!richsyncBody.isNullOrBlank()) {
+                val elrc = convertMusixmatchRichsyncToElrc(richsyncBody, performerMap)
+                if (!elrc.isNullOrBlank()) {
+                    val hasPerformers = performerMap.isNotEmpty()
+                    val format = if (hasPerformers) LyricsFormat.ELRC_MULTI_PERSON else LyricsFormat.ELRC
+                    val provider = if (hasPerformers) {
+                        "Musixmatch (Word-by-Word + Performers)"
+                    } else {
+                        "Musixmatch (Word-by-Word)"
+                    }
+                    if (hasPerformers) {
+                        Log.i(TAG, "Musixmatch: Word-by-word with performers detected (${performerMap.size} parts)")
+                    }
+                    Log.i(TAG, "Successfully fetched WORD-BY-WORD lyrics from Musixmatch for $title")
+                    val artistList = getCleanArtistList(title, artist)
+                    return@withContext LyricsParser.parse(elrc, format, artistList).enrich(
+                        retrievalMethod = LyricsRetrievalMethod.API,
+                        provider = provider,
+                        rawContent = elrc
+                    )
+                }
+            }
+
+            // ── 5. Fallback: LRC por línea ──
+            val subtitleBody = macroCalls
+                .optJSONObject("track.subtitles.get")
+                ?.optJSONObject("message")
+                ?.optJSONObject("body")
+                ?.optJSONArray("subtitle_list")
+                ?.optJSONObject(0)
+                ?.optJSONObject("subtitle")
+                ?.optString("subtitle_body")
+                ?.takeIf { it.isNotBlank() }
+
+            if (!subtitleBody.isNullOrBlank()) {
+                val lrcWithPerformers = if (performerMap.isNotEmpty()) {
+                    injectPerformersIntoLrc(subtitleBody, performerMap)
+                } else {
+                    subtitleBody
+                }
+
+                val looksLikeElrc = wordTimestampRegex.containsMatchIn(lrcWithPerformers)
+                val format = if (looksLikeElrc) LyricsFormat.ELRC else LyricsFormat.LRC
+                val provider = when {
+                    looksLikeElrc && performerMap.isNotEmpty() -> "Musixmatch (Word-by-Word + Performers)"
+                    looksLikeElrc -> "Musixmatch (Word-by-Word)"
+                    performerMap.isNotEmpty() -> "Musixmatch (Synced + Performers)"
+                    else -> "Musixmatch (Synced)"
+                }
+
+                if (performerMap.isNotEmpty()) {
+                    Log.i(TAG, "Musixmatch: Line-synced with performers detected (${performerMap.size} parts)")
+                }
+
+                Log.i(TAG, "Successfully fetched SYNCED lyrics from Musixmatch for $title (Format: $format)")
+                val artistList = getCleanArtistList(title, artist)
+                return@withContext LyricsParser.parse(lrcWithPerformers, format, artistList).enrich(
+                    retrievalMethod = LyricsRetrievalMethod.API,
+                    provider = provider,
+                    rawContent = lrcWithPerformers
+                )
+            }
+
+            // ── 6. Fallback: letra plana ──
+            val plain = macroCalls
+                .optJSONObject("track.lyrics.get")
+                ?.optJSONObject("message")
+                ?.optJSONObject("body")
+                ?.optJSONObject("lyrics")
+                ?.optString("lyrics_body")
+                ?.takeIf { it.isNotBlank() }
+
+            if (!plain.isNullOrBlank()) {
+                Log.i(TAG, "Successfully fetched plain lyrics from Musixmatch for $title")
+                return@withContext LyricsParser.parse(plain, LyricsFormat.PLAIN).enrich(
+                    retrievalMethod = LyricsRetrievalMethod.API,
+                    provider = "Musixmatch",
+                    rawContent = plain
+                )
+            }
+
+            Log.w(TAG, "Musixmatch: No lyrics found")
+            null
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching from Musixmatch desktop API", e)
+            null
+        }
+    }
+
+    // ─────────────────────────────────────────────
+    // Helpers
+    // ─────────────────────────────────────────────
+
+    /**
+     * Parsea track.performer_tagging → Map<textoNormalizado, lista de nombres de performers>
+     */
+    private fun parsePerformerTagging(tagging: JSONObject?): Map<String, List<String>> {
+        if (tagging == null) return emptyMap()
+
+        val artistsById = mutableMapOf<Long, String>()
+        val resources = tagging.optJSONObject("resources")
+        val artistsArr = resources?.optJSONArray("artists")
+        if (artistsArr != null) {
+            for (i in 0 until artistsArr.length()) {
+                val a = artistsArr.optJSONObject(i) ?: continue
+                val id = a.optLong("artist_id")
+                val name = a.optString("artist_name").takeIf { it.isNotBlank() } ?: continue
+                if (id > 0) artistsById[id] = name
+            }
+        }
+
+        val result = linkedMapOf<String, List<String>>()
+        val content = tagging.optJSONArray("content") ?: return emptyMap()
+
+        for (i in 0 until content.length()) {
+            val part = content.optJSONObject(i) ?: continue
+            val snippet = part.optString("snippet").trim()
+            if (snippet.isBlank()) continue
+
+            val performersArr = part.optJSONArray("performers") ?: continue
+            val names = mutableListOf<String>()
+            for (j in 0 until performersArr.length()) {
+                val p = performersArr.optJSONObject(j) ?: continue
+                val type = p.optString("type")
+                when (type) {
+                    "artist" -> {
+                        val fqid = p.optString("fqid") // mxm:artist:12345
+                        val id = fqid.substringAfterLast(':').toLongOrNull()
+                        val name = id?.let { artistsById[it] }
+                        names.add(name ?: "Artist")
+                    }
+                    "unknown" -> names.add("Unknown")
+                    else -> {
+                        // misc tags: fanchant, voice-over, backing vocalist...
+                        if (type.isNotBlank()) names.add(type.replaceFirstChar { it.uppercase() })
+                    }
+                }
+            }
+            if (names.isNotEmpty()) {
+                result[normalizeSnippet(snippet)] = names.distinct()
+            }
+        }
+        return result
+    }
+
+    private fun normalizeSnippet(text: String): String =
+        text.lowercase()
+            .replace(Regex("""\s+"""), " ")
+            .trim()
+
+    /**
+     * richsync_body JSON → Enhanced LRC.
+     * Si hay performerMap, añade prefijo [Artist Name] en cada línea cuando coincida.
+     */
+    private fun convertMusixmatchRichsyncToElrc(
+        richsyncBody: String,
+        performerMap: Map<String, List<String>> = emptyMap()
+    ): String? {
+        return try {
+            val array = org.json.JSONArray(richsyncBody)
+            val sb = StringBuilder()
+
+            for (i in 0 until array.length()) {
+                val line = array.getJSONObject(i)
+                val ts = line.optDouble("ts", -1.0)
+                if (ts < 0) continue
+
+                val lineText = line.optString("x", "").trim()
+                val performerPrefix = resolvePerformerPrefix(lineText, performerMap)
+
+                val words = line.optJSONArray("l")
+                if (words != null && words.length() > 0) {
+                    sb.append(formatLrcTime(ts))
+                    if (performerPrefix != null) sb.append(performerPrefix)
+                    for (j in 0 until words.length()) {
+                        val w = words.getJSONObject(j)
+                        val text = w.optString("c", "")
+                        if (text.isEmpty()) continue
+                        val wordTime = ts + w.optDouble("o", 0.0)
+                        sb.append(formatElrcWordTime(wordTime)).append(text)
+                    }
+                    sb.append('\n')
+                } else if (lineText.isNotBlank()) {
+                    sb.append(formatLrcTime(ts))
+                    if (performerPrefix != null) sb.append(performerPrefix)
+                    sb.append(lineText).append('\n')
+                }
+            }
+            sb.toString().trim().takeIf { it.isNotBlank() }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error converting Musixmatch richsync", e)
+            null
+        }
+    }
+
+    /** Inyecta nombres de performer en LRC línea a línea cuando el texto coincide */
+    private fun injectPerformersIntoLrc(
+        lrc: String,
+        performerMap: Map<String, List<String>>
+    ): String {
+        val lineRegex = Regex("""^(\[\d{1,2}:\d{2}(?:\.\d{1,3})?])\s*(.*)$""")
+        return lrc.lineSequence().map { line ->
+            val m = lineRegex.matchEntire(line.trim())
+            if (m != null) {
+                val ts = m.groupValues[1]
+                val text = m.groupValues[2]
+                val prefix = resolvePerformerPrefix(text, performerMap)
+                if (prefix != null) "$ts$prefix$text" else line
+            } else {
+                line
+            }
+        }.joinToString("\n")
+    }
+
+    private fun resolvePerformerPrefix(
+        lineText: String,
+        performerMap: Map<String, List<String>>
+    ): String? {
+        if (performerMap.isEmpty() || lineText.isBlank()) return null
+        val norm = normalizeSnippet(lineText)
+        // Match exacto o por contención
+        val names = performerMap.entries.firstOrNull { (snippet, _) ->
+            norm == snippet || norm.contains(snippet) || snippet.contains(norm)
+        }?.value ?: return null
+        return if (names.size == 1) {
+            "[${names[0]}] "
+        } else {
+            "[${names.joinToString(" & ")}] "
+        }
+    }
+
+    private fun formatLrcTime(seconds: Double): String {
+        val totalCs = (seconds * 100).toLong().coerceAtLeast(0)
+        val m = totalCs / 6000
+        val s = (totalCs % 6000) / 100
+        val cs = totalCs % 100
+        return "[%02d:%02d.%02d]".format(m, s, cs)
+    }
+
+    private fun formatElrcWordTime(seconds: Double): String {
+        val totalCs = (seconds * 100).toLong().coerceAtLeast(0)
+        val m = totalCs / 6000
+        val s = (totalCs % 6000) / 100
+        val cs = totalCs % 100
+        return "<%02d:%02d.%02d>".format(m, s, cs)
+    }
+
     suspend fun fetchFromLrclib(
         title: String,
         artist: String,
@@ -100,6 +858,7 @@ class LyricsRepository(private val context: Context) {
         duration: Long? = null
     ): LyricsUiState? = withContext(Dispatchers.IO) {
         try {
+            Log.d(TAG, "Fetching from LRCLIB: $artist - $title")
             val params = buildList {
                 add("artist_name=${Uri.encode(artist)}")
                 add("track_name=${Uri.encode(title)}")
@@ -139,7 +898,8 @@ class LyricsRepository(private val context: Context) {
                     else -> LyricsFormat.PLAIN
                 }
 
-                LyricsParser.parse(payload, hint).enrich(
+                val artistList = getCleanArtistList(title, artist)
+                LyricsParser.parse(payload, hint, artistList).enrich(
                     retrievalMethod = LyricsRetrievalMethod.API,
                     provider = "LRCLIB",
                     rawContent = payload
@@ -151,14 +911,15 @@ class LyricsRepository(private val context: Context) {
         }
     }
 
-    private suspend fun loadFromSeparateFile(audioFile: File?): LyricsUiState? {
+    private suspend fun loadFromSeparateFile(audioFile: File?, artist: String): LyricsUiState? {
         val baseFile = audioFile ?: return null
         val parent = baseFile.parentFile ?: return null
         val matchingFile = findLyricsSidecarFiles(parent, baseFile.nameWithoutExtension)
             .firstOrNull()
             ?: return null
 
-        return parseLyricsFile(matchingFile, LyricsRetrievalMethod.SEPARATE_FILE)
+        val artistList = getCleanArtistList("", artist)
+        return parseLyricsFile(matchingFile, LyricsRetrievalMethod.SEPARATE_FILE, artistList)
     }
 
     private suspend fun loadFromLocalCache(audioFile: File?, title: String, artist: String): LyricsUiState? {
@@ -174,18 +935,20 @@ class LyricsRepository(private val context: Context) {
             }
         }
 
+        val artistList = getCleanArtistList(title, artist)
         return candidates.firstOrNull { it.exists() && it.isFile && it.canRead() }
-            ?.let { parseLyricsFile(it, LyricsRetrievalMethod.CACHE) }
+            ?.let { parseLyricsFile(it, LyricsRetrievalMethod.CACHE, artistList) }
     }
 
-    private suspend fun loadFromEmbeddedAudio(audioFile: File?, audioUri: Uri?): LyricsUiState? {
+    private suspend fun loadFromEmbeddedAudio(audioFile: File?, audioUri: Uri?, artist: String): LyricsUiState? {
         val payload = when {
             audioFile?.exists() == true -> extractEmbeddedLyrics(audioFile)
             audioUri != null -> extractEmbeddedLyrics(audioUri)
             else -> null
         } ?: return null
 
-        return LyricsParser.parse(payload.content, payload.formatHint).enrich(
+        val artistList = getCleanArtistList("", artist)
+        return LyricsParser.parse(payload.content, payload.formatHint, artistList).enrich(
             retrievalMethod = LyricsRetrievalMethod.EMBEDDED_AUDIO,
             rawContent = payload.content
         )
@@ -732,10 +1495,10 @@ class LyricsRepository(private val context: Context) {
         else -> LyricsFormat.PLAIN
     }
 
-    private suspend fun parseLyricsFile(file: File, retrievalMethod: LyricsRetrievalMethod): LyricsUiState? =
+    private suspend fun parseLyricsFile(file: File, retrievalMethod: LyricsRetrievalMethod, artistList: List<String> = emptyList()): LyricsUiState? =
         runCatching {
             val content = file.readText()
-            LyricsParser.parse(content, formatHintForFile(file)).enrich(
+            LyricsParser.parse(content, formatHintForFile(file), artistList).enrich(
                 retrievalMethod = retrievalMethod,
                 rawContent = content
             )
@@ -1022,4 +1785,27 @@ class LyricsRepository(private val context: Context) {
         val start: Long,
         val size: Long,
     )
+    private fun getCleanArtistList(title: String, artist: String): List<String> {
+        val combined = "$artist $title"
+        // Regex para capturar nombres de artistas separados por delimitadores comunes
+        // y también dentro de paréntesis (feat. X), (with X), (con X)
+        val separators = Regex("""(?i)\s*(?:,|&|and|feat\.?|ft\.?|with|con|featuring|x|/|(?<=\s)y(?=\s))\s+""")
+        
+        // 1. Extraer lo que está entre paréntesis que empiece con indicadores de colaboración
+        val parenRegex = Regex("""(?i)\((?:feat\.?|ft\.?|with|con|featuring)\s+([^)]+)\)""")
+        val featFromCombined = parenRegex.findAll(combined).map { it.groupValues[1] }.toList()
+        
+        // 2. Limpiar el artista principal de paréntesis de feat
+        val cleanArtistField = artist.replace(parenRegex, "").trim()
+        
+        // 3. Dividir el artista principal por separadores
+        val mainArtists = cleanArtistField.split(separators).map { it.trim() }
+        
+        // 4. Combinar todo
+        return (mainArtists + featFromCombined.flatMap { it.split(separators) })
+            .map { it.trim() }
+            .map { it.replace(Regex("""(?i)\(.*\)|\[.*\]"""), "").trim() }
+            .filter { it.length > 2 }
+            .distinct()
+    }
 }

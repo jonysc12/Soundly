@@ -9,14 +9,19 @@
     <string name="permission_screen_storage_description">允许 Soundly 读取您的本地音乐并自动整理。</string>
     <string name="permission_screen_notifications_title">允许通知</string>
     <string name="permission_screen_notifications_description">允许 Soundly 在您播放音乐时显示控件和通知。</string>
+    <string name="permission_screen_bluetooth_title">蓝牙连接</string>
+    <string name="permission_screen_bluetooth_description">允许 Soundly 连接到蓝牙音频设备并正确控制播放。</string>
     <string name="permission_screen_explanation">授予所请求的权限以访问您的音乐并向您发送通知。</string>
+    <string name="permission_screen_note">重要提示：要在现代版本的 Android（12 及更高版本）上运行，请确保您已在应用程序中接受“附近设备”（蓝牙）权限，因为这是检测这些连接所必需的。</string>
+    <string name="permission_screen_section_scanning">扫描</string>
+    <string name="permission_screen_section_functions">功能</string>
     <string name="permission_screen_grant_permission_button">授予权限</string>
     <string name="cd_profile_image_placeholder">个人资料图片占位符</string>
     <string name="cd_profile_image">个人资料图片</string>
     <string name="profile_screen_title">个人资料</string>
     <string name="profile_screen_subtitle">为了获得更好的体验，请完成或编辑您的个人资料。</string>
     <string name="profile_screen_username_label">用户名</string>
-    <string name="profile_screen_button_ready">准备好</string>
+    <string name="profile_screen_button_ready">完成</string>
     <string name="profile_screen_button_save">保存并继续</string>
     <string name="exit_dialog_title">退出应用程序</string>
     <string name="exit_dialog_text">您确定要退出应用程序吗？</string>
@@ -32,4 +37,491 @@
     <string name="change_image">更改图片</string>
     <string name="confirm">确认</string>
     <string name="edit">编辑</string>
+
+    <!-- Language Selection -->
+    <string name="language_selection_title">语言</string>
+    <string name="language_selection_header">语言</string>
+    <string name="language_selection_description">选择应用程序界面的首选语言。您可以稍后在设置中进行更改。</string>
+    <string name="language_selection_system">系统</string>
+    <string name="language_selection_system_desc">默认</string>
+    <string name="language_selection_select">选择您的语言</string>
+    <string name="language_selection_see_more">查看更多</string>
+    <string name="language_selection_see_more_desc">显示所有可用语言</string>
+    <string name="language_selection_see_less">查看较少</string>
+    <string name="language_selection_see_less_desc">隐藏其他语言</string>
+
+    <!-- Media Scanner -->
+    <string name="media_scanner_title">媒体扫描</string>
+    <string name="media_scanner_description">通过简单的设置导入保存在设备上的音乐。</string>
+    <string name="media_scanner_local_source">本地来源</string>
+    <string name="media_scanner_android_mediastore">Android MediaStore</string>
+    <string name="media_scanner_settings">设置</string>
+    <string name="media_scanner_ignore_temp">忽略临时文件夹</string>
+    <string name="media_scanner_ignore_temp_desc">排除来自 WhatsApp、Telegram 和缓存的音频。</string>
+    <string name="media_scanner_ignore_short">忽略 60 秒以下的音频</string>
+    <string name="media_scanner_start_scan_cd">开始扫描</string>
+    <string name="media_scanner_dialog_title">扫描音乐</string>
+    <string name="media_scanner_dialog_scan_summary">扫描和摘要</string>
+    <string name="media_scanner_dialog_manage_folders">管理文件夹</string>
+    <string name="media_scanner_dialog_manage_songs">管理歌曲</string>
+    <string name="media_scanner_dialog_scanning">正在扫描文件...</string>
+    <string name="media_scanner_dialog_complete">扫描完成</string>
+    <string name="media_scanner_dialog_ready">准备扫描</string>
+    <string name="media_scanner_dialog_detail">扫描详情</string>
+    <string name="media_scanner_dialog_confirm">确认</string>
+    <string name="media_scanner_dialog_manage">管理</string>
+    <string name="media_scanner_dialog_apply">应用</string>
+    <string name="media_scanner_dialog_back">返回</string>
+    <string name="media_scanner_dialog_folders_desc">选择要排除的文件夹并打开其内容以控制单首歌曲。</string>
+    <string name="media_scanner_dialog_no_folder_selected">未选择文件夹</string>
+    <string name="media_scanner_dialog_see_content_cd">查看内容</string>
+    <string name="media_scanner_dialog_songs_count">歌曲：%1$d | 手动阻止：%2$d</string>
+    <string name="media_scanner_report_filter_temp">临时文件夹过滤器：%1$s</string>
+    <string name="media_scanner_report_filter_short"><![CDATA[音频过滤器 < 60s: %1$s]]></string>
+    <string name="media_scanner_report_result_header">----- 扫描结果 -----</string>
+    <string name="media_scanner_report_scanned">已扫描：%1$d</string>
+    <string name="media_scanner_report_imported">已导入：%1$d</string>
+    <string name="media_scanner_report_blocked_temp">按文件夹阻止：%1$d</string>
+    <string name="media_scanner_report_blocked_short">按音频阻止 <![CDATA[< 60s: %1$d]]></string>
+    <string name="media_scanner_report_total_blocked">总计阻止：%1$d</string>
+    <string name="active">激活</string>
+    <string name="inactive">未激活</string>
+
+    <!-- Buttons -->
+    <string name="button_cancel">取消</string>
+    <string name="button_close">关闭</string>
+    <string name="button_delete">删除</string>
+    <string name="button_save">保存</string>
+    <string name="button_ready">完成</string>
+    <string name="button_see_all">查看全部</string>
+    <string name="button_see_less">查看较少</string>
+    <string name="button_see_more_bio">阅读完整传记</string>
+    <string name="button_search_again">再次搜索</string>
+
+    <!-- Library Options & Labels -->
+    <string name="library_option_songs">歌曲</string>
+    <string name="library_option_albums">专辑</string>
+    <string name="library_option_artists">艺术家</string>
+    <string name="library_btn_play">播放</string>
+    <string name="library_btn_shuffle">随机播放</string>
+    <string name="library_btn_sort">排序</string>
+    <string name="library_btn_format">格式</string>
+    <string name="library_auto_collection">自动生成的收藏</string>
+    <string name="library_label_artist">艺术家</string>
+    <string name="library_label_folder">文件夹</string>
+
+    <!-- Filter Chips -->
+    <string name="filter_playlists">播放列表</string>
+    <string name="filter_albums">专辑</string>
+    <string name="filter_artists">艺术家</string>
+    <string name="filter_folders">文件夹</string>
+    <string name="filter_clear_desc">清除过滤器</string>
+
+    <!-- Sort & Layout -->
+    <string name="sort_az">A-Z</string>
+    <string name="sort_za">Z-A</string>
+    <string name="sort_recent">最近添加</string>
+    <string name="sort_oldest">最早添加</string>
+    <string name="layout_grid">网格</string>
+    <string name="layout_list">列表</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_close">关闭</string>
+    <string name="cd_more_options">更多选项</string>
+    <string name="cd_refresh">刷新</string>
+    <string name="cd_artwork">封面</string>
+    <string name="cd_change_artwork">更改封面</string>
+    <string name="cd_device">设备</string>
+    <string name="cd_favorite">收藏</string>
+    <string name="cd_pause">暂停</string>
+    <string name="cd_play">播放</string>
+
+    <!-- Search -->
+    <string name="search_explore_title">探索</string>
+    <string name="search_title">搜索</string>
+    <string name="search_section_songs">歌曲</string>
+    <string name="search_section_albums">专辑</string>
+    <string name="search_section_artists">艺术家</string>
+    <string name="search_section_playlists">播放列表</string>
+    <string name="search_empty_title">寻找您的热爱</string>
+    <string name="search_empty_desc">搜索歌曲、艺术家或专辑</string>
+    <string name="search_no_results_title">没有关于“%1$s”的结果</string>
+    <string name="search_no_results_desc">请尝试更通用的词汇</string>
+    <string name="search_cloud_title">前往 SoundlyCloud</string>
+    <string name="search_cloud_desc">探索云端内容</string>
+
+    <!-- Library & Menu -->
+    <string name="menu_delete_from_library">从库中删除</string>
+    <string name="dialog_delete_from_library_title">从库中删除？</string>
+    <string name="dialog_delete_from_library_message">歌曲将从您的库中隐藏，不再出现在列表和详情中。</string>
+    <string name="menu_remove_from_favorites">从收藏中移除</string>
+    <string name="dialog_remove_from_favorites_title">从收藏中移除？</string>
+    <string name="dialog_remove_from_favorites_message">歌曲将从您的收藏中移除，并离开自动生成的播放列表。</string>
+    <string name="menu_remove_from_playlist">从此播放列表中移除</string>
+    <string name="dialog_remove_from_playlist_title">从播放列表中移除？</string>
+    <string name="dialog_remove_from_playlist_message">歌曲将从此播放列表中移除。</string>
+    <string name="menu_add_to_playlist">添加到播放列表</string>
+    <string name="menu_save_as_playlist">保存到音乐库</string>
+    <string name="home_section_monthly_recap">每月回顾</string>
+    <string name="recap_playlist_title">每月回顾</string>
+    <string name="recap_banner_title">您的 %1$s 回顾</string>
+    <string name="recap_banner_desc">重温本月您最喜爱的 %1$d 首歌曲</string>
+    <string name="recap_explore_now">立即探索</string>
+    <string name="menu_go_to_album">前往专辑</string>
+    <string name="menu_go_to_artist_multiple">前往艺术家...</string>
+    <string name="menu_go_to_artist">前往艺术家</string>
+    <string name="menu_information">信息</string>
+    <string name="menu_edit">编辑</string>
+    <string name="edit_screen_title">编辑信息</string>
+    <string name="edit_section_details">歌曲详情</string>
+    <string name="edit_section_additional">补充信息</string>
+    <string name="menu_playback_queue">播放队列</string>
+    <string name="menu_sleep_timer">睡眠定时器</string>
+    <string name="timer_description">定义音乐将在多久后停止。</string>
+    <string name="timer_active_format">已激活：%1$02d:%2$02d:%3$02d</string>
+    <string name="timer_cancel">取消定时器</string>
+    <string name="timer_choose_time">选择小时/分钟 (24h)</string>
+    <string name="timer_schedule">计划</string>
+    <string name="timer_dialog_title">定时器 (24h)</string>
+    <string name="timer_min_label">%1$d 分钟</string>
+    <string name="menu_add_to_library">添加到您的库</string>
+    <string name="library_add_album">添加到您的库</string>
+    <string name="library_remove_album">从您的库中移除</string>
+    <string name="menu_add_to_playlist_title">添加到播放列表</string>
+    <string name="menu_add_album_to_playlist_title">将专辑添加到播放列表</string>
+    <string name="menu_add_to_playlist_desc">选择一个播放列表来添加此歌曲。</string>
+    <string name="menu_no_playlists">您还没有创建任何播放列表。</string>
+    <string name="dialog_info_title">信息</string>
+    <string name="info_label_title">标题</string>
+    <string name="info_label_artist">艺术家</string>
+    <string name="info_label_album">专辑</string>
+    <string name="info_label_genre">流派</string>
+    <string name="info_label_year">年份</string>
+    <string name="info_label_composer">作曲家</string>
+    <string name="info_label_duration">时长</string>
+    <string name="info_label_path">路径</string>
+    <string name="info_value_empty">无数据</string>
+    <string name="info_value_no_title">无标题</string>
+    <string name="info_value_unknown_artist">未知艺术家</string>
+    <string name="info_bio_prefix">认识</string>
+    <string name="share_song_chooser_title">分享歌曲</string>
+    <string name="share_song_text">我正在 Soundly 上听这首歌</string>
+    <string name="dialog_select_artist_title">选择艺术家</string>
+    <string name="quick_action_play_next">下一首播放</string>
+    <string name="quick_action_in_queue">在队列中</string>
+    <string name="quick_action_remove_favorite">取消收藏</string>
+    <string name="quick_action_favorites">收藏</string>
+    <string name="playlist_item_already_added">已添加</string>
+    <string name="playlist_item_add_here">添加到此处</string>
+    <string name="playlist_song_count">%1$d 首歌曲</string>
+    <string name="library_empty_title">您的库是空的</string>
+    <string name="library_empty_message">从创建播放列表或将内容标记为收藏开始，在这里查看它们。</string>
+    <string name="playlists_empty_title">您还没有播放列表</string>
+    <string name="playlists_empty_message">创建一个新的播放列表或点赞歌曲，以便您的自动生成播放列表出现。</string>
+    <string name="folders_empty_title">没有包含音乐的文件夹</string>
+    <string name="folders_empty_message">当 Soundly 检测到本地文件时，您将在这里看到按文件夹的分组。</string>
+    <string name="artists_empty_title">没有收藏的艺术家</string>
+    <string name="artists_empty_message">您从库中添加的艺术家将出现在这里。</string>
+    <string name="albums_empty_title">没有收藏的专辑</string>
+    <string name="albums_empty_message">您从库中标记的专辑将保存在这里。</string>
+
+    <!-- Device Control -->
+    <string name="device_sheet_title">音频输出</string>
+    <string name="device_sheet_searching">正在搜索设备...</string>
+    <string name="device_sheet_no_devices_title">未找到设备</string>
+    <string name="device_sheet_no_devices_desc">确保您的投射或蓝牙设备已开启并处于同一 Wi-Fi 网络。</string>
+    <string name="device_name_default">设备</string>
+    <string name="device_sheet_volume">音量</string>
+    <string name="device_status_casting">正在投射</string>
+    <string name="device_status_connected">已连接</string>
+
+    <!-- Settings Style -->
+    <string name="settings_mini_player_title">迷你播放器</string>
+    <string name="settings_section_customization">个性化</string>
+    <string name="settings_animations_title">动画</string>
+    <string name="settings_coming_soon">敬请期待...</string>
+    <string name="settings_functionality_title">功能</string>
+    <string name="settings_swipe_to_dismiss_title">滑动关闭</string>
+    <string name="settings_swipe_to_dismiss_desc">向侧面滑动迷你播放器以停止音乐并关闭服务</string>
+    <string name="settings_marquee_title">跑马灯文本</string>
+    <string name="settings_marquee_desc">为标题和艺术家开启自动滚动</string>
+    <string name="settings_marquee_desc_player">为长文本开启自动滚动</string>
+    <string name="settings_style_design_title">风格与设计</string>
+    <string name="settings_progress_thickness_title">进度条粗细</string>
+    <string name="settings_show_previous_title">上一首按钮</string>
+    <string name="settings_show_previous_desc">在迷你播放器中启用返回按钮</string>
+    <string name="settings_artwork_shape_title">封面形状</string>
+    <string name="settings_progressbar_design_title">进度条设计</string>
+    <string name="settings_preview_title">预览</string>
+    <string name="settings_mini_player_closed_preview">迷你播放器已关闭 (滑动)</string>
+    <string name="settings_center_text_title">居中文字</string>
+    <string name="settings_center_text_desc">在播放器中居中标题和艺术家</string>
+    <string name="settings_carousel_title">封面轮播</string>
+    <string name="settings_carousel_desc">在封面上滑动以切换歌曲</string>
+    <string name="settings_player_preview_title">播放器预览</string>
+    <string name="player_header_playing">正在播放</string>
+    <string name="settings_progressbar_title">进度条</string>
+    <string name="settings_show_thumb_title">显示滑块</string>
+    <string name="settings_show_thumb_desc">在栏上显示或隐藏圆形指示器</string>
+    <string name="settings_bar_thickness_title">栏粗细</string>
+    <string name="settings_thickness_normal">标准</string>
+    <string name="settings_thickness_bold">加粗</string>
+
+    <!-- Home Sections -->
+    <string name="home_section_discover_albums">发现专辑</string>
+    <string name="home_section_discover_albums_desc">探索美妙音乐</string>
+    <string name="home_section_recently_played">最近播放</string>
+    <string name="home_section_recently_played_desc">从上次停下的地方继续</string>
+    <string name="home_section_top_artists">热门艺术家</string>
+    <string name="home_section_top_artists_desc">您播放次数最多的艺术家</string>
+    <string name="home_section_recently_added">最近添加</string>
+    <string name="home_section_recently_added_desc">您最新的添加项</string>
+    <string name="home_section_recommended">为您推荐</string>
+    <string name="home_section_recommended_desc">根据您的收听偏好</string>
+    <string name="home_section_user_playlists">您的播放列表</string>
+    <string name="home_section_user_playlists_desc">您的个人库</string>
+    <string name="playlist_auto_generated">自动生成</string>
+    <string name="songs_count">%1$d 首歌曲</string>
+    <string name="button_create_playlist">创建或导入</string>
+    <string name="create_playlist_desc">新收藏</string>
+
+    <!-- New Strings -->
+    <string name="album_detail_more_by">更多来自 %1$s 的作品</string>
+    <string name="library_label_playlist">播放列表</string>
+    <string name="label_your_profile">您的个人资料</string>
+    <string name="albums_count">%1$d 张专辑</string>
+    <string name="unknown_artist">未知艺术家</string>
+    <string name="cd_add_to_favorites">添加到收藏</string>
+    <string name="cd_remove_from_favorites">从收藏中移除</string>
+    <string name="user_header_greeting">%1$s，你好！</string>
+    <string name="user_header_motto">您的音乐，您的世界。</string>
+    <string name="nav_home">首页</string>
+    <string name="nav_music">音乐</string>
+    <string name="nav_library">库</string>
+    <string name="nav_search">搜索</string>
+    <string name="lyrics_not_found">未找到歌词</string>
+    <string name="lyrics_closing">正在关闭...</string>
+    <string name="artist_detail_more_songs">+ 还有 %1$d 首歌曲</string>
+    <string name="library_label_albums">专辑</string>
+    <string name="library_label_artists">艺术家</string>
+    <string name="button_back">返回</string>
+    <string name="cd_shuffle">随机播放</string>
+    <string name="cd_previous">上一首</string>
+    <string name="cd_next">下一首</string>
+    <string name="cd_share">分享</string>
+    <string name="cd_queue">队列</string>
+    <string name="cd_pinned">已固定</string>
+    <string name="cd_song_artwork">歌曲封面</string>
+    <string name="cd_album_artwork">专辑封面</string>
+    <string name="cd_artist_image">艺术家图片</string>
+    <string name="cd_create_playlist">创建播放列表</string>
+    <string name="cd_playlist">播放列表</string>
+    <string name="cd_reorder">重新排序</string>
+    <string name="cd_open_options">打开选项</string>
+    <string name="label_artist">艺术家</string>
+    <string name="label_autogenerated">自动生成</string>
+    <string name="song_count_singular">%1$d 首歌曲</string>
+    <string name="album_count_singular">%1$d 张专辑</string>
+
+    <!-- Playlist Operations -->
+    <string name="playlist_edit_title">编辑播放列表</string>
+    <string name="playlist_create_title">创建新播放列表</string>
+    <string name="playlist_edit_desc">更改收藏集的名称或封面以保持更新。</string>
+    <string name="playlist_create_desc">使用精美照片和独特名称为您的播放列表赋予个性，并将其保存到您的库中。</string>
+    <string name="playlist_artwork_cd">播放列表封面</string>
+    <string name="playlist_add_photo">添加照片</string>
+    <string name="playlist_name_placeholder">我最喜欢的播放列表</string>
+    <string name="playlist_error_name_empty">请为播放列表编写一个名称。</string>
+    <string name="playlist_error_artwork_empty">请选择一个封面以继续。</string>
+    <string name="playlist_error_update_failed">无法更新播放列表。</string>
+    <string name="playlist_error_create_failed">无法创建播放列表。</string>
+    <string name="playlist_btn_create">创建</string>
+
+    <!-- Additional Menu Actions -->
+    <string name="menu_unpin">取消固定</string>
+    <string name="menu_pin">固定</string>
+    <string name="menu_remove_from_home">从首页移除</string>
+    <string name="menu_show_on_home">在首页显示</string>
+    <string name="menu_delete_playlist">删除播放列表</string>
+
+    <!-- Widget -->
+    <string name="widget_play_pause_cd">播放/暂停</string>
+    <string name="widget_pause">暂停</string>
+    <string name="widget_play">播放</string>
+    <!-- Generic -->
+    <string name="loading">加载中...</string>
+
+    <!-- Lyrics -->
+    <string name="lyrics_title">歌词</string>
+    <string name="button_show_more">更多</string>
+
+    <!-- Soundly Cloud -->
+    <string name="soundly_cloud_card_desc">探索并下载音乐</string>
+
+    <!-- Playlist -->
+    <string name="liked_songs_title">喜欢的歌曲</string>
+
+    <!-- Settings Main -->
+    <string name="settings_title">设置</string>
+    <string name="settings_cloud_title">Soundly Music Cloud</string>
+    <string name="settings_enable_cloud_title">启用 Soundly Cloud</string>
+    <string name="settings_cloud_desc">从云端获取独家内容</string>
+    <string name="settings_scan_title">扫描库</string>
+    <string name="settings_scan_desc">扫描您的音乐库</string>
+    <string name="settings_audio_title">音频</string>
+    <string name="settings_audio_desc">调整音频体验</string>
+    <string name="settings_interface_title">界面</string>
+    <string name="settings_interface_desc">个性化 Soundly 的外观</string>
+    <string name="settings_check_updates_title">检查更新</string>
+    <string name="settings_check_updates_desc">保持最新功能</string>
+    <string name="settings_about_title">关于</string>
+    <string name="settings_about_desc">应用信息和版本</string>
+
+    <!-- Audio Page -->
+    <string name="audio_section_playback">播放</string>
+    <string name="audio_gapless_title">无缝播放</string>
+    <string name="audio_gapless_desc">消除歌曲之间的静音</string>
+    <string name="audio_crossfade_title">淡入淡出</string>
+    <string name="audio_crossfade_desc">曲目之间的平滑过渡</string>
+    <string name="audio_crossfade_duration">持续时间</string>
+    <string name="audio_normalization_title">音频标准化</string>
+    <string name="audio_normalization_desc">保持恒定音量</string>
+    <string name="audio_level_low">低</string>
+    <string name="audio_level_normal">标准</string>
+    <string name="audio_level_high">高</string>
+    <string name="audio_focus_title">音频焦点</string>
+    <string name="audio_focus_desc">如果其他应用播放声音，则暂停音乐</string>
+    <string name="audio_connection_features">连接功能</string>
+    <string name="audio_connection_desc">配置设备交互</string>
+    <string name="audio_section_sound">声音</string>
+    <string name="audio_equalizer_title">均衡器</string>
+    <string name="audio_equalizer_desc">调整音频频率</string>
+    <string name="audio_mono_title">单声道音频</string>
+    <string name="audio_mono_desc">合并左右声道</string>
+
+    <!-- Interface Page -->
+    <string name="interface_section_universal">通用</string>
+    <string name="interface_theme_title">应用主题</string>
+    <string name="interface_theme_light">浅色</string>
+    <string name="interface_theme_dark">深色</string>
+    <string name="interface_theme_system">跟随系统</string>
+    <string name="interface_language_title">语言</string>
+    <string name="interface_language_desc">更改应用语言</string>
+    <string name="interface_vivid_colors_title">鲜艳色彩</string>
+    <string name="interface_vivid_colors_desc">在界面中使用更鲜艳的色彩</string>
+    <string name="interface_dynamic_colors_title">M3 颜色</string>
+    <string name="interface_dynamic_colors_desc">使用系统颜色 (Material You)</string>
+    <string name="interface_section_home">首页</string>
+    <string name="interface_enable_home_title">启用首页</string>
+    <string name="interface_enable_home_desc">在导航栏中显示首页标签</string>
+    <string name="interface_customize_home_title">自定义首页</string>
+    <string name="interface_customize_home_desc">个性化首页外观</string>
+    <string name="interface_section_player">播放器设置</string>
+    <string name="interface_player_title">播放器</string>
+    <string name="interface_player_desc">个性化播放器</string>
+    <string name="interface_mini_player_title">迷你播放器</string>
+    <string name="interface_mini_player_desc">个性化迷你播放器</string>
+    <string name="interface_lyrics_title">歌词</string>
+    <string name="interface_lyrics_desc">个性化歌曲歌词</string>
+
+    <!-- Home Settings Page -->
+    <string name="home_settings_header">个性化首页</string>
+    <string name="home_settings_subtitles_title">显示副标题</string>
+    <string name="home_settings_subtitles_desc">启用或禁用板块标题下的描述</string>
+    <string name="home_settings_help_text">按住并拖动以排列板块。下面您将看到每个部分的预览效果。</string>
+    <string name="home_settings_restore_button">恢复默认顺序</string>
+    <string name="home_settings_restore_toast">首页顺序已恢复</string>
+
+    <!-- Lyrics Page -->
+    <string name="lyrics_section_animations">动画</string>
+    <string name="lyrics_expansion_speed_title">展开速度</string>
+    <string name="lyrics_expansion_speed_desc">调整歌词展开的速度</string>
+    <string name="lyrics_agsl_title">动画背景 (AGSL)</string>
+    <string name="lyrics_agsl_desc">在歌词背景中使用彩色波浪</string>
+
+    <!-- Connection Page -->
+    <string name="connection_title">连接</string>
+    <string name="connection_section_devices">设备</string>
+    <string name="connection_bluetooth_autoplay_title">蓝牙播放</string>
+    <string name="connection_bluetooth_autoplay_desc">连接设备时开始播放</string>
+    <string name="connection_allowed_devices_title">允许的设备</string>
+    <string name="connection_devices_none">未选择</string>
+    <string name="connection_devices_all">已全选</string>
+    <string name="connection_devices_count">已选择 %1$d 台设备</string>
+    <string name="connection_no_devices">未找到配对设备</string>
+
+    <!-- Equalizer Page -->
+    <string name="equalizer_title">均衡器</string>
+    <string name="equalizer_enable_title">启用均衡器</string>
+    <string name="equalizer_section_bands">频段</string>
+    <string name="equalizer_section_effects">音效</string>
+    <string name="equalizer_bass_boost">低音增强</string>
+    <string name="equalizer_virtualizer">环绕声</string>
+    <string name="equalizer_system">系统均衡器</string>
+    <string name="equalizer_reset">重置</string>
+
+    <!-- Player Animations Page -->
+    <string name="animations_title">动画</string>
+    <string name="animations_expansion_mode_title">展开模式</string>
+    <string name="animations_mode_expansion">展开</string>
+    <string name="animations_mode_elevation">提升</string>
+    <string name="animations_speed_title">动画速度</string>
+
+    <!-- Mini Player Animations Page -->
+    <string name="player_settings_title">播放器</string>
+    <string name="player_section_customization">个性化</string>
+    <string name="player_animation_title">动画</string>
+    <string name="player_animation_desc">个性化播放器动画</string>
+    <string name="player_style_title">风格与设计</string>
+    <string name="player_style_desc">个性化视觉外观</string>
+
+    <!-- Animation Speeds -->
+    <string name="speed_normal">标准</string>
+    <string name="speed_slow">慢速</string>
+
+    <!-- Progress Bar Types -->
+    <string name="pb_type_default">Material 3 (无选项)</string>
+    <string name="pb_type_wave">波浪</string>
+    <string name="pb_type_plane">平面</string>
+
+    <!-- Mini Progress Bar Types -->
+    <string name="mini_pb_type_wave">波浪 (默认)</string>
+    <string name="mini_pb_type_plane">平面</string>
+    <string name="mini_pb_type_none">无进度</string>
+
+    <!-- Mini Progress Bar Thickness -->
+    <string name="mini_thickness_normal">标准</string>
+    <string name="mini_thickness_medium">中等</string>
+    <string name="mini_thickness_bold">加粗</string>
+
+    <!-- Artwork Shapes -->
+    <string name="shape_default">默认</string>
+    <string name="shape_circle">圆形</string>
+    <string name="shape_square">正方形</string>
+    <string name="shape_arch">拱形</string>
+    <string name="shape_pill">药丸形</string>
+    <string name="shape_arrow">箭头</string>
+    <string name="shape_pentagon">五边形</string>
+    <string name="shape_cookie_4">四边饼干</string>
+    <string name="shape_cookie_6">六边饼干</string>
+    <string name="shape_cookie_7">七边饼干</string>
+    <string name="shape_clover_4">四叶草</string>
+
+    <!-- Mini Player Style -->
+    <string name="mini_style_solid">纯色</string>
+    <string name="mini_style_tinted">着色</string>
+    <string name="mini_style_blur">模糊</string>
+
+    <!-- Search Cloud -->
+    <string name="search_mode_offline">离线</string>
+    <string name="search_mode_online">在线</string>
+    <string name="search_section_cloud_artists">云端歌手</string>
+    <string name="search_section_cloud_songs">云端歌曲</string>
+    <string name="search_section_cloud_albums">云端专辑</string>
+    <string name="search_section_cloud_playlists">云端播放列表</string>
+    <string name="search_no_results_cloud">云端未找到结果。</string>
+    <string name="cloud_artist_label">SoundlyCloud 歌手</string>
+    <string name="cloud_download_all">下载全部</string>
+    <string name="cloud_popular_songs">热门歌曲</string>
+    <string name="cloud_subscribers_label">订阅者</string>
 </resources>

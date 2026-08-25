@@ -10,6 +10,7 @@ import com.soundly.home.ui.HomeScreen
 sealed class InicioRoute(val route: String) {
     object Launcher : InicioRoute("inicio_launcher")
     object Onboarding : InicioRoute("inicio_onboarding")
+    object LanguageSelection : InicioRoute("inicio_language")
     object Permissions : InicioRoute("inicio_permissions")
     object Profile : InicioRoute("inicio_profile")
     object MediaScanner : InicioRoute("inicio_media_scanner")
@@ -31,9 +32,18 @@ fun AppNavHost(navController: NavHostController, repository: MusicRepository) {
         composable(InicioRoute.Onboarding.route) {
             OnboardingScreen(
                 onFinished = {
-                    navController.navigate(InicioRoute.Permissions.route) {
+                    navController.navigate(InicioRoute.LanguageSelection.route) {
                         popUpTo(InicioRoute.Launcher.route) { inclusive = true }
                     }
+                }
+            )
+        }
+
+        composable(InicioRoute.LanguageSelection.route) {
+            LanguageSelectionScreen(
+                navController = navController,
+                onLanguageSelected = {
+                    navController.navigate(InicioRoute.Permissions.route)
                 }
             )
         }

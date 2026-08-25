@@ -1,7 +1,7 @@
 package com.soundly.ui.components
 
 import android.graphics.BitmapFactory
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.soundly.ui.theme.LocalIsDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -137,7 +137,7 @@ fun SoundlyPrimaryButton(
     text: String,
     enabled: Boolean = true
 ) {
-    val isDark = isSystemInDarkTheme()
+    val isDark = LocalIsDarkTheme.current
 
     val buttonColor = extractedColor?.let { color ->
         SoundlyColors.adaptBlueForTheme(color)

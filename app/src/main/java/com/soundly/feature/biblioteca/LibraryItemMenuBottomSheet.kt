@@ -36,10 +36,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.soundly.R
 
 sealed class LibraryItemMenuType {
@@ -56,6 +59,7 @@ data class LibraryItemMenuData(
     val artworkUri: Any?, // Uri, Int (Resource), or null
     val type: LibraryItemMenuType,
     val isPinned: Boolean,
+    val isFromHome: Boolean = false,
     val isFromTodo: Boolean = false,
     val isFavorite: Boolean = false
 )
@@ -67,6 +71,7 @@ fun LibraryItemMenuBottomSheet(
     data: LibraryItemMenuData?,
     onDismiss: () -> Unit,
     onPinClick: () -> Unit,
+    onShowOnHomeClick: () -> Unit = {},
     onEditClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {}
 ) {
@@ -109,22 +114,30 @@ fun LibraryItemMenuBottomSheet(
             if (data.type is LibraryItemMenuType.Folder && !data.isFromTodo) {
                 // Special case for folders in the general folder section
                 MenuItemWithIcon(
-                    text = if (data.isFavorite) "Quitar de favoritos" else "Añadir a fav",
+                    text = if (data.isFavorite) stringResource(R.string.menu_remove_from_favorites) else stringResource(R.string.cd_add_to_favorites),
                     icon = if (data.isFavorite) Icons.Rounded.Delete else Icons.Rounded.Folder,
                     onClick = { onDeleteClick(); onDismiss() }
                 )
             } else {
                 // Normal case for other items or folders in the favorite section
                 MenuItemWithIcon(
-                    text = if (data.isPinned) "Desfijar" else "Fijar",
+                    text = if (data.isPinned) stringResource(R.string.menu_unpin) else stringResource(R.string.menu_pin),
                     icon = Icons.Rounded.PushPin,
                     onClick = { onPinClick(); onDismiss() }
                 )
             }
 
+            if (data.type is LibraryItemMenuType.UserPlaylist || data.type is LibraryItemMenuType.AutoPlaylist) {
+                MenuItemWithIcon(
+                    text = if (data.isFromHome) stringResource(R.string.menu_remove_from_home) else stringResource(R.string.menu_show_on_home),
+                    icon = Icons.Rounded.PushPin, // Or another icon
+                    onClick = { onShowOnHomeClick(); onDismiss() }
+                )
+            }
+
             if (data.type is LibraryItemMenuType.UserPlaylist) {
                 MenuItemWithIcon(
-                    text = "Editar playlist",
+                    text = stringResource(R.string.menu_edit),
                     icon = Icons.Rounded.Edit,
                     onClick = { onEditClick(); onDismiss() }
                 )
@@ -132,10 +145,10 @@ fun LibraryItemMenuBottomSheet(
 
             // Delete/Unfavorite Action
             val (deleteText, showDelete) = when (data.type) {
-                is LibraryItemMenuType.UserPlaylist -> "Eliminar playlist" to true
-                is LibraryItemMenuType.Album -> "Eliminar de favoritos" to true
-                is LibraryItemMenuType.Artist -> "Eliminar de favoritos" to true
-                is LibraryItemMenuType.Folder -> if (data.isFromTodo) "Eliminar de favoritos" to true else "" to false
+                is LibraryItemMenuType.UserPlaylist -> stringResource(R.string.menu_delete_playlist) to true
+                is LibraryItemMenuType.Album -> stringResource(R.string.menu_remove_from_favorites) to true
+                is LibraryItemMenuType.Artist -> stringResource(R.string.menu_remove_from_favorites) to true
+                is LibraryItemMenuType.Folder -> if (data.isFromTodo) stringResource(R.string.menu_remove_from_favorites) to true else "" to false
                 else -> "" to false
             }
 
@@ -175,7 +188,11 @@ private fun LibraryItemSheetHeader(data: LibraryItemMenuData, onClose: () -> Uni
                 )
             } else {
                 AsyncImage(
-                    model = data.artworkUri ?: R.drawable.playlist_favicon,
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(data.artworkUri ?: R.drawable.playlist_favicon)
+                        .crossfade(true)
+                        .allowHardware(true)
+                        .build(),
                     contentDescription = data.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.matchParentSize()
@@ -216,7 +233,7 @@ private fun LibraryItemSheetHeader(data: LibraryItemMenuData, onClose: () -> Uni
         ) {
             Icon(
                 imageVector = Icons.Rounded.Close,
-                contentDescription = "Cerrar",
+                contentDescription = stringResource(R.string.button_close),
                 modifier = Modifier.size(20.dp)
             )
         }

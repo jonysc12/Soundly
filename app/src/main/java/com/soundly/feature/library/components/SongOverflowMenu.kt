@@ -1,5 +1,6 @@
 package com.soundly.feature.library.components
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -16,56 +17,35 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import android.net.Uri
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
-import androidx.compose.material.icons.rounded.Album
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.FavoriteBorder
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.LibraryMusic
-import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.soundly.R
 import com.soundly.data.model.Playlist
 import com.soundly.data.model.Song
+import com.soundly.ui.componentes.edit.SongEditSheet
 import java.util.concurrent.TimeUnit
 
 sealed interface SongMenuSource {
@@ -76,7 +56,7 @@ sealed interface SongMenuSource {
     ) : SongMenuSource
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongOverflowMenuButton(
     song: Song,
@@ -89,39 +69,126 @@ fun SongOverflowMenuButton(
     onOpenAlbum: (Long) -> Unit,
     onOpenArtist: (Long) -> Unit,
     onAddToPlaylist: (String) -> Unit,
-    onAddToFavorites: () -> Unit,
+    onToggleFavorite: () -> Unit,
     onDeleteSong: () -> Unit,
+    onOpenSleepTimer: (() -> Unit)? = null,
+    onViewQueue: (() -> Unit)? = null,
+    showDeleteOption: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     var showSheet by remember(song.id) { mutableStateOf(false) }
-    var showPlaylistSheet by remember(song.id) { mutableStateOf(false) }
-    var showInfoDialog by remember(song.id) { mutableStateOf(false) }
-    var showDeleteDialog by remember(song.id) { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val playlistSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showEditSheet by remember(song.id) { mutableStateOf(false) }
 
     Box(modifier = modifier) {
-    IconButton(
-        onClick = { showSheet = true },
-        colors = IconButtonDefaults.iconButtonColors(
-            containerColor = Color.Transparent, // 👈 sin fondo
-            contentColor = MaterialTheme.colorScheme.onSurface // 👈 se adapta al tema
-        ),
-        modifier = Modifier
-            .size(40.dp)
-    ) {
-        Icon(
-            imageVector = Icons.Rounded.MoreVert,
-            contentDescription = "Más opciones",
-            modifier = Modifier.size(20.dp)
+        IconButton(
+            onClick = { showSheet = true },
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            ),
+            modifier = Modifier.size(40.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.MoreVert,
+                contentDescription = stringResource(R.string.cd_more_options),
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+
+    SongOverflowMenu(
+        song = song,
+        source = source,
+        userPlaylists = userPlaylists,
+        playlistIdsContainingSong = playlistIdsContainingSong,
+        isFavorite = isFavorite,
+        showMenu = showSheet,
+        onDismissRequest = { showSheet = false },
+        onPlayNext = onPlayNext,
+        onAddToQueue = onAddToQueue,
+        onOpenAlbum = onOpenAlbum,
+        onOpenArtist = onOpenArtist,
+        onAddToPlaylist = onAddToPlaylist,
+        onToggleFavorite = onToggleFavorite,
+        onDeleteSong = onDeleteSong,
+        onOpenSleepTimer = onOpenSleepTimer,
+        onViewQueue = onViewQueue,
+        onEditClick = {
+            showEditSheet = true
+        },
+        showDeleteOption = showDeleteOption
+    )
+
+    if (showEditSheet) {
+        SongEditSheet(
+            song = song,
+            onDismissRequest = { showEditSheet = false }
         )
     }
 }
 
-    // ── Bottom sheet principal ──────────────────────────────────────────────
-    if (showSheet) {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SongOverflowMenu(
+    song: Song,
+    source: SongMenuSource,
+    userPlaylists: List<Playlist>,
+    playlistIdsContainingSong: Set<String>,
+    isFavorite: Boolean,
+    showMenu: Boolean,
+    onDismissRequest: () -> Unit,
+    onPlayNext: () -> Unit,
+    onAddToQueue: () -> Unit,
+    onOpenAlbum: (Long) -> Unit,
+    onOpenArtist: (Long) -> Unit,
+    onAddToPlaylist: (String) -> Unit,
+    onToggleFavorite: () -> Unit,
+    onDeleteSong: () -> Unit,
+    onOpenSleepTimer: (() -> Unit)? = null,
+    onViewQueue: (() -> Unit)? = null,
+    onEditClick: () -> Unit = {},
+    showDeleteOption: Boolean = true
+) {
+    if (!showMenu) return
+
+    var showPlaylistSheet by remember(song.id) { mutableStateOf(false) }
+    var showInfoDialog by remember(song.id) { mutableStateOf(false) }
+    var showDeleteDialog by remember(song.id) { mutableStateOf(false) }
+    var showArtistChoiceDialog by remember(song.id) { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val playlistSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    val deleteContext = remember(source) {
+        when (source) {
+            SongMenuSource.Library -> Triple(
+                context.getString(R.string.menu_delete_from_library),
+                context.getString(R.string.dialog_delete_from_library_title),
+                deleteMessageForSource(context, source)
+            )
+            is SongMenuSource.Playlist -> {
+                if (source.isAutoGenerated) {
+                    Triple(
+                        context.getString(R.string.menu_remove_from_favorites),
+                        context.getString(R.string.dialog_remove_from_favorites_title),
+                        deleteMessageForSource(context, source)
+                    )
+                } else {
+                    Triple(
+                        context.getString(R.string.menu_remove_from_playlist),
+                        context.getString(R.string.dialog_remove_from_playlist_title),
+                        deleteMessageForSource(context, source)
+                    )
+                }
+            }
+        }
+    }
+
+    // ── Gestión de Bottom Sheets ───────────────────────────────────────────
+    if (!showPlaylistSheet) {
         ModalBottomSheet(
-            onDismissRequest = { showSheet = false },
+            onDismissRequest = onDismissRequest,
             sheetState = sheetState,
             containerColor = MaterialTheme.colorScheme.surface,
             scrimColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.32f),
@@ -129,74 +196,129 @@ fun SongOverflowMenuButton(
             dragHandle = {
                 Box(
                     modifier = Modifier
-                        .padding(top = 12.dp, bottom = 4.dp)
-                        .size(width = 40.dp, height = 4.dp)
+                        .padding(vertical = 12.dp)
+                        .size(width = 36.dp, height = 4.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
+                        .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f))
                 )
             }
         ) {
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 24.dp)
             ) {
                 // Cabecera con info de la canción
-                SongSheetHeader(song = song, onClose = { showSheet = false })
+                item {
+                    SongSheetHeader(song = song, onClose = onDismissRequest)
+                }
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                )
+                item {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                    )
+                }
 
                 // Acciones rápidas en fila
-                QuickActionsRow(
-                    isFavorite = isFavorite,
-                    onPlayNext = { showSheet = false; onPlayNext() },
-                    onAddToQueue = { showSheet = false; onAddToQueue() },
-                    onAddToFavorites = { showSheet = false; onAddToFavorites() }
-                )
+                item {
+                    QuickActionsRow(
+                        isFavorite = isFavorite,
+                        onPlayNext = { onDismissRequest(); onPlayNext() },
+                        onAddToQueue = { onDismissRequest(); onAddToQueue() },
+                        onToggleFavorite = onToggleFavorite
+                    )
+                }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-                )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                    )
+                }
 
                 // Lista de acciones secundarias
-                MenuItemWithIcon(
-                    text = "Añadir a una playlist",
-                    icon = Icons.AutoMirrored.Rounded.PlaylistAdd,
-                    onClick = { showSheet = false; showPlaylistSheet = true }
-                )
-                MenuItemWithIcon(
-                    text = "Ir al álbum",
-                    icon = Icons.Rounded.Album,
-                    onClick = { showSheet = false; onOpenAlbum(song.albumId) }
-                )
-                MenuItemWithIcon(
-                    text = "Ir al artista",
-                    icon = Icons.Rounded.Person,
-                    onClick = { showSheet = false; onOpenArtist(song.artistId) }
-                )
-                MenuItemWithIcon(
-                    text = "Información",
-                    icon = Icons.Rounded.Info,
-                    onClick = { showSheet = false; showInfoDialog = true }
-                )
-                MenuItemWithIcon(
-                    text = "Eliminar canción",
-                    icon = Icons.Rounded.Delete,
-                    tintOverride = MaterialTheme.colorScheme.error,
-                    onClick = { showSheet = false; showDeleteDialog = true }
-                )
+                item {
+                    MenuItemWithIcon(
+                        text = stringResource(R.string.menu_add_to_playlist),
+                        icon = Icons.AutoMirrored.Rounded.PlaylistAdd,
+                        onClick = { showPlaylistSheet = true }
+                    )
+                }
+                item {
+                    MenuItemWithIcon(
+                        text = stringResource(R.string.menu_go_to_album),
+                        icon = Icons.Rounded.Album,
+                        onClick = { onDismissRequest(); onOpenAlbum(song.albumId) }
+                    )
+                }
+                item {
+                    val artists = song.artistNames
+                    MenuItemWithIcon(
+                        text = if (artists.size > 1) stringResource(R.string.menu_go_to_artist_multiple) else stringResource(R.string.menu_go_to_artist),
+                        icon = Icons.Rounded.Person,
+                        onClick = {
+                            if (artists.size > 1) {
+                                showArtistChoiceDialog = true
+                            } else {
+                                onDismissRequest()
+                                // Usamos el sistema inteligente de IDs
+                                onOpenArtist(com.soundly.data.model.generateArtistId(artists.first()))
+                            }
+                        }
+                    )
+                }
+                item {
+                    MenuItemWithIcon(
+                        text = stringResource(R.string.menu_information),
+                        icon = Icons.Rounded.Info,
+                        onClick = { showInfoDialog = true }
+                    )
+                }
+                item {
+                    MenuItemWithIcon(
+                        text = stringResource(R.string.menu_edit),
+                        icon = Icons.Rounded.Edit,
+                        onClick = {
+                            onDismissRequest()
+                            onEditClick()
+                        }
+                    )
+                }
+                if (onViewQueue != null) {
+                    item {
+                        MenuItemWithIcon(
+                            text = stringResource(R.string.menu_playback_queue),
+                            icon = Icons.AutoMirrored.Rounded.QueueMusic,
+                            onClick = { onDismissRequest(); onViewQueue() }
+                        )
+                    }
+                }
+                if (onOpenSleepTimer != null) {
+                    item {
+                        MenuItemWithIcon(
+                            text = stringResource(R.string.menu_sleep_timer),
+                            icon = Icons.Rounded.Timer,
+                            onClick = { onDismissRequest(); onOpenSleepTimer() }
+                        )
+                    }
+                }
+                if (showDeleteOption) {
+                    item {
+                        MenuItemWithIcon(
+                            text = deleteContext.first,
+                            icon = Icons.Rounded.Delete,
+                            tintOverride = MaterialTheme.colorScheme.error,
+                            onClick = { showDeleteDialog = true }
+                        )
+                    }
+                }
             }
         }
-    }
-
-    // ── Bottom sheet de playlists ───────────────────────────────────────────
-    if (showPlaylistSheet) {
+    } else {
+        // Sheet de selección de playlists
         ModalBottomSheet(
             onDismissRequest = { showPlaylistSheet = false },
             sheetState = playlistSheetState,
@@ -206,10 +328,10 @@ fun SongOverflowMenuButton(
             dragHandle = {
                 Box(
                     modifier = Modifier
-                        .padding(top = 12.dp, bottom = 4.dp)
-                        .size(width = 40.dp, height = 4.dp)
+                        .padding(vertical = 12.dp)
+                        .size(width = 36.dp, height = 4.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
+                        .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f))
                 )
             }
         ) {
@@ -218,15 +340,21 @@ fun SongOverflowMenuButton(
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp, vertical = 8.dp)
             ) {
-                Text(
-                    text = "Añadir a playlist",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { showPlaylistSheet = false }) {
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, null)
+                    }
+                    Text(
+                        text = stringResource(R.string.menu_add_to_playlist_title),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Una canción no puede duplicarse en la misma playlist.",
+                    text = stringResource(R.string.menu_add_to_playlist_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -234,7 +362,7 @@ fun SongOverflowMenuButton(
 
                 if (userPlaylists.isEmpty()) {
                     Text(
-                        text = "Todavía no tienes playlists creadas.",
+                        text = stringResource(R.string.menu_no_playlists),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(bottom = 20.dp)
@@ -245,7 +373,9 @@ fun SongOverflowMenuButton(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         items(userPlaylists, key = { it.id }) { playlist ->
-                            val alreadyAdded = playlist.id in playlistIdsContainingSong
+                            val alreadyAdded = remember(playlist.id, playlistIdsContainingSong) {
+                                playlist.id in playlistIdsContainingSong
+                            }
                             PlaylistItem(
                                 playlist = playlist,
                                 alreadyAdded = alreadyAdded,
@@ -253,95 +383,116 @@ fun SongOverflowMenuButton(
                                     if (!alreadyAdded) {
                                         onAddToPlaylist(playlist.id)
                                         showPlaylistSheet = false
+                                        onDismissRequest()
                                     }
                                 }
                             )
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
 
-    // ── Diálogo de info ─────────────────────────────────────────────────────
+    // ── Diálogos ────────────────────────────────────────────────────────────
     if (showInfoDialog) {
         AlertDialog(
             onDismissRequest = { showInfoDialog = false },
             confirmButton = {
-                FilledTonalButton(onClick = { showInfoDialog = false }) {
-                    Text("Cerrar")
-                }
+                FilledTonalButton(onClick = { showInfoDialog = false }) { Text(stringResource(R.string.button_close)) }
             },
-            title = {
-                Text("Información", fontWeight = FontWeight.Bold)
-            },
+            title = { Text(stringResource(R.string.dialog_info_title), fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    SongInfoRow(label = "Título", value = song.title)
-                    SongInfoRow(label = "Artista", value = song.artist)
-                    SongInfoRow(label = "Álbum", value = song.album)
-                    SongInfoRow(label = "Duración", value = song.duration.formatDuration())
-                    SongInfoRow(label = "Ruta", value = song.path)
+                    SongInfoRow(label = stringResource(R.string.info_label_title), value = song.title)
+                    SongInfoRow(label = stringResource(R.string.info_label_artist), value = song.artist)
+                    SongInfoRow(label = stringResource(R.string.info_label_album), value = song.album)
+                    SongInfoRow(label = stringResource(R.string.info_label_duration), value = remember(song.duration) { song.duration.formatDuration() })
+                    SongInfoRow(label = stringResource(R.string.info_label_path), value = song.path)
                 }
             },
             containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurface,
             shape = RoundedCornerShape(24.dp)
         )
     }
 
-    // ── Diálogo de eliminar ─────────────────────────────────────────────────
+    if (showArtistChoiceDialog) {
+        val artists = song.artistNames
+        AlertDialog(
+            onDismissRequest = { showArtistChoiceDialog = false },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showArtistChoiceDialog = false }) { Text(stringResource(R.string.button_cancel)) }
+            },
+            title = { Text(stringResource(R.string.dialog_select_artist_title), fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    artists.forEach { name ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable {
+                                    showArtistChoiceDialog = false
+                                    onDismissRequest()
+                                    onOpenArtist(com.soundly.data.model.generateArtistId(name))
+                                }
+                                .padding(vertical = 12.dp, horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Rounded.Person, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
+                            Spacer(Modifier.width(12.dp))
+                            Text(name, style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(24.dp)
+        )
+    }
+
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             confirmButton = {
                 FilledTonalButton(
-                    onClick = { showDeleteDialog = false; onDeleteSong() },
+                    onClick = {
+                        showDeleteDialog = false
+                        onDeleteSong()
+                        onDismissRequest()
+                    },
                     colors = ButtonDefaults.filledTonalButtonColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer,
                         contentColor = MaterialTheme.colorScheme.onErrorContainer
                     )
-                ) {
-                    Text("Eliminar")
-                }
+                ) { Text(stringResource(R.string.button_delete)) }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancelar")
-                }
+                TextButton(onClick = { showDeleteDialog = false }) { Text(stringResource(R.string.button_cancel)) }
             },
-            title = {
-                Text("Eliminar canción", fontWeight = FontWeight.Bold)
-            },
+            title = { Text(deleteContext.second, fontWeight = FontWeight.Bold) },
             text = {
-                Text(
-                    text = deleteMessageForSource(source),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Text(text = deleteContext.third, style = MaterialTheme.typography.bodyMedium)
             },
             containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             shape = RoundedCornerShape(24.dp)
         )
     }
 }
 
-// ── Cabecera del sheet ──────────────────────────────────────────────────────
-
 @Composable
 private fun SongSheetHeader(song: Song, onClose: () -> Unit) {
+    val artworkUri = remember(song.albumId) {
+        Uri.parse("content://media/external/audio/albumart/${song.albumId}")
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 20.dp, end = 12.dp, top = 4.dp, bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val artworkUri = remember(song.albumId) {
-            Uri.parse("content://media/external/audio/albumart/${song.albumId}")
-        }
         Box(
             modifier = Modifier
                 .size(62.dp)
@@ -350,12 +501,15 @@ private fun SongSheetHeader(song: Song, onClose: () -> Unit) {
             contentAlignment = Alignment.Center
         ) {
             AsyncImage(
-                model = artworkUri,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(artworkUri)
+                    .crossfade(true)
+                    .allowHardware(true)
+                    .build(),
                 contentDescription = song.album,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.matchParentSize()
             )
-            // Fallback visible solo si la imagen no carga
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.QueueMusic,
                 contentDescription = null,
@@ -363,260 +517,112 @@ private fun SongSheetHeader(song: Song, onClose: () -> Unit) {
                 modifier = Modifier.size(24.dp)
             )
         }
-
         Spacer(modifier = Modifier.size(14.dp))
-
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = song.title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = song.artist,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Text(text = song.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(text = song.artist, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
-
         IconButton(
             onClick = onClose,
-            colors = IconButtonDefaults.iconButtonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-            ),
-            modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape)
+            colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), contentColor = MaterialTheme.colorScheme.onSurfaceVariant),
+            modifier = Modifier.size(36.dp).clip(CircleShape)
         ) {
-            Icon(
-                imageVector = Icons.Rounded.Close,
-                contentDescription = "Cerrar",
-                modifier = Modifier.size(18.dp)
-            )
+            Icon(imageVector = Icons.Rounded.Close, contentDescription = stringResource(R.string.cd_close), modifier = Modifier.size(18.dp))
         }
     }
 }
 
-// ── Fila de acciones rápidas ────────────────────────────────────────────────
-
 @Composable
-private fun QuickActionsRow(
-    isFavorite: Boolean,
-    onPlayNext: () -> Unit,
-    onAddToQueue: () -> Unit,
-    onAddToFavorites: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
+private fun QuickActionsRow(isFavorite: Boolean, onPlayNext: () -> Unit, onAddToQueue: () -> Unit, onToggleFavorite: () -> Unit) {
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        QuickActionChip(label = stringResource(R.string.quick_action_play_next), icon = Icons.Rounded.PlayArrow, modifier = Modifier.weight(1f), onClick = onPlayNext)
+        QuickActionChip(label = stringResource(R.string.quick_action_in_queue), icon = Icons.AutoMirrored.Rounded.QueueMusic, modifier = Modifier.weight(1f), onClick = onAddToQueue)
         QuickActionChip(
-            label = "Play next",
-            icon = Icons.Rounded.PlayArrow,
-            modifier = Modifier.weight(1f),
-            onClick = onPlayNext
-        )
-        QuickActionChip(
-            label = "En cola",
-            icon = Icons.AutoMirrored.Rounded.QueueMusic,
-            modifier = Modifier.weight(1f),
-            onClick = onAddToQueue
-        )
-        QuickActionChip(
-            label = if (isFavorite) "Favorito" else "Favoritos",
+            label = if (isFavorite) stringResource(R.string.quick_action_remove_favorite) else stringResource(R.string.quick_action_favorites),
             icon = if (isFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
-            enabled = !isFavorite,
             modifier = Modifier.weight(1f),
-            onClick = onAddToFavorites
+            onClick = onToggleFavorite
         )
     }
 }
 
 @Composable
-private fun QuickActionChip(
-    label: String,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    val bgColor = if (enabled)
-        MaterialTheme.colorScheme.surfaceVariant
-    else
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-
-    val contentColor = if (enabled)
-        MaterialTheme.colorScheme.onSurface
-    else
-        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-
+private fun QuickActionChip(label: String, icon: ImageVector, modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
+    val bgColor = if (enabled) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+    val contentColor = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
     Column(
         modifier = modifier
+            .height(72.dp) // Altura fija para evitar saltos
             .clip(RoundedCornerShape(16.dp))
             .background(bgColor)
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(vertical = 12.dp),
+            .padding(horizontal = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.Center
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = contentColor,
-            modifier = Modifier.size(22.dp)
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = contentColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        Icon(imageVector = icon, contentDescription = label, tint = contentColor, modifier = Modifier.size(22.dp))
+        Spacer(Modifier.height(4.dp))
+        Text(text = label, style = MaterialTheme.typography.labelSmall, color = contentColor, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
     }
 }
 
-// ── Item de menú ────────────────────────────────────────────────────────────
-
 @Composable
-private fun MenuItemWithIcon(
-    text: String,
-    icon: ImageVector,
-    tintOverride: androidx.compose.ui.graphics.Color? = null,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    val iconTint = tintOverride
-        ?: if (enabled) MaterialTheme.colorScheme.onSurface
-        else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-
-    val textColor = tintOverride
-        ?: if (enabled) MaterialTheme.colorScheme.onSurface
-        else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 20.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = iconTint,
-            modifier = Modifier.size(22.dp)
-        )
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-            color = textColor
-        )
+private fun MenuItemWithIcon(text: String, icon: ImageVector, tintOverride: Color? = null, enabled: Boolean = true, onClick: () -> Unit) {
+    val color = tintOverride ?: (if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
+    Row(modifier = Modifier.fillMaxWidth().clickable(enabled = enabled, onClick = onClick).padding(horizontal = 20.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Icon(imageVector = icon, contentDescription = null, tint = color, modifier = Modifier.size(22.dp))
+        Text(text = text, style = MaterialTheme.typography.bodyLarge, color = color)
     }
 }
 
-// ── Item de playlist ────────────────────────────────────────────────────────
-
 @Composable
-private fun PlaylistItem(
-    playlist: Playlist,
-    alreadyAdded: Boolean,
-    onClick: () -> Unit
-) {
+private fun PlaylistItem(playlist: Playlist, alreadyAdded: Boolean, onClick: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(
-                if (alreadyAdded) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
-            )
-            .clickable(enabled = !alreadyAdded, onClick = onClick)
-            .padding(12.dp),
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(if (alreadyAdded) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)).clickable(enabled = !alreadyAdded, onClick = onClick).padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(42.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(
-                    if (alreadyAdded) MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = if (alreadyAdded) Icons.Rounded.CheckCircle else Icons.Rounded.LibraryMusic,
-                contentDescription = null,
-                tint = if (alreadyAdded) MaterialTheme.colorScheme.onSurfaceVariant
-                else MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(20.dp)
-            )
+        Box(modifier = Modifier.size(42.dp).clip(RoundedCornerShape(12.dp)).background(if (alreadyAdded) MaterialTheme.colorScheme.outline.copy(alpha = 0.2f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)), contentAlignment = Alignment.Center) {
+            if (playlist.artworkUri != null) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(playlist.artworkUri)
+                        .crossfade(true)
+                        .allowHardware(true)
+                        .build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.matchParentSize()
+                )
+            }
+ else {
+                Icon(imageVector = if (alreadyAdded) Icons.Rounded.CheckCircle else Icons.Rounded.LibraryMusic, contentDescription = null, tint = if (alreadyAdded) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(20.dp))
+            }
         }
-
         Spacer(modifier = Modifier.size(12.dp))
-
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = playlist.name,
-                style = MaterialTheme.typography.titleSmall,
-                color = if (alreadyAdded) MaterialTheme.colorScheme.onSurfaceVariant
-                else MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = if (alreadyAdded) "Ya añadida" else "Añadir aquí",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            val playlistName = if (playlist.id == com.soundly.data.repository.MusicRepository.LIKED_SONGS_PLAYLIST_ID) {
+                stringResource(R.string.liked_songs_title)
+            } else {
+                playlist.name
+            }
+            Text(text = playlistName, style = MaterialTheme.typography.titleSmall, color = if (alreadyAdded) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(text = if (alreadyAdded) stringResource(R.string.playlist_item_already_added) else stringResource(R.string.playlist_item_add_here), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-
-        if (alreadyAdded) {
-            Icon(
-                imageVector = Icons.Rounded.CheckCircle,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier.size(18.dp)
-            )
-        }
+        if (alreadyAdded) { Icon(imageVector = Icons.Rounded.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f), modifier = Modifier.size(18.dp)) }
     }
 }
-
-// ── Info row ────────────────────────────────────────────────────────────────
 
 @Composable
 private fun SongInfoRow(label: String, value: String) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = value.ifBlank { "Sin datos" },
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+        Text(text = label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(text = value.ifBlank { stringResource(R.string.info_value_empty) }, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
     }
 }
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
-
-private fun deleteMessageForSource(source: SongMenuSource): String = when (source) {
-    SongMenuSource.Library ->
-        "La canción se ocultará de tu biblioteca y dejará de aparecer en listas y detalles."
-    is SongMenuSource.Playlist -> if (source.isAutoGenerated)
-        "La canción se quitará de tus favoritos y saldrá de la playlist autogenerada."
-    else
-        "La canción se quitará de esta playlist."
+private fun deleteMessageForSource(context: android.content.Context, source: SongMenuSource): String = when (source) {
+    SongMenuSource.Library -> context.getString(R.string.dialog_delete_from_library_message)
+    is SongMenuSource.Playlist -> if (source.isAutoGenerated) context.getString(R.string.dialog_remove_from_favorites_message) else context.getString(R.string.dialog_remove_from_playlist_message)
 }
 
 private fun Long.formatDuration(): String {

@@ -8,6 +8,7 @@ import android.provider.MediaStore
 import com.soundly.data.model.Album
 import com.soundly.data.model.Artist
 import com.soundly.data.model.Song
+import com.soundly.data.utils.fixEncoding
 
 class MediaStoreDataSource(
     private val context: Context
@@ -103,8 +104,8 @@ class MediaStoreDataSource(
 
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
-                val name = cursor.getString(albumColumn) ?: "Unknown"
-                val artist = cursor.getString(artistColumn) ?: "Unknown"
+                val name = cursor.getString(albumColumn).fixEncoding().ifBlank { "Unknown" }
+                val artist = cursor.getString(artistColumn).fixEncoding().ifBlank { "Unknown" }
                 val songCount = cursor.getInt(songCountColumn)
 
                 albums.add(
@@ -146,7 +147,7 @@ class MediaStoreDataSource(
 
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
-                val name = cursor.getString(artistColumn) ?: "Unknown"
+                val name = cursor.getString(artistColumn).fixEncoding().ifBlank { "Unknown" }
                 val songCount = cursor.getInt(trackCountColumn)
                 val albumCount = cursor.getInt(albumCountColumn)
 
@@ -189,10 +190,10 @@ class MediaStoreDataSource(
     private fun mapSong(cursor: Cursor, columns: SongColumns): Song {
         return Song(
             id = cursor.getLong(columns.idColumn),
-            title = cursor.getString(columns.titleColumn) ?: "Unknown",
-            artist = cursor.getString(columns.artistColumn) ?: "Unknown",
+            title = cursor.getString(columns.titleColumn).fixEncoding().ifBlank { "Unknown" },
+            artist = cursor.getString(columns.artistColumn).fixEncoding().ifBlank { "Unknown" },
             artistId = cursor.getLong(columns.artistIdColumn),
-            album = cursor.getString(columns.albumColumn) ?: "Unknown",
+            album = cursor.getString(columns.albumColumn).fixEncoding().ifBlank { "Unknown" },
             albumId = cursor.getLong(columns.albumIdColumn),
             dateAdded = cursor.getLong(columns.dateAddedColumn),
             duration = cursor.getLong(columns.durationColumn),

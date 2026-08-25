@@ -144,7 +144,8 @@ fun PlayerSecondaryControls(
     onToggleFavorite: () -> Unit,
     onCycleRepeat: () -> Unit,
     onColor: Color,
-    compact: Boolean = false
+    compact: Boolean = false,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Center
 ) {
     var shufflePressed by remember { mutableStateOf(false) }
     var heartPressed   by remember { mutableStateOf(false) }
@@ -172,7 +173,7 @@ fun PlayerSecondaryControls(
 
     Row(
         modifier              = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = horizontalArrangement
     ) {
         Row(
             modifier = Modifier
