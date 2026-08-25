@@ -53,14 +53,11 @@ La aplicación combina la potencia del lenguaje Kotlin y **Jetpack Compose**, ad
 
 ---
 
+
 ## Capturas de Pantalla
 
-*(Reemplaza las rutas de las imágenes con las capturas de tu app)*
-
-| Inicio / Player | Biblioteca | Soundly Cloud |
+| <img src="Resources/Home.png" width="100%"/> | <img src="Resources/Player.png" width="100%"/> | <img src="Resources/Artist.png" width="100%"/> |
 | :---: | :---: | :---: |
-| <img src="docs/screenshots/home.png" width="220"/> | <img src="docs/screenshots/library.png" width="220"/> | <img src="docs/screenshots/cloud.png" width="220"/> |
-
 ---
 
 <div align="center">
